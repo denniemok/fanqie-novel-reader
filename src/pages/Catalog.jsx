@@ -129,10 +129,13 @@ function Catalog() {
     return <Navigate to="/" replace />;
   }
 
+  if (error) {
+    return <Error message={error} href="/" />;
+  }
+
   return (
     <CatalogWrapper>
       <MyHead bookInfo={bookInfo} />
-      {error && <Error message={error} href="/" />}
       {bookInfo && (
       <BackBar>
         <SiteTitle to="/">番茄小說閱讀器</SiteTitle>

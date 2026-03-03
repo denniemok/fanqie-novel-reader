@@ -136,6 +136,10 @@ function Chapter() {
     return bookId ? <Navigate to={`/catalog?bookId=${bookId}`} replace /> : <Navigate to="/" replace />;
   }
 
+  if (error) {
+    return <Error message={error} href={bookId ? `/catalog?bookId=${bookId}` : '/'} />;
+  }
+
   return (
     <ChapterWrapper>
       {loading ? (
@@ -143,7 +147,6 @@ function Chapter() {
       ) : (
         <>
           <MyHead bookInfo={bookInfo} chapterData={chapterData} />
-          {error && <Error message={error} href="/" />}
           {chapterData && (
             <>
               <TopBar
