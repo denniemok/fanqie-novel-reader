@@ -19,36 +19,20 @@ export function setApiBase(url) {
 }
 
 const REQUEST_TIMEOUT_MS = 45000; // 45 seconds
-const DEBUG = true; // Set to false to disable API debug logs
-
-function debug(...args) {
-  if (DEBUG) {
-    const ts = new Date().toISOString();
-    console.log(`[API ${ts}]`, ...args);
-  }
-}
 
 async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-  debug('fetch start', url);
-  const start = performance.now();
-
   try {
     const res = await fetch(url, { ...options, signal: controller.signal });
     clearTimeout(timeoutId);
-    const elapsed = (performance.now() - start).toFixed(0);
-    debug('fetch done', url, `status=${res.status}`, `${elapsed}ms`);
     return res;
   } catch (err) {
     clearTimeout(timeoutId);
-    const elapsed = (performance.now() - start).toFixed(0);
     if (err.name === 'AbortError') {
-      debug('fetch timeout', url, `${elapsed}ms`);
       throw new Error(`Request timed out after ${timeoutMs / 1000}s`);
     }
-    debug('fetch error', url, err.message, `${elapsed}ms`);
     throw err;
   }
 }
@@ -72,13 +56,11 @@ export async function fetchBookDetail(bookId, { forceRefresh = false } = {}) {
   if (!forceRefresh) {
     const cached = detailCache.get(bookId);
     if (cached) {
-      debug('fetchBookDetail cache hit', bookId);
       return cached;
     }
   }
 
   const url = `${getApiBase()}/api/detail?book_id=${bookId}`;
-  debug('fetchBookDetail', bookId, forceRefresh ? '(force refresh)' : '');
   const res = await fetchWithTimeout(url);
   if (!res.ok) throw new Error('Failed to fetch book detail');
   const json = await res.json();
@@ -98,13 +80,11 @@ export async function fetchBook(bookId, { forceRefresh = false } = {}) {
   if (!forceRefresh) {
     const cached = directoryCache.get(bookId);
     if (cached) {
-      debug('fetchBook cache hit', bookId);
       return cached;
     }
   }
 
   const url = `${getApiBase()}/api/directory?book_id=${bookId}`;
-  debug('fetchBook', bookId, forceRefresh ? '(force refresh)' : '');
   const res = await fetchWithTimeout(url);
   if (!res.ok) throw new Error('Failed to fetch book data');
   const json = await res.json();
@@ -148,14 +128,12 @@ export async function fetchItem(itemId, { forceRefresh = false } = {}) {
   if (!forceRefresh) {
     const cached = chapterCache.get(itemId);
     if (cached) {
-      debug('fetchItem cache hit', itemId);
       return applyChapterConversion(cached);
     }
   }
 
   // API 參數 tab 使用簡體「小说」，後端可能依此識別
   const url = `${getApiBase()}/api/content?tab=小说&item_id=${itemId}`;
-  debug('fetchItem', itemId, forceRefresh ? '(force refresh)' : '');
   const res = await fetchWithTimeout(url);
   if (!res.ok) throw new Error('Failed to fetch chapter content');
   const json = await res.json();

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import AbstractModal from './AbstractModal';
-import { cleanAbstract, truncateText, MAX_ABSTRACT_LENGTH } from '../utils/text';
+import { cleanAbstract, truncateText, MAX_ABSTRACT_LENGTH, MOBILE_ABSTRACT_LENGTH } from '../utils/text';
 import { maybeConvert } from '../utils/zh-convert';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 
 const InfoWrapper = styled.div`
   display: flex;
-  width: 100%;
   padding: 32px 24px;
   align-items: flex-start;
   gap: 24px;
@@ -20,6 +20,16 @@ const InfoWrapper = styled.div`
     border-radius: 12px;
     flex-shrink: 0;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px 16px;
+    gap: 16px;
+
+    img {
+      width: 80px;
+      height: 107px;
+    }
   }
 `;
 
@@ -52,6 +62,15 @@ const TitleBlock = styled.div`
     margin: 0;
   }
 
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 18px;
+    }
+    h3 {
+      font-size: 13px;
+    }
+  }
+
   h3 {
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -75,6 +94,15 @@ const Abstract = styled.p`
   word-break: break-word;
   white-space: pre-line;
   margin: 0;
+
+  @media (max-width: 480px) {
+    font-size: 13px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    white-space: normal;
+  }
 `;
 
 const ShowMore = styled.button`
@@ -96,11 +124,13 @@ const ShowMore = styled.button`
 
 function Info({ bookInfo, useTraditionalChinese = false }) {
   const [showFullAbstract, setShowFullAbstract] = useState(false);
+  const isMobile = useMediaQuery('(max-width: 480px)');
   const bookData = bookInfo ? bookInfo : { book_info: {} };
   const bookInfoData = bookData.book_info || {};
   const fullAbstract = cleanAbstract(maybeConvert(bookInfoData.abstract, useTraditionalChinese));
-  const truncated = truncateText(fullAbstract, MAX_ABSTRACT_LENGTH);
-  const isLong = fullAbstract.length > MAX_ABSTRACT_LENGTH;
+  const maxLen = isMobile ? MOBILE_ABSTRACT_LENGTH : MAX_ABSTRACT_LENGTH;
+  const truncated = truncateText(fullAbstract, maxLen);
+  const isLong = fullAbstract.length > maxLen;
 
   if (!bookInfoData.book_name && !bookInfoData.author) return null;
 

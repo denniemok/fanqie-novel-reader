@@ -1,4 +1,5 @@
-export const MAX_ABSTRACT_LENGTH = 120;
+export const MAX_ABSTRACT_LENGTH = 80;
+export const MOBILE_ABSTRACT_LENGTH = 45;
 
 export function cleanAbstract(text) {
   if (!text) return '';

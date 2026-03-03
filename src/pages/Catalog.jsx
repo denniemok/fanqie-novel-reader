@@ -10,6 +10,15 @@ import LoadingPage from '../components/LoadingPage';
 import BackButton from '../components/BackButton';
 import styled from 'styled-components';
 import { BOOK_ID_KEY } from '../utils/constants';
+
+const CatalogWrapper = styled.div`
+  min-height: 100dvh;
+  min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
+  background-color: var(--background-color);
+  padding-bottom: env(safe-area-inset-bottom);
+`;
 import { safeSetItem, getLastReadChapter, getUseTraditionalChinese, setUseTraditionalChinese } from '../utils/storage';
 import { formatErrorMessage } from '../utils/errors';
 import { fetchBookWithDetail } from '../utils/api-helpers';
@@ -19,11 +28,17 @@ const BackBar = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
+  padding-top: calc(16px + env(safe-area-inset-top));
   background-color: var(--background-color);
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
   z-index: 100;
+
+  @media (max-width: 480px) {
+    padding: 12px 16px;
+    padding-top: calc(12px + env(safe-area-inset-top));
+  }
 `;
 
 const RightActions = styled.div`
@@ -37,6 +52,8 @@ const IconButton = styled.button`
   align-items: center;
   justify-content: center;
   padding: 10px;
+  min-width: 44px;
+  min-height: 44px;
   color: var(--text-color-secondary);
   background: none;
   border: none;
@@ -55,6 +72,7 @@ const CloseButton = styled.button`
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
+  min-height: 44px;
   color: var(--text-color-secondary);
   font-size: 14px;
   font-weight: 500;
@@ -62,6 +80,8 @@ const CloseButton = styled.button`
   border-radius: 20px;
   background: none;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.2s ease;
 
   &:hover {
@@ -73,6 +93,13 @@ const CloseButton = styled.button`
   svg {
     width: 18px;
     height: 18px;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 480px) {
+    padding: 8px 12px;
+    font-size: 13px;
+    gap: 6px;
   }
 `;
 
@@ -123,7 +150,7 @@ function Catalog() {
   }
 
   return (
-    <div>
+    <CatalogWrapper>
       <MyHead bookInfo={bookInfo} />
       {error && <Error message={error} href="/" />}
       <BackBar>
@@ -162,7 +189,7 @@ function Catalog() {
       ) : (
         <LoadingPage />
       )}
-    </div>
+    </CatalogWrapper>
   );
 }
 

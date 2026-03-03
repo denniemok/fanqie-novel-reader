@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Navigate } from 'react-router-dom';
 import { fetchItem } from '../api';
 import styled from 'styled-components';
 import TopBar from '../components/TopBar';
@@ -23,6 +23,10 @@ import { fetchBookWithDetail } from '../utils/api-helpers';
 
 const ChapterWrapper = styled.div`
   background-color: var(--background-color);
+  min-height: 100dvh;
+  min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
 `;
 
 function buildNovelDataFromDirectory(itemId, bookId, itemDataList) {
@@ -126,6 +130,10 @@ function Chapter() {
   }, [itemId, loadChapter]);
 
   const handleRefresh = () => loadChapter(true);
+
+  if (!itemId) {
+    return bookId ? <Navigate to={`/catalog?bookId=${bookId}`} replace /> : <Navigate to="/" replace />;
+  }
 
   return (
     <ChapterWrapper>

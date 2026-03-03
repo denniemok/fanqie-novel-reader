@@ -38,6 +38,14 @@
   }
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -47,8 +55,23 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* iOS: prevent text size adjustment on orientation change */
+  -webkit-text-size-adjust: 100%;
+  /* iOS: smooth momentum scrolling */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent overscroll bounce on fixed elements */
+  overscroll-behavior-y: none;
+  /* iOS: use dynamic viewport height (accounts for browser chrome) */
+  min-height: 100dvh;
+  min-height: 100vh;
 }
 
 a, span, h1, h2, h3, h4, h5, h6, p, li {
   color: inherit;
+}
+
+/* iOS: remove tap highlight, improve tap responsiveness */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }

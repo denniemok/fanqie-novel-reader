@@ -9,16 +9,22 @@ const ModalOverlay = styled.div`
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 20px;
+  padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
 `;
 
 const ModalContent = styled.div`
   background: var(--background-color2);
   border-radius: 8px;
   padding: 16px 20px;
-  max-width: 400px;
+  max-width: 560px;
   max-height: 70vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  @media (max-width: 480px) {
+    padding: 16px;
+    max-height: 80dvh;
+  }
 `;
 
 const ModalText = styled.p`

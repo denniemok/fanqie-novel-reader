@@ -7,9 +7,8 @@ const ErrorBackground = styled.div`
   display: flex;
   background-color: var(--error-background-color);
   position: fixed;
+  inset: 0;
   z-index: 999;
-  width: 100%;
-  height: 100vh;
   backdrop-filter: blur(20px);
 `;
 
@@ -23,10 +22,17 @@ const ErrorMessage = styled.div`
   z-index: 999;
   margin: auto;
   max-width: 375px;
+  width: calc(100% - 32px);
   background-color: #ffffff;
   background-size: auto 100%;
   background-repeat: no-repeat;
   background-position: left bottom;
+
+  @media (max-width: 480px) {
+    padding: 20px 16px 20px 80px;
+    margin: 16px;
+    width: auto;
+  }
 `;
 
 const InfoBlock = styled.div`

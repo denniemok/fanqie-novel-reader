@@ -12,7 +12,7 @@ function App() {
         <Route path="/catalog" element={<Catalog />} />
         <Route path="/chapter" element={<Chapter />} />
       </Routes>
-      <Analytics />
+      <Analytics debug={false} />
     </>
   );
 }

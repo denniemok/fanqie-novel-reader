@@ -7,17 +7,16 @@ const MenuList = styled.ul`
   list-style-type: none;
   margin: 0;
   padding: 0;
-  width: 100%;
 `;
 
 const MenuItem = styled.li`
-  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--border-color);
   padding: 0 16px;
+  min-height: 48px;
   transition: all 0.2s ease;
 
   &:hover {
@@ -59,11 +58,22 @@ const MenuItem = styled.li`
     color: var(--text-color-secondary);
     margin-left: 16px;
     opacity: 0.7;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 480px) {
+    a {
+      font-size: 15px;
+    }
+    span {
+      display: none;
+    }
   }
 `;
 
 function Menu({ itemDataList, sortOrder, bookId, useTraditionalChinese = false }) {
-  const items = itemDataList ? itemDataList : [];
+  const items = [...(itemDataList || [])];
 
   const compareChapters = (a, b) => {
     const regex = /第(\d+)章/;

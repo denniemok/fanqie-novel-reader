@@ -16,8 +16,16 @@ const NullPageWrapper = styled.div`
   background-color: var(--background-color);
   color: var(--text-color);
   padding: 40px 24px;
+  padding-top: calc(40px + env(safe-area-inset-top));
+  padding-bottom: calc(40px + env(safe-area-inset-bottom));
   max-width: 800px;
   margin: 0 auto;
+
+  @media (max-width: 480px) {
+    padding: 24px 16px;
+    padding-top: calc(24px + env(safe-area-inset-top));
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
 `;
 
 const Header = styled.header`
@@ -37,6 +45,10 @@ const Title = styled.h1`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.02em;
+
+  @media (max-width: 480px) {
+    font-size: 26px;
+  }
 `;
 
 const Subtitle = styled.p`
@@ -75,9 +87,14 @@ const SectionTitle = styled.h2`
 const SavedBookCard = styled.div`
   display: flex;
   width: 100%;
-  box-sizing: border-box; /* Ensure padding doesn't affect width */
+  box-sizing: border-box;
   padding: 20px;
   gap: 20px;
+
+  @media (max-width: 480px) {
+    padding: 16px;
+    gap: 16px;
+  }
   border-radius: 20px;
   background-color: var(--background-color2);
   border: 1px solid var(--border-color);

@@ -6,8 +6,10 @@ import styled from 'styled-components';
 const BottomBarWrapper = styled.div`
   position: fixed;
   bottom: 0;
-  width: 100%;
+  left: 0;
+  right: 0;
   height: 64px;
+  padding-bottom: env(safe-area-inset-bottom);
   display: flex;
   background-color: rgba(18, 18, 18, 0.95);
   backdrop-filter: blur(10px);
@@ -25,6 +27,7 @@ const BottomBarWrapper = styled.div`
     text-decoration: none;
     color: var(--text-color-secondary);
     width: 100%;
+    min-height: 44px;
     height: 100%;
     transition: all 0.2s ease;
   }

@@ -6,11 +6,18 @@ const SortWrapper = styled.div`
   position: fixed;
   z-index: 1000;
   right: 24px;
-  bottom: 88px; /* Above the bottom bar */
+  bottom: 24px;
+
+  @media (max-width: 480px) {
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+  }
 
   button {
     display: flex;
     padding: 14px;
+    min-width: 52px;
+    min-height: 52px;
     border-radius: 50%;
     background-color: var(--accent-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
