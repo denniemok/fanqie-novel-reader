@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useSearchParams, Navigate } from 'react-router-dom';
+import { useSearchParams, Navigate, useNavigate } from 'react-router-dom';
 import { fetchItem } from '../api';
 import styled from 'styled-components';
 import TopBar from '../components/TopBar';
@@ -50,6 +50,7 @@ function buildNovelDataFromDirectory(itemId, bookId, itemDataList) {
 
 function Chapter() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const itemId = searchParams.get('itemId');
   const bookId = searchParams.get('bookId') || safeGetItem(BOOK_ID_KEY);
   const [error, setError] = useState(null);
@@ -85,7 +86,7 @@ function Chapter() {
     const loadPromise = bookId
       ? Promise.all([
           fetchItem(itemId, { forceRefresh }),
-          fetchBookWithDetail(bookId, { forceRefresh }),
+          fetchBookWithDetail(bookId, { forceRefresh: false }),
         ]).then(([contentRes, mergedBookInfo]) => {
           const contentData = contentRes.data.data;
           const novelData = buildNovelDataFromDirectory(itemId, bookId, mergedBookInfo.item_data_list);
@@ -138,7 +139,7 @@ function Chapter() {
   return (
     <ChapterWrapper>
       {loading ? (
-        <LoadingPage />
+        <LoadingPage onAbort={() => navigate('/')} />
       ) : (
         <>
           <MyHead bookInfo={bookInfo} chapterData={chapterData} />

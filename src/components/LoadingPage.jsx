@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const spin = keyframes`
@@ -31,6 +31,13 @@ const LoadingWrapper = styled.div`
       animation: ${dots} 1s steps(5, end) infinite;
     }
   }
+
+  .counter {
+    &::after {
+      content: none;
+      animation: none;
+    }
+  }
 `;
 
 const Spinner = styled.div`
@@ -43,11 +50,41 @@ const Spinner = styled.div`
   margin: 0 auto;
 `;
 
-function LoadingPage() {
+const AbortButton = styled.button`
+  margin-top: 16px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  color: var(--text-color-secondary);
+  background: var(--background-color2);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+  }
+`;
+
+function LoadingPage({ onAbort }) {
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, []);
+
   return (
     <LoadingWrapper>
       <Spinner />
       <p>載入中</p>
+      <p className="counter">{seconds} 秒</p>
+      {onAbort && (
+        <AbortButton type="button" onClick={onAbort}>
+          取消載入
+        </AbortButton>
+      )}
     </LoadingWrapper>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, Minus, Plus, Sun, Moon, RefreshCw, Languages, SlidersHorizontal, X } from 'lucide-react';
+import { List, Minus, Plus, Sun, Moon, RefreshCw, Languages, SlidersHorizontal, X } from 'lucide-react';
 import HomeButton from './HomeButton';
+import { IconButton, IconLink } from './IconButton';
 import styled from 'styled-components';
 import { maybeConvert } from '../utils/zh-convert';
 import { useMediaQuery } from '../hooks/useMediaQuery';
@@ -42,10 +42,6 @@ const RightActions = styled.div`
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-
-  @media (max-width: 480px) {
-    gap: 4px;
-  }
 `;
 
 const ToolsToggle = styled.button`
@@ -81,7 +77,7 @@ const ToolsPanel = styled.div`
     position: fixed;
     top: calc(12px + env(safe-area-inset-top));
     right: 0;
-    width: min(320px, 90vw);
+    width: min(240px, 85vw);
     flex-direction: column;
     align-items: stretch;
     gap: 0;
@@ -120,15 +116,15 @@ const ToolsPanelHeader = styled.div`
 `;
 
 const ToolsPanelContent = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   flex-shrink: 0;
+  padding-bottom: 16px;
 
   @media (max-width: 480px) {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 6px;
+    gap: 2px;
+    padding-bottom: 20px;
   }
 `;
 
@@ -144,61 +140,6 @@ const Overlay = styled.div`
 
   @media (max-width: 480px) {
     display: block;
-  }
-`;
-
-const IconLink = styled(Link)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  min-width: 44px;
-  min-height: 44px;
-  color: var(--text-color-secondary);
-  text-decoration: none;
-  border-radius: 12px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: var(--hover-background-color);
-    color: var(--accent-color);
-  }
-
-  @media (max-width: 480px) {
-    min-width: 40px;
-    min-height: 40px;
-    padding: 8px;
-  }
-`;
-
-const IconButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  min-width: 44px;
-  min-height: 44px;
-  color: var(--text-color-secondary);
-  background: none;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover:not(:disabled) {
-    background-color: var(--hover-background-color);
-    color: var(--accent-color);
-  }
-
-  &:disabled {
-    opacity: 0.2;
-    cursor: not-allowed;
-  }
-
-  @media (max-width: 480px) {
-    min-width: 40px;
-    min-height: 40px;
-    padding: 8px;
   }
 `;
 
@@ -340,7 +281,7 @@ function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, textBrightn
       )}
       {chapterData.novel_data.book_id && (
         <IconLink to={`/catalog?bookId=${chapterData.novel_data.book_id}`} title="目錄">
-          <Menu size={20} strokeWidth={2.5} />
+          <List size={20} strokeWidth={2.5} />
         </IconLink>
       )}
     </>

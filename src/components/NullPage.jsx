@@ -6,8 +6,9 @@ import { BOOK_ID_KEY, DIRECTORY_CACHE_KEY, DETAIL_CACHE_KEY } from '../utils/con
 import { safeGetItem, safeSetItem, safeGetJSON, getLastReadChapter, deleteBookData } from '../utils/storage';
 import AbstractModal from './AbstractModal';
 import { cleanAbstract, truncateText, MAX_ABSTRACT_LENGTH } from '../utils/text';
+import { maybeConvert } from '../utils/zh-convert';
 
-import { BookOpen, Search, Info as InfoIcon, Globe, Trash2 } from 'lucide-react';
+import { BookOpen, Search, Info as InfoIcon, Globe, Trash2, List } from 'lucide-react';
 
 const NullPageWrapper = styled.div`
   display: flex;
@@ -183,25 +184,31 @@ const SavedBookCard = styled.div`
   }
 `;
 
-const DeleteButton = styled.button`
+const ActionButtons = styled.div`
   position: absolute;
   top: 16px;
   right: 16px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+`;
+
+const ActionButton = styled.button`
   padding: 8px;
   border-radius: 10px;
-  background-color: rgba(239, 68, 68, 0.9);
-  color: white;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.7;
   transition: all 0.2s ease;
+  background-color: ${(p) => (p.$variant === 'delete' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(100, 116, 139, 0.9)')};
+  color: white;
+  opacity: ${(p) => (p.$variant === 'delete' ? 0.7 : 0.9)};
 
   &:hover {
     opacity: 1;
-    background-color: #dc2626;
+    background-color: ${(p) => (p.$variant === 'delete' ? '#dc2626' : 'rgba(148, 163, 184, 0.95)')};
     transform: scale(1.05);
   }
 
@@ -406,9 +413,14 @@ function NullPage() {
     navigate(lastReadItemId ? `/chapter?bookId=${savedBookId}&itemId=${lastReadItemId}` : `/catalog?bookId=${savedBookId}`);
   };
 
+  const handleCatalogClick = (e) => {
+    e.stopPropagation();
+    navigate(`/catalog?bookId=${savedBookId}`);
+  };
+
   const handleDeleteBook = (e) => {
     e.stopPropagation();
-    if (window.confirm(`確定要刪除「${savedBookInfo?.book_name || savedBookId}」的所有本地資料嗎？`)) {
+    if (window.confirm(`確定要刪除「${maybeConvert(savedBookInfo?.book_name) || savedBookId}」的所有本地資料嗎？`)) {
       deleteBookData(savedBookId);
       setRefreshKey((k) => k + 1);
     }
@@ -425,22 +437,34 @@ function NullPage() {
         <Section key={refreshKey}>
           <SectionTitle><BookOpen /> 最近閱讀</SectionTitle>
           <SavedBookCard onClick={handleSavedBookClick}>
-            <DeleteButton
-              type="button"
-              onClick={handleDeleteBook}
-              title="刪除此書的本地資料"
-              aria-label="刪除此書的本地資料"
-            >
-              <Trash2 />
-            </DeleteButton>
+            <ActionButtons>
+              <ActionButton
+                type="button"
+                $variant="catalog"
+                onClick={handleCatalogClick}
+                title="目錄"
+                aria-label="前往目錄"
+              >
+                <List />
+              </ActionButton>
+              <ActionButton
+                type="button"
+                $variant="delete"
+                onClick={handleDeleteBook}
+                title="刪除此書的本地資料"
+                aria-label="刪除此書的本地資料"
+              >
+                <Trash2 />
+              </ActionButton>
+            </ActionButtons>
             {savedBookInfo.audio_thumb_uri && (
               <img src={savedBookInfo.audio_thumb_uri} alt="封面" />
             )}
             <div className="content">
-              <h3 className="title">{savedBookInfo.book_name}</h3>
-              <div className="author">{savedBookInfo.author}</div>
+              <h3 className="title">{maybeConvert(savedBookInfo.book_name)}</h3>
+              <div className="author">{maybeConvert(savedBookInfo.author)}</div>
               {savedBookInfo.abstract && (
-                <div className="abstract">{savedBookInfo.abstract}</div>
+                <div className="abstract">{maybeConvert(savedBookInfo.abstract)}</div>
               )}
               <div className="meta">
                 {savedBookInfo.chapterCount > 0 ? `共 ${savedBookInfo.chapterCount} 章節` : '暫無章節資訊'}

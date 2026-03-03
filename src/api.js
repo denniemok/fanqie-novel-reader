@@ -77,9 +77,7 @@ export async function fetchBookDetail(bookId, { forceRefresh = false } = {}) {
 }
 
 export async function fetchBook(bookId, { forceRefresh = false } = {}) {
-  if (forceRefresh) {
-    directoryCache.remove(bookId);
-  } else {
+  if (!forceRefresh) {
     const cached = directoryCache.get(bookId);
     if (cached) {
       return cached;

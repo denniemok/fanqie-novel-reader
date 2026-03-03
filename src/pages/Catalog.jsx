@@ -8,6 +8,7 @@ import MyHead from '../components/MyHead';
 import Sort from '../components/Sort';
 import LoadingPage from '../components/LoadingPage';
 import HomeButton from '../components/HomeButton';
+import { IconButton } from '../components/IconButton';
 import styled from 'styled-components';
 import { BOOK_ID_KEY } from '../utils/constants';
 
@@ -31,13 +32,23 @@ const BackBar = styled.div`
   padding-top: calc(16px + env(safe-area-inset-top));
   background-color: var(--background-color);
   border-bottom: 1px solid var(--border-color);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
 
   @media (max-width: 480px) {
     padding: 12px 16px;
     padding-top: calc(12px + env(safe-area-inset-top));
+  }
+`;
+
+const CatalogContent = styled.div`
+  padding-top: calc(76px + env(safe-area-inset-top));
+
+  @media (max-width: 480px) {
+    padding-top: calc(68px + env(safe-area-inset-top));
   }
 `;
 
@@ -62,28 +73,11 @@ const RightActions = styled.div`
   align-items: center;
   gap: 8px;
   margin-left: auto;
-`;
 
-const IconButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  min-width: 44px;
-  min-height: 44px;
-  color: var(--text-color-secondary);
-  background: none;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: var(--hover-background-color);
-    color: var(--accent-color);
+  @media (max-width: 480px) {
+    gap: 2px;
   }
 `;
-
 
 function Catalog() {
   const [searchParams] = useSearchParams();
@@ -172,7 +166,7 @@ function Catalog() {
       </BackBar>
       )}
       {bookInfo ? (
-        <>
+        <CatalogContent>
           <Info bookInfo={bookInfo} useTraditionalChinese={useTraditionalChinese} />
           {bookInfo.item_data_list && (
             <>
@@ -180,9 +174,9 @@ function Catalog() {
               <Menu sortOrder={sortOrder} itemDataList={bookInfo.item_data_list} bookId={bookId} useTraditionalChinese={useTraditionalChinese} />
             </>
           )}
-        </>
+        </CatalogContent>
       ) : (
-        <LoadingPage />
+        <LoadingPage onAbort={() => navigate('/')} />
       )}
     </CatalogWrapper>
   );
