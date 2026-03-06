@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams, Navigate, useNavigate, Link } from 'react-router-dom';
-import { Bookmark, Download, DownloadCloud, Languages, RefreshCw } from 'lucide-react';
+import { Bookmark, CloudDownload, Download, Languages, RefreshCw } from 'lucide-react';
 import Menu from '../components/Menu';
 import Info from '../components/Info';
 import Error from '../components/Error';
@@ -145,7 +145,7 @@ function Catalog() {
             disabled={!hasUncachedChapters && !downloadingAll}
             style={downloadingAll ? { color: 'var(--accent-color)' } : undefined}
           >
-            <DownloadCloud size={20} strokeWidth={2.5} />
+            <CloudDownload size={20} strokeWidth={2.5} />
           </IconButton>
           <IconButton
             type="button"
