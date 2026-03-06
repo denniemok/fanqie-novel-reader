@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Navigate, useNavigate, Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Languages } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Languages, List, RefreshCw } from 'lucide-react';
 import styled from 'styled-components';
 import { fetchComments, fetchBookDetail } from '../api';
 import { buildCatalogUrl } from '../utils/navigation';
 import Error from '../components/Error';
+import Info from '../components/Info';
 import LoadingPage from '../components/LoadingPage';
 import HomeButton from '../components/HomeButton';
 import MyHead from '../components/MyHead';
@@ -61,74 +62,20 @@ const SiteTitle = styled(Link)`
   }
 `;
 
-const CommentsContent = styled.div`
-  padding: calc(76px + env(safe-area-inset-top)) 24px 24px;
+const PageContent = styled.div`
+  padding-top: calc(76px + env(safe-area-inset-top));
 
   @media (max-width: 480px) {
-    padding: calc(68px + env(safe-area-inset-top)) 16px 16px;
+    padding-top: calc(68px + env(safe-area-inset-top));
   }
 `;
 
-const BookInfoSection = styled.section`
-  padding: 24px;
-  margin-bottom: 24px;
-  background-color: var(--background-color2);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
+const CommentsSection = styled.div`
+  padding: 24px 24px 24px;
 
   @media (max-width: 480px) {
-    padding: 16px;
-    gap: 16px;
+    padding: 20px 16px 16px;
   }
-`;
-
-const BookCover = styled.img`
-  width: 80px;
-  height: 107px;
-  object-fit: cover;
-  border-radius: 8px;
-  flex-shrink: 0;
-
-  @media (max-width: 480px) {
-    width: 60px;
-    height: 80px;
-  }
-`;
-
-const BookDetails = styled.div`
-  flex: 1;
-  min-width: 0;
-`;
-
-const BookTitle = styled.h1`
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-color);
-  margin: 0 0 4px;
-
-  @media (max-width: 480px) {
-    font-size: 16px;
-  }
-`;
-
-const BookAuthor = styled.div`
-  font-size: 14px;
-  color: var(--accent-color);
-  margin-bottom: 8px;
-`;
-
-const BookAbstract = styled.p`
-  font-size: 14px;
-  color: var(--text-color-secondary);
-  line-height: 1.5;
-  margin: 0 0 12px;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
 `;
 
 const CommentStats = styled.div`
@@ -136,11 +83,15 @@ const CommentStats = styled.div`
   color: var(--text-color-secondary);
 `;
 
-const PageTitle = styled.h1`
+const SectionTitle = styled.h1`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
   font-size: 22px;
   font-weight: 700;
   color: var(--text-color);
-  margin: 0 0 24px;
+  margin: 10px 0 24px;
 
   @media (max-width: 480px) {
     font-size: 18px;
@@ -257,6 +208,7 @@ function Comments() {
   const [bookDetail, setBookDetail] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const offset = (page - 1) * COMMENTS_PER_PAGE + 1;
   const innerData = data?.data ?? {};
@@ -280,7 +232,7 @@ function Comments() {
       .finally(() => {
         setLoading(false);
       });
-  }, [bookId, offset]);
+  }, [bookId, offset, refreshKey]);
 
   const comments = innerData.comment ?? [];
   const commentCnt = innerData.comment_cnt ?? 0;
@@ -289,9 +241,6 @@ function Comments() {
   const canGoNext = hasMore;
   const canGoPrev = page > 1;
 
-  const convertedBookName = useConvertedText(bookDetail?.book_name ?? '', useTraditionalChinese);
-  const convertedAuthor = useConvertedText(bookDetail?.author ?? '', useTraditionalChinese);
-  const convertedAbstract = useConvertedText(bookDetail?.abstract ?? '', useTraditionalChinese);
   const convertedContext = useConvertedText(context, useTraditionalChinese);
 
   const handlePrevPage = () => {
@@ -310,6 +259,8 @@ function Comments() {
     }
   };
 
+  const handleRefresh = () => setRefreshKey((k) => k + 1);
+
   if (!bookId) {
     return <Navigate to="/" replace />;
   }
@@ -321,9 +272,14 @@ function Comments() {
   return (
     <CommentsWrapper>
       <MyHead bookInfo={bookDetail ? { book_info: bookDetail } : undefined} />
+      {loading ? (
+        <LoadingPage onAbort={() => navigate(buildCatalogUrl(bookId))} />
+      ) : (
+        <>
       <BackBar>
         <SiteTitle to="/">番茄小說閱讀器</SiteTitle>
         <RightActions>
+          <HomeButton />
           <IconButton
             type="button"
             title={useTraditionalChinese ? '切換為簡體中文' : '切換為繁體中文'}
@@ -332,30 +288,39 @@ function Comments() {
           >
             <Languages size={20} strokeWidth={2.5} />
           </IconButton>
-          <HomeButton />
+          <IconButton
+            type="button"
+            title="重新載入評論"
+            onClick={handleRefresh}
+          >
+            <RefreshCw size={20} strokeWidth={2.5} />
+          </IconButton>
+          <IconButton
+            type="button"
+            title="目錄"
+            onClick={() => navigate(buildCatalogUrl(bookId))}
+          >
+            <List size={20} strokeWidth={2.5} />
+          </IconButton>
         </RightActions>
       </BackBar>
-      {loading ? (
-        <LoadingPage onAbort={() => navigate(buildCatalogUrl(bookId))} />
-      ) : (
-        <CommentsContent>
+        <PageContent>
           {bookDetail && (
-            <BookInfoSection>
-              {bookDetail.audio_thumb_uri && (
-                <BookCover src={bookDetail.audio_thumb_uri} alt="封面" />
-              )}
-              <BookDetails>
-                <BookTitle>{convertedBookName}</BookTitle>
-                <BookAuthor>作者: {convertedAuthor}</BookAuthor>
-                {convertedAbstract && <BookAbstract>{convertedAbstract}</BookAbstract>}
-                <CommentStats>
-                  {commentCnt > 0 && <span>共 {commentCnt} 則評論</span>}
-                  {context && <span> · {convertedContext}</span>}
-                </CommentStats>
-              </BookDetails>
-            </BookInfoSection>
+            <Info
+              bookInfo={bookDetail}
+              useTraditionalChinese={useTraditionalChinese}
+            />
           )}
-          <PageTitle>評論</PageTitle>
+          <CommentsSection>
+          <SectionTitle>
+            評論
+            {(commentCnt > 0 || context) && (
+              <CommentStats>
+                {commentCnt > 0 && <span>共 {commentCnt} 則評論</span>}
+                {context && <span> · {convertedContext}</span>}
+              </CommentStats>
+            )}
+          </SectionTitle>
           {comments.length === 0 ? (
             <EmptyState>暫無評論</EmptyState>
           ) : (
@@ -386,30 +351,30 @@ function Comments() {
                   );
                 })}
               </CommentList>
-              <Pagination>
-                <PaginationButton
-                  type="button"
-                  onClick={handlePrevPage}
-                  disabled={!canGoPrev}
-                  title="上一頁"
-                >
-                  <ChevronLeft size={18} />
-                  上一頁
-                </PaginationButton>
-                <PageInfo>第 {page} 頁</PageInfo>
-                <PaginationButton
-                  type="button"
-                  onClick={handleNextPage}
-                  disabled={!canGoNext}
-                  title="下一頁"
-                >
-                  下一頁
-                  <ChevronRight size={18} />
-                </PaginationButton>
-              </Pagination>
             </>
           )}
-        </CommentsContent>
+          <Pagination>
+            <PaginationButton
+              type="button"
+              onClick={handlePrevPage}
+              disabled={!canGoPrev}
+              title="上一頁"
+            >
+              <ChevronLeft size={18} />
+            </PaginationButton>
+            <PageInfo>第 {page} 頁</PageInfo>
+            <PaginationButton
+              type="button"
+              onClick={handleNextPage}
+              disabled={!canGoNext}
+              title="下一頁"
+            >
+              <ChevronRight size={18} />
+            </PaginationButton>
+          </Pagination>
+          </CommentsSection>
+        </PageContent>
+        </>
       )}
     </CommentsWrapper>
   );

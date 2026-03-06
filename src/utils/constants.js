@@ -17,5 +17,5 @@ export const TEXT_BRIGHTNESS_DEFAULT = 55;
 export const TEXT_BRIGHTNESS_STEP = 5;
 export const MAX_CONCURRENT_DOWNLOADS = 10;
 export const REQUEST_TIMEOUT_MS = 45000;
-export const MAX_ABSTRACT_LENGTH = 80;
+export const MAX_ABSTRACT_LENGTH = 180;
 export const MOBILE_ABSTRACT_LENGTH = 45;

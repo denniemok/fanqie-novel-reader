@@ -33,15 +33,17 @@ const SectionTitle = styled.h2`
 
 function getBookInfoFromCache(bookId) {
   try {
-    const directory = safeGetJSON(`${DIRECTORY_CACHE_KEY}-${bookId}`);
     const detail = safeGetJSON(`${DETAIL_CACHE_KEY}-${bookId}`);
-    const list = directory?.item_data_list ?? [];
     return {
-      chapterCount: list.length,
-      book_name: detail?.book_name || list[0]?.title || `書籍 ${bookId.slice(0, 8)}`,
+      chapterCount: detail?.content_chapter_number || null,
+      book_name: detail?.book_name || `書籍 ${bookId.slice(0, 8)}`,
       author: detail?.author || '未知作者',
       abstract: cleanAbstract(detail?.abstract) || null,
       audio_thumb_uri: detail?.audio_thumb_uri || null,
+      score: detail?.score || null,
+      tags: detail?.tags || null,
+      category: detail?.category || null,
+      sub_info: detail?.sub_info || null,
     };
   } catch {
     return null;

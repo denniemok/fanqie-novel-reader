@@ -14,7 +14,7 @@ export function useBookLoader(bookId) {
       setBookInfo(null);
     }
 
-    fetchBookWithDetail(bookId, { forceRefresh, catalogOnly: forceRefresh })
+    fetchBookWithDetail(bookId, { forceRefresh })
       .then((merged) => {
         setBookInfo(merged);
       })

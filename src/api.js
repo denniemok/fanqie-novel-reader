@@ -69,10 +69,15 @@ export async function fetchBookDetail(bookId, { forceRefresh = false } = {}) {
   
   const d = json.data?.data ?? {};
   const result = {
-    abstract: d.abstract ?? '',
-    author: d.author ?? '',
-    audio_thumb_uri: d.audio_thumb_uri ?? '',
-    book_name: d.book_name ?? '',
+    abstract: d.abstract || null,
+    author: d.author || null,
+    audio_thumb_uri: d.audio_thumb_uri || null,
+    book_name: d.book_name || null,
+    score: d.score || null,
+    tags: d.tags || null,
+    category: d.category || null,
+    sub_info: d.sub_info || null,
+    content_chapter_number: d.content_chapter_number || null,
   };
   
   detailCache.set(bookId, result);

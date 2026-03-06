@@ -63,17 +63,61 @@ const Card = styled.div`
     font-weight: 500;
   }
 
-  .meta {
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .meta-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    background-color: rgba(var(--accent-color-rgb, 255, 193, 7), 0.15);
+    color: var(--text-color);
+    white-space: nowrap;
+  }
+
+  .meta-score {
+    background-color: rgba(129, 199, 132, 0.3);
+    color: #81c784;
+  }
+
+  .meta-category {
+    background-color: rgba(100, 181, 246, 0.3);
+    color: #64b5f6;
+  }
+
+  .meta-subinfo {
+    background-color: rgba(186, 104, 200, 0.3);
+    color: #ba68c8;
+  }
+
+  .tags {
     font-size: 12px;
     color: var(--text-color-secondary);
-    margin-top: 4px;
+    line-height: 1.3;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0.75;
+
+    @media (max-width: 480px) {
+      font-size: 11px;
+    }
   }
 
   .abstract {
     font-size: 13px;
     color: var(--text-color-secondary);
     line-height: 1.5;
-    margin-top: 8px;
+    margin-top: 2px;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
@@ -102,6 +146,21 @@ const Card = styled.div`
   }
 `;
 
+const ThumbnailWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+  align-items: center;
+`;
+
+const ThumbnailMeta = styled.div`
+  font-size: 11px;
+  color: var(--text-color-secondary);
+  text-align: center;
+  width: 100px;
+`;
+
 const ActionButtons = styled.div`
   position: absolute;
   top: 16px;
@@ -121,14 +180,14 @@ const ActionButton = styled.button`
   justify-content: center;
   transition: all 0.2s ease;
   background-color: ${(p) =>
-    p.$variant === 'delete' ? 'rgba(239, 68, 68, 0.9)' : p.$variant === 'comment' ? 'rgba(255, 152, 0, 0.9)' : 'rgba(100, 116, 139, 0.9)'};
+    p.$variant === 'delete' ? 'rgba(239, 68, 68, 0.9)' : p.$variant === 'comment' ? 'rgba(76, 175, 80, 0.9)' : 'rgba(100, 116, 139, 0.9)'};
   color: white;
   opacity: ${(p) => (p.$variant === 'delete' ? 0.7 : 0.9)};
 
   &:hover {
     opacity: 1;
     background-color: ${(p) =>
-      p.$variant === 'delete' ? '#dc2626' : p.$variant === 'comment' ? 'var(--accent-color)' : 'rgba(148, 163, 184, 0.95)'};
+      p.$variant === 'delete' ? '#dc2626' : p.$variant === 'comment' ? '#4caf50' : 'rgba(148, 163, 184, 0.95)'};
     transform: scale(1.05);
   }
 
@@ -145,7 +204,10 @@ const ActionButton = styled.button`
 function SavedBookCard({ bookInfo, actionHint, onClick, onCatalogClick, onCommentClick, onDeleteClick, useTraditionalChinese }) {
   const bookName = useConvertedText(bookInfo.book_name, useTraditionalChinese);
   const author = useConvertedText(bookInfo.author, useTraditionalChinese);
-  const abstract = useConvertedText(bookInfo.abstract ?? '', useTraditionalChinese);
+  const abstract = useConvertedText(bookInfo.abstract, useTraditionalChinese);
+  const tags = useConvertedText(bookInfo.tags, useTraditionalChinese);
+  const category = useConvertedText(bookInfo.category, useTraditionalChinese);
+  const subInfo = useConvertedText(bookInfo.sub_info, useTraditionalChinese);
 
   return (
     <Card onClick={onClick}>
@@ -180,15 +242,23 @@ function SavedBookCard({ bookInfo, actionHint, onClick, onCatalogClick, onCommen
           <Trash2 />
         </ActionButton>
       </ActionButtons>
-      {bookInfo.audio_thumb_uri && (
-        <img src={bookInfo.audio_thumb_uri} alt="封面" />
-      )}
+      <ThumbnailWrapper>
+        {bookInfo.audio_thumb_uri && (
+          <img src={bookInfo.audio_thumb_uri} alt="封面" />
+        )}
+        <ThumbnailMeta>
+          {bookInfo.chapterCount ? `共 ${bookInfo.chapterCount} 章節` : '暫無章節資訊'}
+        </ThumbnailMeta>
+      </ThumbnailWrapper>
       <div className="content">
         <h3 className="title">{bookName}</h3>
         <div className="author">{author}</div>
+        {bookInfo.tags && <div className="tags">{tags}</div>}
         {bookInfo.abstract && <div className="abstract">{abstract}</div>}
-        <div className="meta">
-          {bookInfo.chapterCount > 0 ? `共 ${bookInfo.chapterCount} 章節` : '暫無章節資訊'}
+        <div className="meta-row">
+          {bookInfo.score && <span className="meta-tag meta-score">評分: {bookInfo.score}</span>}
+          {bookInfo.category && <span className="meta-tag meta-category">{category}</span>}
+          {bookInfo.sub_info && <span className="meta-tag meta-subinfo">{subInfo}</span>}
         </div>
       </div>
       <div className="action-hint">{actionHint}</div>

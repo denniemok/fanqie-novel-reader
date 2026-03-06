@@ -127,7 +127,7 @@ function Menu({ itemDataList, sortOrder, bookId, useTraditionalChinese = false }
 }
 
 function MenuItemLink({ item, bookId, useTraditionalChinese, isDownloading }) {
-  const convertedTitle = useConvertedText(item.title ?? '', useTraditionalChinese);
+  const convertedTitle = useConvertedText(item.title, useTraditionalChinese);
 
   if (isDownloading) {
     return (

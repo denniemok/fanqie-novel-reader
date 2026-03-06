@@ -208,8 +208,8 @@ const ProgressText = styled.div`
 function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, textBrightness, onTextBrightnessChange, useTraditionalChinese = false, onTraditionalChineseToggle, onRefresh }) {
   const [toolsExpanded, setToolsExpanded] = useState(false);
   const isMobile = useMediaQuery('(max-width: 480px)');
-  const convertedTitle = useConvertedText(chapterData?.novel_data?.title ?? '', useTraditionalChinese);
-  const convertedBookName = useConvertedText(bookInfo?.book_info?.book_name ?? '', useTraditionalChinese);
+  const convertedTitle = useConvertedText(chapterData?.novel_data?.title, useTraditionalChinese);
+  const convertedBookName = useConvertedText(bookInfo?.book_info?.book_name, useTraditionalChinese);
 
   if (!chapterData || !chapterData.novel_data) return null;
 
