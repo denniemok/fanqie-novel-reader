@@ -316,11 +316,11 @@ function Info({ bookInfo, useTraditionalChinese = false, variant, footer }) {
           {truncated}
         </Abstract>
         <MetaRow>
-          {isCompact && !audio_thumb_uri && chapter_count && (
-            <MetaTag className="meta-chapters">共 {chapter_count} 章節</MetaTag>
+          {isCompact && !audio_thumb_uri && (
+            <MetaTag className="meta-chapters">{chapter_count ? `共 ${chapter_count} 章節` : '暫無章節資訊'}</MetaTag>
           )}
-          {(score !== undefined && score !== null && score !== '') && (
-            <MetaTag className="meta-score">評分: {score === '0' || score === 0 ? '暫無' : score}</MetaTag>
+          {score && (
+            <MetaTag className="meta-score">評分: {score}</MetaTag>
           )}
           {category && <MetaTag className="meta-category">{convertedCategory}</MetaTag>}
           {sub_info && <MetaTag className="meta-subinfo">{convertedSubInfo}</MetaTag>}

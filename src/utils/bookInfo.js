@@ -18,17 +18,18 @@ export function normalizeBookInfo(raw, bookId) {
     author: book_info.author || '未知作者',
     abstract: cleanAbstract(book_info.abstract) || null,
     audio_thumb_uri: book_info.audio_thumb_uri || null,
-    score: book_info.score ?? null,
+    score: (book_info.score === '0') ? null : (book_info.score || null),
     tags: book_info.tags || null,
     category: book_info.category || null,
     sub_info: book_info.sub_info || null,
-    content_chapter_number: book_info.content_chapter_number ?? null,
+    content_chapter_number: (book_info.content_chapter_number === '0') ? null : (book_info.content_chapter_number || null),
   };
 
+  const n = item_data_list.length || normalizedBookInfo.content_chapter_number;
   return {
     ...raw,
     book_info: normalizedBookInfo,
     item_data_list,
-    chapter_count: (item_data_list.length || normalizedBookInfo.content_chapter_number) ?? null,
+    chapter_count: (n === 0 || n === '0' || n == null) ? null : n,
   };
 }
