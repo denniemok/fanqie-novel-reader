@@ -11,7 +11,7 @@ const FooterWrapper = styled.footer`
 `;
 
 function Footer() {
-  return <FooterWrapper>番茄小說閱讀器 · 簡單、乾淨、無廣告</FooterWrapper>;
+  return <FooterWrapper>FQNR · 僅供學習交流使用</FooterWrapper>;
 }
 
 export default Footer;

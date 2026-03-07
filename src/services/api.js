@@ -6,6 +6,8 @@ import { maybeConvert } from '../utils/zh-convert';
 export const API_OPTIONS = [
   { id: 'bk', url: 'https://bk.yydjtc.cn', label: 'bk.yydjtc.cn' },
   { id: 'qkfq', url: 'https://qkfqapi.vv9v.cn', label: 'qkfqapi.vv9v.cn' },
+  { id: '103', url: 'http://103.236.91.147:9999', label: '103.236.91.147:9999' },
+  { id: '101', url: 'http://101.35.133.34:5000', label: '101.35.133.34:5000' },
 ];
 
 const DEFAULT_API_BASE = API_OPTIONS[0].url;
