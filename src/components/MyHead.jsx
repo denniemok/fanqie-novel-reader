@@ -2,10 +2,10 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 function MyHead({ bookInfo, chapterData }) {
-  const bookName = bookInfo && bookInfo.book_info && bookInfo.book_info.book_name;
-  const bookTitle = chapterData && chapterData.novel_data && chapterData.novel_data.book_name;
+  const bookName = bookInfo && bookInfo.book_info && bookInfo.book_info.original_book_name;
+  const bookTitle = chapterData && chapterData.novel_data && chapterData.novel_data.original_book_name;
   const author = bookInfo && bookInfo.book_info && bookInfo.book_info.author;
-  const icon = bookInfo && bookInfo.book_info && bookInfo.book_info.audio_thumb_uri;
+  const icon = bookInfo && bookInfo.book_info && bookInfo.book_info.thumb_url;
   const currentURL = typeof window !== 'undefined' ? window.location.href : '';
   const rawDesc = bookInfo?.book_info?.abstract?.replace(/\n[\u3000]+/g, ' ') ?? '';
   const description = rawDesc

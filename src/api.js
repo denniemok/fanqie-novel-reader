@@ -71,13 +71,16 @@ export async function fetchBookDetail(bookId, { forceRefresh = false } = {}) {
   const result = {
     abstract: d.abstract || null,
     author: d.author || null,
-    audio_thumb_uri: d.audio_thumb_uri || null,
-    book_name: d.book_name || null,
+    thumb_url: d.thumb_url || null,
+    original_book_name: d.original_book_name || null,
     score: d.score || null,
     tags: d.tags || null,
     category: d.category || null,
     sub_info: d.sub_info || null,
     content_chapter_number: d.content_chapter_number || null,
+    word_number: d.word_number || null,
+    last_publish_time: d.last_publish_time || null,
+    creation_status: d.creation_status || null,
   };
   
   detailCache.set(bookId, result);

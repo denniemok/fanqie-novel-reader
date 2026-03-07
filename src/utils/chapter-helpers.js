@@ -10,14 +10,10 @@ export function buildNovelDataFromDirectory(itemId, bookId, itemDataList) {
   
   return {
     book_id: bookId,
-    book_name: '',
     title: item.title,
     order: String(index + 1),
     serial_count: String(list.length),
     pre_item_id: prevItem?.item_id ?? null,
     next_item_id: nextItem?.item_id ?? null,
-    author: '',
-    abstract: '',
-    create_time: '',
   };
 }

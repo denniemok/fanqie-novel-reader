@@ -254,6 +254,21 @@ const MetaTag = styled.span`
     color: #ba68c8;
   }
 
+  &.meta-word-number {
+    background-color: rgba(255, 167, 38, 0.3);
+    color: #ffa726;
+  }
+
+  &.meta-creation-status {
+    background-color: rgba(77, 208, 225, 0.3);
+    color: #4dd0e1;
+  }
+
+  &.meta-publish-time {
+    background-color: rgba(161, 136, 127, 0.3);
+    color: #a1887f;
+  }
+
   &.meta-chapters {
     background-color: rgba(var(--accent-color-rgb, 255, 193, 7), 0.15);
     color: var(--text-color);
@@ -271,15 +286,17 @@ function Info({ bookInfo, useTraditionalChinese = false, variant, footer }) {
   const isMobile = useMediaQuery('(max-width: 480px)');
   
   const bookInfoData = bookInfo?.book_info || bookInfo || {};
-  const { book_name, author, audio_thumb_uri, abstract, tags, score, category, sub_info } = bookInfoData;
+  const { original_book_name, author, thumb_url, abstract, tags, score, category, sub_info, word_number, creation_status, last_publish_time } = bookInfoData;
   const chapter_count = bookInfo?.chapter_count ?? null;
 
   const convertedAbstract = useConvertedText(abstract, useTraditionalChinese);
-  const convertedBookName = useConvertedText(book_name, useTraditionalChinese);
+  const convertedBookName = useConvertedText(original_book_name, useTraditionalChinese);
   const convertedAuthor = useConvertedText(author, useTraditionalChinese);
   const convertedTags = useConvertedText(tags, useTraditionalChinese);
   const convertedCategory = useConvertedText(category, useTraditionalChinese);
   const convertedSubInfo = useConvertedText(sub_info, useTraditionalChinese);
+  const convertedWordNumber = useConvertedText(word_number, useTraditionalChinese);
+  const convertedCreationStatus = useConvertedText(creation_status, useTraditionalChinese);
   
   const fullAbstract = cleanAbstract(convertedAbstract);
   const maxLen = isMobile ? MOBILE_ABSTRACT_LENGTH : MAX_ABSTRACT_LENGTH;
@@ -287,15 +304,15 @@ function Info({ bookInfo, useTraditionalChinese = false, variant, footer }) {
   const isLong = fullAbstract.length > maxLen;
   const isCompact = variant === 'compact';
 
-  if (!book_name && !author) return null;
+  if (!original_book_name && !author) return null;
 
   const wrapperClass = variant === 'card' ? 'variant-card' : variant === 'compact' ? 'variant-compact' : '';
 
   return (
     <InfoWrapper className={wrapperClass}>
-      {audio_thumb_uri && (
-        <CoverWrapper>
-          <img src={audio_thumb_uri} alt="書籍封面" width="128" height="128" />
+{thumb_url && (
+          <CoverWrapper>
+          <img src={thumb_url} alt="書籍封面" width="128" height="128" />
           <CoverMeta>
             {chapter_count ? `共 ${chapter_count} 章節` : '暫無章節資訊'}
           </CoverMeta>
@@ -316,7 +333,7 @@ function Info({ bookInfo, useTraditionalChinese = false, variant, footer }) {
           {truncated}
         </Abstract>
         <MetaRow>
-          {isCompact && !audio_thumb_uri && (
+          {!thumb_url && (
             <MetaTag className="meta-chapters">{chapter_count ? `共 ${chapter_count} 章節` : '暫無章節資訊'}</MetaTag>
           )}
           {score && (
@@ -324,6 +341,9 @@ function Info({ bookInfo, useTraditionalChinese = false, variant, footer }) {
           )}
           {category && <MetaTag className="meta-category">{convertedCategory}</MetaTag>}
           {sub_info && <MetaTag className="meta-subinfo">{convertedSubInfo}</MetaTag>}
+          {word_number && <MetaTag className="meta-word-number">{convertedWordNumber}字</MetaTag>}
+          {creation_status && <MetaTag className="meta-creation-status">{convertedCreationStatus}</MetaTag>}
+          {last_publish_time && <MetaTag className="meta-publish-time">更新: {last_publish_time}</MetaTag>}
         </MetaRow>
         {!isCompact && footer && <Footer>{footer}</Footer>}
       </TextBlock>

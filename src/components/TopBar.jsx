@@ -106,7 +106,7 @@ const ProgressText = styled.div`
 
 function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, textBrightness, onTextBrightnessChange, useTraditionalChinese = false, onTraditionalChineseToggle, onRefresh }) {
   const convertedTitle = useConvertedText(chapterData?.novel_data?.title, useTraditionalChinese);
-  const convertedBookName = useConvertedText(bookInfo?.book_info?.book_name, useTraditionalChinese);
+  const convertedBookName = useConvertedText(bookInfo?.book_info?.original_book_name, useTraditionalChinese);
 
   if (!chapterData || !chapterData.novel_data) return null;
 
