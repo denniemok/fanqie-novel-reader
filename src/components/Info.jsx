@@ -31,6 +31,20 @@ const InfoWrapper = styled.div`
       gap: 16px;
     }
   }
+
+  &.variant-compact {
+    padding: 0;
+    gap: 20px;
+    background: none;
+    border: none;
+    border-bottom: none;
+    flex: 1;
+    min-width: 0;
+
+    @media (max-width: 480px) {
+      gap: 16px;
+    }
+  }
 `;
 
 const CoverWrapper = styled.div`
@@ -68,6 +82,14 @@ const CoverWrapper = styled.div`
       }
     }
   }
+
+  .variant-compact & {
+    img {
+      width: 100px;
+      height: 134px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+  }
 `;
 
 const CoverMeta = styled.div`
@@ -75,6 +97,10 @@ const CoverMeta = styled.div`
   color: var(--text-color-secondary);
   text-align: center;
   width: 100%;
+
+  .variant-compact & {
+    width: 100px;
+  }
 `;
 
 const TextBlock = styled.div`
@@ -84,6 +110,11 @@ const TextBlock = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
+
+  .variant-compact & {
+    gap: 8px;
+    justify-content: center;
+  }
 `;
 
 const TitleBlock = styled.div`
@@ -126,6 +157,16 @@ const TitleBlock = styled.div`
     font-weight: 500;
     line-height: 1;
     margin: 6px 0 0 0;
+  }
+
+  .variant-compact & h1 {
+    font-size: 20px;
+    white-space: nowrap;
+    -webkit-line-clamp: 1;
+  }
+
+  .variant-compact & h3 {
+    margin: 0;
   }
 `;
 
@@ -183,6 +224,10 @@ const MetaRow = styled.div`
   align-items: center;
   gap: 8px;
   margin-top: 8px;
+
+  .variant-compact & {
+    margin-top: 4px;
+  }
 `;
 
 const MetaTag = styled.span`
@@ -208,6 +253,11 @@ const MetaTag = styled.span`
     background-color: rgba(186, 104, 200, 0.3);
     color: #ba68c8;
   }
+
+  &.meta-chapters {
+    background-color: rgba(var(--accent-color-rgb, 255, 193, 7), 0.15);
+    color: var(--text-color);
+  }
 `;
 
 const Footer = styled.div`
@@ -216,13 +266,13 @@ const Footer = styled.div`
   color: var(--text-color-secondary);
 `;
 
-function Info({ bookInfo, useTraditionalChinese = false, variant, footer }) {
+function Info({ bookInfo, useTraditionalChinese = false, variant, footer, chapterCount: chapterCountProp }) {
   const [showFullAbstract, setShowFullAbstract] = useState(false);
   const isMobile = useMediaQuery('(max-width: 480px)');
   
   const bookInfoData = bookInfo?.book_info || bookInfo || {};
   const { book_name, author, audio_thumb_uri, abstract, tags, score, category, sub_info, content_chapter_number } = bookInfoData;
-  const chapterCount = bookInfo?.item_data_list?.length ?? content_chapter_number ?? null;
+  const chapterCount = chapterCountProp ?? bookInfo?.item_data_list?.length ?? content_chapter_number ?? bookInfo?.chapterCount ?? null;
 
   const convertedAbstract = useConvertedText(abstract, useTraditionalChinese);
   const convertedBookName = useConvertedText(book_name, useTraditionalChinese);
@@ -235,11 +285,14 @@ function Info({ bookInfo, useTraditionalChinese = false, variant, footer }) {
   const maxLen = isMobile ? MOBILE_ABSTRACT_LENGTH : MAX_ABSTRACT_LENGTH;
   const truncated = truncateText(fullAbstract, maxLen);
   const isLong = fullAbstract.length > maxLen;
+  const isCompact = variant === 'compact';
 
   if (!book_name && !author) return null;
 
+  const wrapperClass = variant === 'card' ? 'variant-card' : variant === 'compact' ? 'variant-compact' : '';
+
   return (
-    <InfoWrapper className={variant === 'card' ? 'variant-card' : ''}>
+    <InfoWrapper className={wrapperClass}>
       {audio_thumb_uri && (
         <CoverWrapper>
           <img src={audio_thumb_uri} alt="書籍封面" width="128" height="128" />
@@ -255,7 +308,7 @@ function Info({ bookInfo, useTraditionalChinese = false, variant, footer }) {
         </TitleBlock>
         {tags && <Tags>{convertedTags}</Tags>}
         <Abstract>
-          {isLong && (
+          {!isCompact && isLong && (
             <ShowMore type="button" onClick={() => setShowFullAbstract(true)}>
               展開
             </ShowMore>
@@ -263,13 +316,16 @@ function Info({ bookInfo, useTraditionalChinese = false, variant, footer }) {
           {truncated}
         </Abstract>
         <MetaRow>
+          {isCompact && !audio_thumb_uri && chapterCount && (
+            <MetaTag className="meta-chapters">共 {chapterCount} 章節</MetaTag>
+          )}
           {score && <MetaTag className="meta-score">評分: {score}</MetaTag>}
           {category && <MetaTag className="meta-category">{convertedCategory}</MetaTag>}
           {sub_info && <MetaTag className="meta-subinfo">{convertedSubInfo}</MetaTag>}
         </MetaRow>
-        {footer && <Footer>{footer}</Footer>}
+        {!isCompact && footer && <Footer>{footer}</Footer>}
       </TextBlock>
-      {showFullAbstract && (
+      {!isCompact && showFullAbstract && (
         <AbstractModal text={fullAbstract} onClose={() => setShowFullAbstract(false)} />
       )}
     </InfoWrapper>
