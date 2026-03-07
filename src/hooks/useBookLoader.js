@@ -34,6 +34,21 @@ export function useBookLoader(bookId, { detailOnly = false } = {}) {
     if (bookId && !detailOnly) loadBook(false);
   }, [bookId, detailOnly, loadBook]);
 
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const refetch = useCallback(() => {
+    if (!bookId || !detailOnly) return;
+    setIsRefreshing(true);
+    fetchBookDetailAndDirectory(bookId, { forceRefresh: true })
+      .then((merged) => {
+        setBookInfo(normalizeBookInfo(merged, bookId));
+      })
+      .catch(() => {})
+      .finally(() => {
+        setIsRefreshing(false);
+      });
+  }, [bookId, detailOnly]);
+
   useEffect(() => {
     if (detailOnly && bookId) {
       fetchBookDetail(bookId)
@@ -45,5 +60,5 @@ export function useBookLoader(bookId, { detailOnly = false } = {}) {
     }
   }, [detailOnly, bookId]);
 
-  return { error, bookInfo, loadBook };
+  return { error, bookInfo, loadBook, refetch, isRefreshing };
 }

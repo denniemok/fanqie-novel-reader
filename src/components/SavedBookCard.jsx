@@ -1,8 +1,13 @@
 import React from 'react';
-import styled from 'styled-components';
-import { List, MessageCircle, Trash2 } from 'lucide-react';
+import styled, { keyframes } from 'styled-components';
+import { List, Loader2, MessageCircle, RefreshCw, Trash2 } from 'lucide-react';
 import Info from './Info';
 import { useBookLoader } from '../hooks/useBookLoader';
+
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
 
 const Card = styled.div`
   display: flex;
@@ -22,6 +27,8 @@ const Card = styled.div`
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  pointer-events: ${(p) => (p.$disabled ? 'none' : 'auto')};
+  opacity: ${(p) => (p.$disabled ? 0.7 : 1)};
 
   &:hover {
     transform: translateY(-4px);
@@ -51,6 +58,29 @@ const Card = styled.div`
   }
 `;
 
+const SpinningIcon = styled.span`
+  display: flex;
+  animation: ${spin} 1s linear infinite;
+`;
+
+const LoadingOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 20px;
+  z-index: 10;
+
+  svg {
+    width: 40px;
+    height: 40px;
+    color: var(--accent-color);
+    animation: ${spin} 1s linear infinite;
+  }
+`;
+
 const ActionButtons = styled.div`
   position: absolute;
   top: 16px;
@@ -58,6 +88,7 @@ const ActionButtons = styled.div`
   display: flex;
   gap: 8px;
   align-items: center;
+  z-index: 11;
 `;
 
 const ActionButton = styled.button`
@@ -70,19 +101,24 @@ const ActionButton = styled.button`
   justify-content: center;
   transition: all 0.2s ease;
   background-color: ${(p) =>
-    p.$variant === 'delete' ? 'rgba(239, 68, 68, 0.9)' : p.$variant === 'comment' ? 'rgba(76, 175, 80, 0.9)' : 'rgba(100, 116, 139, 0.9)'};
+    p.$variant === 'delete' ? 'rgba(239, 68, 68, 0.9)' : p.$variant === 'comment' ? 'rgba(76, 175, 80, 0.9)' : p.$variant === 'refresh' ? 'rgba(59, 130, 246, 0.9)' : 'rgba(100, 116, 139, 0.9)'};
   color: white;
   opacity: ${(p) => (p.$variant === 'delete' ? 0.7 : 0.9)};
 
   &:hover {
     opacity: 1;
     background-color: ${(p) =>
-      p.$variant === 'delete' ? '#dc2626' : p.$variant === 'comment' ? '#4caf50' : 'rgba(148, 163, 184, 0.95)'};
+      p.$variant === 'delete' ? '#dc2626' : p.$variant === 'comment' ? '#4caf50' : p.$variant === 'refresh' ? '#2563eb' : 'rgba(148, 163, 184, 0.95)'};
     transform: scale(1.05);
   }
 
   &:active {
     transform: scale(0.95);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
   }
 
   svg {
@@ -91,13 +127,18 @@ const ActionButton = styled.button`
   }
 `;
 
-function SavedBookCard({ bookId, actionHint, onClick, onCatalogClick, onCommentClick, onDeleteClick, useTraditionalChinese }) {
-  const { bookInfo } = useBookLoader(bookId, { detailOnly: true });
+function SavedBookCard({ bookId, actionHint, onClick, onCatalogClick, onCommentClick, onRefreshClick, onDeleteClick, useTraditionalChinese }) {
+  const { bookInfo, refetch, isRefreshing } = useBookLoader(bookId, { detailOnly: true });
 
   if (!bookInfo) return null;
 
   return (
-    <Card onClick={onClick}>
+    <Card onClick={onClick} $disabled={isRefreshing}>
+      {isRefreshing && (
+        <LoadingOverlay>
+          <Loader2 />
+        </LoadingOverlay>
+      )}
       <ActionButtons>
         <ActionButton
           type="button"
@@ -119,6 +160,16 @@ function SavedBookCard({ bookId, actionHint, onClick, onCatalogClick, onCommentC
             <MessageCircle />
           </ActionButton>
         )}
+        <ActionButton
+          type="button"
+          $variant="refresh"
+          disabled={isRefreshing}
+          onClick={(e) => { e.stopPropagation(); (onRefreshClick ?? refetch)(e); }}
+          title="重新整理"
+          aria-label="重新整理"
+        >
+          {isRefreshing ? <SpinningIcon><Loader2 size={18} /></SpinningIcon> : <RefreshCw />}
+        </ActionButton>
         <ActionButton
           type="button"
           $variant="delete"
