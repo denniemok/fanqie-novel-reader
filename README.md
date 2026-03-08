@@ -1,8 +1,17 @@
 # 番茄小說閱讀器
 
-[English](README.en.md) | 繁體中文
+繁體中文 | [English](README.en.md)
 
 一個簡單、無廣告的番茄小說閱讀器。免安裝、免註冊，支援多章節下載與 TXT 匯出，無需中國手機號即可在線閱讀。
+
+## 預覽
+
+<p align="center">
+  <img src="https://i.imgur.com/OwM0o2um.png" width="24%" alt="預覽 1">
+  <img src="https://i.imgur.com/iUC48s8m.png" width="24%" alt="預覽 2">
+  <img src="https://i.imgur.com/JjPwI30m.png" width="24%" alt="預覽 3">
+  <img src="https://i.imgur.com/gam1lGpm.png" width="24%" alt="預覽 4">
+</p>
 
 ## 功能特點
 
@@ -40,13 +49,13 @@ npm run build
 
 ## 使用方法
 
-1. **取得書籍 ID**：前往 [番茄小說網](https://fanqienovel.com) 找到小說，從網址複製數字 ID：
+1. **取得書籍**：前往 [番茄小說網](https://fanqienovel.com) 找到小說，從網址複製數字 ID：
    ```
    https://fanqienovel.com/page/123456789?...
    ```
-   ID 即為 `123456789`。
+   書籍 ID 即為 `123456789`。
 
-2. **開始閱讀**：在首頁輸入 ID 或網址，點擊「開始閱讀」。
+2. **開始閱讀**：在首頁輸入框中輸入 ID 或網址，點擊「開始閱讀」。
 
 3. **繼續閱讀**：首頁會顯示閱讀歷史，點擊即可接續進度。
 

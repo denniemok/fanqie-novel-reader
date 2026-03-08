@@ -4,6 +4,17 @@
 
 A simple, ad-free Fanqie novel reader. No installation or registration needed. Supports multi-chapter downloads and TXT export without a Chinese phone number.
 
+For foreign readers, use Google Translate or AI translation plugins in your browser to translate this site.
+
+## Preview
+
+<p align="center">
+  <img src="https://i.imgur.com/OwM0o2um.png" width="24%" alt="預覽 1">
+  <img src="https://i.imgur.com/iUC48s8m.png" width="24%" alt="預覽 2">
+  <img src="https://i.imgur.com/JjPwI30m.png" width="24%" alt="預覽 3">
+  <img src="https://i.imgur.com/gam1lGpm.png" width="24%" alt="預覽 4">
+</p>
+
 ## Features
 
 - **Ad-Free**: No ads, just reading.
@@ -40,15 +51,15 @@ Static files are in `dist/`. Deploy them to Vercel, Netlify, GitHub Pages, or Cl
 
 ## Usage
 
-1. **Find a Book**: Go to [Fanqie Novel](https://fanqienovel.com). Copy the Book ID from the URL:
+1. **Get Book ID**: Go to [Fanqie Novel](https://fanqienovel.com). Find a book. Copy the numeric ID from the URL:
    ```
    https://fanqienovel.com/page/123456789?...
    ```
    The Book ID is `123456789`.
 
-2. **Start Reading**: Paste the Book ID or URL on the homepage and click "Start Reading".
+2. **Start Reading**: Paste the Book ID or URL in the homepage textbox and click "Start Reading".
 
-3. **Pick Up Where You Left Off**: Your history is on the homepage. Just click to continue.
+3. **Pick Up Where You Left Off**: Your history is on the homepage. Click a book and continue from the previous checkpoint.
 
 ## Structure
 

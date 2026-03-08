@@ -43,7 +43,7 @@ function NoticeBoard() {
       <SectionTitle><Megaphone /> 公告</SectionTitle>
       <NoticeCard>
         2026-03-08 新增 API 來源、字體選擇功能。<br></br>
-        For foreign readers, use Google Translate or AI translation plugins in your browser to translate this page.
+        For foreign readers, use Google Translate or AI translation plugins in your browser to translate this site.
       </NoticeCard>
     </Section>
   );

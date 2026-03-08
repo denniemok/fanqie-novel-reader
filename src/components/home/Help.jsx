@@ -131,7 +131,7 @@ function Help() {
         </HelpCard>
         <HelpCard>
           <h3>Non-Chinese Readers?</h3>
-          <p>Use Google Translate or AI plugin in your browser to translate the page.</p>
+          <p>Use Google Translate or AI translation plugins in your browser to translate this site.</p>
         </HelpCard>
       </HelpGrid>
     </Section>
