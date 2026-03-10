@@ -7,7 +7,7 @@ import Error from '../components/common/Error';
 import Loading from '../components/common/Loading';
 import PageWrapper from '../components/common/PageWrapper';
 import { useConversionMode } from '../hooks/useConversionMode';
-import { useFontSize, useFontFamily, useTextBrightness } from '../hooks/useTextSettings';
+import { useFontSize, useFontFamily, useTextBrightness, useReaderBackground } from '../hooks/useTextSettings';
 import { useChapterLoader } from '../hooks/useChapterLoader';
 import { buildCatalogUrl } from '../utils/navigation';
 
@@ -21,6 +21,7 @@ function Chapter() {
   const [fontSize, handleFontSizeChange] = useFontSize();
   const [fontFamily, handleFontFamilyChange] = useFontFamily();
   const [textBrightness, handleTextBrightnessChange] = useTextBrightness();
+  const [readerBackground, handleReaderBackgroundChange] = useReaderBackground();
   const [conversionMode, setConversionMode] = useConversionMode();
 
   const handleConversionModeChange = useCallback(
@@ -45,7 +46,7 @@ function Chapter() {
   }
 
   return (
-    <PageWrapper $withBottomPadding={false}>
+    <PageWrapper $withBottomPadding={false} $backgroundColor={readerBackground}>
       {loading ? (
         <Loading onAbort={() => navigate('/')} />
       ) : (
@@ -61,11 +62,13 @@ function Chapter() {
                 onFontFamilyChange={handleFontFamilyChange}
                 textBrightness={textBrightness}
                 onTextBrightnessChange={handleTextBrightnessChange}
+                readerBackground={readerBackground}
+                onReaderBackgroundChange={handleReaderBackgroundChange}
                 conversionMode={conversionMode}
                 onConversionModeChange={handleConversionModeChange}
                 onRefresh={handleRefresh}
               />
-              <Reader chapterData={chapterData} fontSize={fontSize} fontFamily={fontFamily} textBrightness={textBrightness} conversionMode={conversionMode} />
+              <Reader chapterData={chapterData} fontSize={fontSize} fontFamily={fontFamily} textBrightness={textBrightness} readerBackground={readerBackground} conversionMode={conversionMode} />
               <BottomBar chapterData={chapterData} bookId={bookId} />
             </>
           )}

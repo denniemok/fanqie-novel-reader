@@ -6,6 +6,8 @@ import {
   setFontFamily,
   getTextBrightness,
   setTextBrightness,
+  getReaderBackground,
+  setReaderBackground,
 } from '../utils/storage';
 import {
   FONT_SIZE_MIN,
@@ -55,4 +57,15 @@ export function useTextBrightness() {
   };
 
   return [textBrightness, handleTextBrightnessChange];
+}
+
+export function useReaderBackground() {
+  const [readerBackground, setReaderBackgroundState] = useState(getReaderBackground);
+
+  const handleReaderBackgroundChange = (value) => {
+    setReaderBackground(value);
+    setReaderBackgroundState(value);
+  };
+
+  return [readerBackground, handleReaderBackgroundChange];
 }

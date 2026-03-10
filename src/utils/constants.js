@@ -8,6 +8,18 @@ export const FONT_SIZE_KEY = 'fanqie-fontSize';
 export const FONT_FAMILY_KEY = 'fanqie-fontFamily';
 export const TRADITIONAL_CHINESE_KEY = 'fanqie-traditionalChinese';
 export const TEXT_BRIGHTNESS_KEY = 'fanqie-textBrightness';
+export const READER_BACKGROUND_KEY = 'fanqie-readerBackground';
+
+/** Reader background presets: { value: hex, label } */
+export const READER_BACKGROUND_OPTIONS = [
+  { value: '#0a0a0a', label: '深色', textColor: 'var(--text-color)' },
+  { value: '#1a1a1a', label: '灰黑', textColor: 'var(--text-color)' },
+  { value: '#c0d0c0', label: '青綠', textColor: '#1a1a1a' },
+  { value: '#ede5d0', label: '米黃', textColor: '#1a1a1a' },
+  { value: '#e0e0e0', label: '淺灰', textColor: '#1a1a1a' },
+  { value: '#fffef5', label: '米白', textColor: '#1a1a1a' },
+  { value: '#ffffff', label: '純白', textColor: '#1a1a1a' },
+];
 
 /** Chinese conversion modes: { value, label } */
 export const ZH_CONVERSION_OPTIONS = [
@@ -35,12 +47,12 @@ export const CHINESE_FONTS = [
 ];
 
 export const FONT_SIZE_MIN = 18;
-export const FONT_SIZE_MAX = 48;
+export const FONT_SIZE_MAX = 56;
 export const FONT_SIZE_DEFAULT = 32;
 export const FONT_SIZE_STEP = 2;
-export const TEXT_BRIGHTNESS_MIN = 35;
+export const TEXT_BRIGHTNESS_MIN = 15;
 export const TEXT_BRIGHTNESS_MAX = 100;
-export const TEXT_BRIGHTNESS_DEFAULT = 55;
+export const TEXT_BRIGHTNESS_DEFAULT = 50;
 export const TEXT_BRIGHTNESS_STEP = 5;
 export const READING_HISTORY_MAX = 50;
 export const MAX_CONCURRENT_DOWNLOADS = 10;

@@ -50,7 +50,7 @@ const SiteTitle = styled(Link)`
 function TopBarBase({ children }) {
   return (
     <TopBarWrapper>
-      <SiteTitle to="/">番茄小說閱讀器</SiteTitle>
+      <SiteTitle to="/">番茄繁體閱讀</SiteTitle>
       <ActionBar>
         {children}
       </ActionBar>

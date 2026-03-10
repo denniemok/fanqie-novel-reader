@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Minus, Plus, Sun, Moon, RefreshCw, Type } from 'lucide-react';
+import { Minus, Plus, Sun, Moon, RefreshCw, Type, Palette } from 'lucide-react';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import ActionBar from '../common/ActionBar';
 import HomeButton from '../common/HomeButton';
@@ -9,7 +9,7 @@ import ApiSourceDropdown from '../common/ApiSourceDropdown';
 import ConversionDropdown from '../common/ConversionDropdown';
 import { IconButton } from '../common/IconButton';
 import IconDropdown from '../common/IconDropdown';
-import { FONT_SIZE_MIN, FONT_SIZE_MAX, TEXT_BRIGHTNESS_MIN, TEXT_BRIGHTNESS_MAX, CHINESE_FONTS } from '../../utils/constants';
+import { FONT_SIZE_MIN, FONT_SIZE_MAX, TEXT_BRIGHTNESS_MIN, TEXT_BRIGHTNESS_MAX, CHINESE_FONTS, READER_BACKGROUND_OPTIONS } from '../../utils/constants';
 
 const TopBarWrapper = styled.div`
   display: flex;
@@ -110,7 +110,7 @@ const ProgressText = styled.div`
   }
 `;
 
-function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily, onFontFamilyChange, textBrightness, onTextBrightnessChange, conversionMode = 'tw', onConversionModeChange, onRefresh }) {
+function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily, onFontFamilyChange, textBrightness, onTextBrightnessChange, readerBackground, onReaderBackgroundChange, conversionMode = 'tw', onConversionModeChange, onRefresh }) {
   const convertedTitle = useConvertedText(chapterData?.novel_data?.title, conversionMode);
   const convertedBookName = useConvertedText(bookInfo?.book_info?.original_book_name, conversionMode);
 
@@ -161,6 +161,16 @@ function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily,
             )}
             {onConversionModeChange && (
               <ConversionDropdown value={conversionMode} onChange={onConversionModeChange} />
+            )}
+            {onReaderBackgroundChange && (
+              <IconDropdown
+                icon={<Palette size={20} strokeWidth={2.5} />}
+                title="閱讀背景"
+                ariaLabel="選擇閱讀背景顏色"
+                options={READER_BACKGROUND_OPTIONS}
+                value={readerBackground}
+                onChange={onReaderBackgroundChange}
+              />
             )}
             {onTextBrightnessChange && (
               <IconButton

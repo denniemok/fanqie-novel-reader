@@ -12,6 +12,8 @@ import {
   TEXT_BRIGHTNESS_MIN,
   TEXT_BRIGHTNESS_MAX,
   TEXT_BRIGHTNESS_DEFAULT,
+  READER_BACKGROUND_KEY,
+  READER_BACKGROUND_OPTIONS,
 } from './constants';
 import { directoryCache, chapterCache, detailCache } from './cache';
 
@@ -135,6 +137,17 @@ export function getTextBrightness() {
 export function setTextBrightness(value) {
   const clamped = Math.max(TEXT_BRIGHTNESS_MIN, Math.min(TEXT_BRIGHTNESS_MAX, value));
   return safeSetItem(TEXT_BRIGHTNESS_KEY, String(clamped));
+}
+
+export function getReaderBackground() {
+  const raw = safeGetItem(READER_BACKGROUND_KEY);
+  const valid = READER_BACKGROUND_OPTIONS.some((o) => o.value === raw);
+  return valid ? raw : READER_BACKGROUND_OPTIONS[0].value;
+}
+
+export function setReaderBackground(value) {
+  const valid = READER_BACKGROUND_OPTIONS.some((o) => o.value === value);
+  return valid ? safeSetItem(READER_BACKGROUND_KEY, value) : false;
 }
 
 /** @returns {'original'|'tw'|'hk'} Default: 'tw' */
