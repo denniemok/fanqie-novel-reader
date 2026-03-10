@@ -11,7 +11,7 @@ const InfoWrapper = styled.div`
   align-items: flex-start;
   gap: 24px;
   background-color: var(--background-color2);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: var(--retro-border-width) solid var(--border-color);
 
   @media (max-width: 480px) {
     padding: 20px 16px;
@@ -20,11 +20,12 @@ const InfoWrapper = styled.div`
 
   &.variant-card {
     border-bottom: none;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border: var(--retro-border-width) solid var(--border-color);
+    border-radius: 0;
     margin-bottom: 24px;
     padding: 24px;
     gap: 20px;
+    box-shadow: var(--retro-shadow);
 
     @media (max-width: 480px) {
       padding: 16px;
@@ -58,8 +59,10 @@ const CoverWrapper = styled.div`
     width: 120px;
     height: 160px;
     object-fit: cover;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    border-radius: 0;
+    border: 1px solid var(--border-color);
+    box-shadow: 4px 4px 0px var(--background-color);
+    opacity: 0.65;
   }
 
   @media (max-width: 480px) {
@@ -87,7 +90,7 @@ const CoverWrapper = styled.div`
     img {
       width: 100px;
       height: 134px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      box-shadow: 3px 3px 0px var(--background-color);
     }
   }
 `;
@@ -97,6 +100,7 @@ const CoverMeta = styled.div`
   color: var(--text-color-secondary);
   text-align: center;
   width: 100%;
+  font-family: inherit;
 
   .variant-compact & {
     width: 100px;
@@ -132,9 +136,10 @@ const TitleBlock = styled.div`
     overflow: hidden;
     color: var(--text-color);
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 900;
     line-height: 1.3;
     margin: 0;
+    text-transform: uppercase;
   }
 
   @media (max-width: 480px) {
@@ -154,9 +159,10 @@ const TitleBlock = styled.div`
     overflow: hidden;
     color: var(--accent-color);
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 700;
     line-height: 1;
     margin: 6px 0 0 0;
+    font-family: inherit;
   }
 
   .variant-compact & h1 {
@@ -183,6 +189,7 @@ const Abstract = styled.p`
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
+  font-family: inherit;
 
   @media (max-width: 480px) {
     font-size: 13px;
@@ -190,21 +197,24 @@ const Abstract = styled.p`
 `;
 
 const ShowMore = styled.button`
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 14px;
-  font-weight: 500;
+  background: var(--background-color2);
+  border: 1px solid var(--border-color);
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: 900;
   color: var(--accent-color);
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: all 0.1s steps(2);
+  margin-right: 8px;
+  text-transform: uppercase;
 
   &:hover {
-    color: var(--accent-hover);
+    background: var(--accent-color);
+    color: var(--background-color);
   }
 
   @media (max-width: 480px) {
-    font-size: 13px;
+    font-size: 11px;
   }
 `;
 
@@ -215,7 +225,8 @@ const Tags = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  opacity: 0.75;
+  opacity: 0.8;
+  font-family: inherit;
 `;
 
 const MetaRow = styled.div`
@@ -233,44 +244,40 @@ const MetaRow = styled.div`
 const MetaTag = styled.span`
   display: inline-flex;
   align-items: center;
-  padding: 3px 8px;
-  border-radius: 6px;
+  padding: 4px 6px;
+  border-radius: 0;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 700;
   white-space: nowrap;
+  border: 1px solid var(--border-color);
+  background: var(--background-color2);
+  font-family: inherit;
 
   &.meta-score {
-    background-color: rgba(129, 199, 132, 0.3);
-    color: #81c784;
+    color: #a7b8a7;
   }
 
   &.meta-category {
-    background-color: rgba(100, 181, 246, 0.3);
-    color: #64b5f6;
+    color: #8fa3a3;
   }
 
   &.meta-subinfo {
-    background-color: rgba(186, 104, 200, 0.3);
-    color: #ba68c8;
+    color: #a38fa3;
   }
 
   &.meta-word-number {
-    background-color: rgba(255, 167, 38, 0.3);
-    color: #ffa726;
+    color: #a3a38f;
   }
 
   &.meta-creation-status {
-    background-color: rgba(77, 208, 225, 0.3);
-    color: #4dd0e1;
+    color: #8fa38f;
   }
 
   &.meta-publish-time {
-    background-color: rgba(161, 136, 127, 0.3);
-    color: #a1887f;
+    color: #888880;
   }
 
   &.meta-chapters {
-    background-color: rgba(var(--accent-color-rgb, 255, 193, 7), 0.15);
     color: var(--text-color);
   }
 `;
@@ -279,6 +286,10 @@ const Footer = styled.div`
   margin-top: 12px;
   font-size: 14px;
   color: var(--text-color-secondary);
+  font-family: inherit;
+  border-top: 1px dashed var(--border-color);
+  padding-top: 8px;
+  width: 100%;
 `;
 
 function Info({ bookInfo, conversionMode = 'tw', variant, footer }) {

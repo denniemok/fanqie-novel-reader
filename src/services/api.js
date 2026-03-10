@@ -1,7 +1,6 @@
 import { API_BASE_KEY, API_OPTIONS, REQUEST_TIMEOUT_MS } from '../utils/constants';
 import { safeGetItem, safeSetItem, setLastReadChapter } from '../utils/storage';
 import { directoryCache, chapterCache, detailCache } from '../utils/cache';
-import { maybeConvert } from '../utils/zh-convert';
 
 const DEFAULT_API_BASE = API_OPTIONS[0].value;
 
@@ -132,27 +131,11 @@ export async function fetchBookDirectory(bookId, { forceRefresh = false, signal 
   return { data: { data: { data: inner } } };
 }
 
-async function applyChapterConversion(result) {
-  const content = result?.data?.data?.content ?? '';
-  const converted = maybeConvert(content);
-  return {
-    ...result,
-    data: {
-      ...result.data,
-      data: {
-        ...result.data?.data,
-        content: converted,
-      },
-    },
-  };
-}
-
 export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {
   if (!forceRefresh) {
     const cached = await chapterCache.get(itemId);
     if (cached != null) {
-      const result = { data: { data: { content: cached, novel_data: null } } };
-      return applyChapterConversion(result);
+      return { data: { data: { content: cached, novel_data: null } } };
     }
   }
 
@@ -163,7 +146,7 @@ export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {
   const filteredContent = stripHtmlTagsAndNewlines(content);
   await chapterCache.set(itemId, filteredContent);
   
-  const result = {
+  return {
     data: {
       data: {
         content: filteredContent,
@@ -171,8 +154,6 @@ export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {
       },
     },
   };
-  
-  return applyChapterConversion(result);
 }
 
 export async function fetchComments(bookId, { count = 20, offset = 1, signal } = {}) {

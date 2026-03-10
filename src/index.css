@@ -1,45 +1,50 @@
 :root {
-  /* Soft Dark Theme - Primary */
-  --background-color: #121212;
-  --background-color2: #1e1e1e;
-  --background-color-fx: rgba(255, 255, 255, 0.1);
+  /* Retro Deep Dark Theme - OLED Friendly & Night Reading */
+  --background-color: #0a0a0a; /* Almost black for comfort */
+  --background-color2: #141414;
+  --background-color-fx: rgba(255, 255, 255, 0.02);
   
-  /* Text Colors */
-  --text-color: #e0e0e0;
-  --text-color-secondary: #a0a0a0;
+  /* Retro Text Colors - Balanced Contrast for Readability */
+  --text-color: #b8b8b0; /* Brighter warm grey for better legibility */
+  --text-color-secondary: #757570;
   --text-color-fx: #000000;
   
-  /* UI Elements */
-  --accent-color: #ff9800;
-  --accent-hover: #ffb74d;
-  --border-color: #2c2c2c;
-  --hover-background-color: #2a2a2a;
-  --hover-text-color: #ffffff;
+  /* UI Elements - Enhanced Retro Style */
+  --accent-color: #d4a574; /* Warm Amber - Vintage CRT Glow */
+  --accent-hover: #e8b988;
+  --border-color: #3a3a3a; /* Brighter for better definition */
+  --hover-background-color: #1a1a1a;
+  --hover-text-color: #aaaaaa;
   
+  /* Retro Shadows & Borders */
+  --retro-shadow: 4px 4px 0px #050505;
+  --retro-shadow-hover: 2px 2px 0px #050505;
+  --retro-border-width: 2px;
+
   /* Progress Bar */
-  --progressBar: #2c2c2c;
-  --progress: #ff9800;
-  --progressBar-text-color: rgba(255, 255, 255, 0.3);
-  --progressBar-text-full-color: rgba(255, 255, 255, 0.6);
+  --progressBar: #1a1a1a;
+  --progress: #d4a574;
+  --progressBar-text-color: rgba(184, 184, 176, 0.2);
+  --progressBar-text-full-color: rgba(184, 184, 176, 0.4);
 
   /* Legacy / Others */
-  --error-background-color: rgba(30, 30, 30, 0.9);
-  --weidu: #121212;
-  --high-color: #ff9800;
-  --yidu: #f57c00;
-  --hide-yidu: rgba(245, 124, 0, 0);
+  --error-background-color: rgba(10, 10, 10, 0.9);
+  --weidu: #0a0a0a;
+  --high-color: #d4a574;
+  --yidu: #b8860b;
+  --hide-yidu: rgba(184, 134, 11, 0);
 }
 
 @media (prefers-color-scheme: dark) {
-  /* Already in dark mode by default now, but keeping for compatibility if needed */
   :root {
-    --background-color: #121212;
-    --background-color2: #1e1e1e;
+    --background-color: #0a0a0a;
+    --background-color2: #141414;
   }
 }
 
 *, *::before, *::after {
   box-sizing: border-box;
+  border-radius: 0 !important; /* Force remove all rounded corners */
 }
 
 html {
@@ -49,19 +54,16 @@ html {
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Noto Serif TC', 'PMingLiU', Georgia, serif;
   background-color: var(--background-color);
   color: var(--text-color);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* iOS: prevent text size adjustment on orientation change */
+  text-rendering: optimizeLegibility;
   -webkit-text-size-adjust: 100%;
-  /* iOS: smooth momentum scrolling */
   -webkit-overflow-scrolling: touch;
-  /* Prevent overscroll bounce on fixed elements */
   overscroll-behavior-y: none;
-  /* iOS: use dynamic viewport height (accounts for browser chrome) */
   min-height: 100dvh;
   min-height: 100vh;
 }

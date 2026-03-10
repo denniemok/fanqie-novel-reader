@@ -33,10 +33,10 @@ const MenuItem = styled.li`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px dashed var(--border-color);
   padding: 0 16px;
   min-height: 48px;
-  transition: all 0.2s ease;
+  transition: all 0.1s steps(2);
 
   &:hover {
     background-color: var(--hover-background-color);
@@ -52,15 +52,14 @@ const MenuItem = styled.li`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: color 0.2s ease;
+    transition: all 0.1s steps(2);
+    font-family: inherit;
 
     &::before {
-      content: '•';
+      content: '>';
       margin-right: 12px;
       color: var(--accent-color);
-      font-size: 20px;
-      vertical-align: middle;
-      line-height: 0;
+      font-weight: 900;
     }
 
     &:visited {
@@ -70,6 +69,7 @@ const MenuItem = styled.li`
 
   &:hover > a {
     color: var(--accent-color);
+    transform: translateX(4px);
   }
 
   span.word-count {

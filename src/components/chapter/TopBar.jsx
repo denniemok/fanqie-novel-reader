@@ -1,14 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Globe, List, Minus, Plus, Sun, Moon, RefreshCw, Languages, Type } from 'lucide-react';
+import { Minus, Plus, Sun, Moon, RefreshCw, Type, Palette } from 'lucide-react';
 import { useConvertedText } from '../../hooks/useConvertedText';
-import { useApiBase } from '../../hooks/useApiBase';
 import ActionBar from '../common/ActionBar';
 import HomeButton from '../common/HomeButton';
-import { IconButton, IconLink } from '../common/IconButton';
+import CatalogButton from '../common/CatalogButton';
+import ApiSourceDropdown from '../common/ApiSourceDropdown';
+import ConversionDropdown from '../common/ConversionDropdown';
+import { IconButton } from '../common/IconButton';
 import IconDropdown from '../common/IconDropdown';
-import { FONT_SIZE_MIN, FONT_SIZE_MAX, TEXT_BRIGHTNESS_MIN, TEXT_BRIGHTNESS_MAX, API_OPTIONS, CHINESE_FONTS, ZH_CONVERSION_OPTIONS } from '../../utils/constants';
-import { buildCatalogUrl } from '../../utils/navigation';
+import { FONT_SIZE_MIN, FONT_SIZE_MAX, TEXT_BRIGHTNESS_MIN, TEXT_BRIGHTNESS_MAX, CHINESE_FONTS, READER_BACKGROUND_OPTIONS } from '../../utils/constants';
 
 const TopBarWrapper = styled.div`
   display: flex;
@@ -17,8 +18,8 @@ const TopBarWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
-  background-color: rgba(18, 18, 18, 0.95);
-  backdrop-filter: blur(10px);
+  background-color: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(8px);
   position: fixed;
   top: 0;
   left: 0;
@@ -48,7 +49,7 @@ const TitleBlock = styled.div`
 
   h1 {
     color: var(--text-color);
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     margin: 0;
     white-space: nowrap;
@@ -84,17 +85,17 @@ const ProgressBox = styled.div`
 `;
 
 const ProgressBarContainer = styled.div`
-  height: 4px;
+  height: 3px;
   flex: 1;
-  border-radius: 2px;
-  background-color: var(--progressBar);
+  border-radius: 0;
+  background-color: rgba(255, 255, 255, 0.05);
   overflow: hidden;
 `;
 
 const Progress = styled.div`
   height: 100%;
   background-color: var(--accent-color);
-  transition: width 0.3s ease;
+  transition: width 0.1s steps(10);
 `;
 
 const ProgressText = styled.div`
@@ -109,8 +110,7 @@ const ProgressText = styled.div`
   }
 `;
 
-function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily, onFontFamilyChange, textBrightness, onTextBrightnessChange, conversionMode = 'tw', onConversionModeChange, onRefresh }) {
-  const [apiBase, handleApiChange] = useApiBase();
+function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily, onFontFamilyChange, textBrightness, onTextBrightnessChange, readerBackground, onReaderBackgroundChange, conversionMode = 'tw', onConversionModeChange, onRefresh }) {
   const convertedTitle = useConvertedText(chapterData?.novel_data?.title, conversionMode);
   const convertedBookName = useConvertedText(bookInfo?.book_info?.original_book_name, conversionMode);
 
@@ -126,16 +126,9 @@ function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily,
           <h1>{convertedTitle}</h1>
           {bookInfo && <h3>{convertedBookName}</h3>}
         </TitleBlock>
-        <ActionBar panelTitle="工具">
-            <HomeButton title="返回首頁" />
-            <IconDropdown
-              icon={<Globe size={20} strokeWidth={2.5} />}
-              title="API 來源"
-              ariaLabel="選擇 API 來源"
-              options={API_OPTIONS}
-              value={apiBase}
-              onChange={handleApiChange}
-            />
+        <ActionBar>
+            <HomeButton />
+            <ApiSourceDropdown />
             {onFontSizeChange && (
               <IconButton
                 type="button"
@@ -167,13 +160,16 @@ function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily,
               />
             )}
             {onConversionModeChange && (
+              <ConversionDropdown value={conversionMode} onChange={onConversionModeChange} />
+            )}
+            {onReaderBackgroundChange && (
               <IconDropdown
-                icon={<Languages size={20} strokeWidth={2.5} />}
-                title="繁簡轉換"
-                ariaLabel="選擇繁簡轉換"
-                options={ZH_CONVERSION_OPTIONS}
-                value={conversionMode}
-                onChange={onConversionModeChange}
+                icon={<Palette size={20} strokeWidth={2.5} />}
+                title="閱讀背景"
+                ariaLabel="選擇閱讀背景顏色"
+                options={READER_BACKGROUND_OPTIONS}
+                value={readerBackground}
+                onChange={onReaderBackgroundChange}
               />
             )}
             {onTextBrightnessChange && (
@@ -201,11 +197,7 @@ function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily,
                 <RefreshCw size={20} strokeWidth={2.5} />
               </IconButton>
             )}
-            {chapterData?.novel_data?.book_id && (
-              <IconLink to={buildCatalogUrl(chapterData.novel_data.book_id)} title="目錄">
-                <List size={20} strokeWidth={2.5} />
-              </IconLink>
-            )}
+            <CatalogButton bookId={chapterData?.novel_data?.book_id} />
           </ActionBar>
       </InfoRow>
       <ProgressBox aria-hidden="true">

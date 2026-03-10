@@ -20,47 +20,48 @@ const Card = styled.div`
     padding: 16px;
     gap: 16px;
   }
-  border-radius: 20px;
+  border-radius: 0;
   background-color: var(--background-color2);
-  border: 1px solid var(--border-color);
+  border: var(--retro-border-width) solid var(--border-color);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.1s steps(2);
   position: relative;
   overflow: hidden;
   pointer-events: ${(p) => (p.$disabled ? 'none' : 'auto')};
   opacity: ${(p) => (p.$disabled ? 0.7 : 1)};
+  box-shadow: var(--retro-shadow);
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translate(-2px, -2px);
     border-color: var(--accent-color);
     background-color: var(--hover-background-color);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    box-shadow: 6px 6px 0px var(--background-color);
   }
 
   .action-hint {
     position: absolute;
-    right: 20px;
-    bottom: 20px;
+    right: 10px;
+    bottom: 10px;
     background: var(--accent-color);
-    color: #000;
-    padding: 6px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
+    color: var(--background-color);
+    padding: 4px 8px;
+    border-radius: 0;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
     opacity: 0;
-    transform: translateX(10px);
-    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    transition: all 0.1s steps(2);
   }
 
   &:hover .action-hint {
     opacity: 1;
-    transform: translateX(0);
   }
 `;
 
 const SpinningIcon = styled.span`
   display: flex;
-  animation: ${spin} 1s linear infinite;
+  animation: ${spin} 1s steps(8) infinite;
 `;
 
 const LoadingOverlay = styled.div`
@@ -69,51 +70,52 @@ const LoadingOverlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 0;
   z-index: 10;
 
   svg {
     width: 40px;
     height: 40px;
     color: var(--accent-color);
-    animation: ${spin} 1s linear infinite;
+    animation: ${spin} 1s steps(8) infinite;
   }
 `;
 
 const ActionButtons = styled.div`
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 10px;
+  right: 10px;
   display: flex;
-  gap: 8px;
+  gap: 4px;
   align-items: center;
   z-index: 11;
+  pointer-events: auto; /* stay clickable when Card has pointer-events: none during refresh */
 `;
 
 const ActionButton = styled.button`
-  padding: 8px;
-  border-radius: 10px;
-  border: none;
+  padding: 6px;
+  border-radius: 0;
+  border: 1px solid var(--border-color);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.1s steps(2);
   background-color: ${(p) =>
-    p.$variant === 'delete' ? 'rgba(239, 68, 68, 0.9)' : p.$variant === 'comment' ? 'rgba(76, 175, 80, 0.9)' : p.$variant === 'refresh' ? 'rgba(59, 130, 246, 0.9)' : 'rgba(100, 116, 139, 0.9)'};
-  color: white;
-  opacity: ${(p) => (p.$variant === 'delete' ? 0.7 : 0.9)};
+    p.$variant === 'delete' ? '#aa5555' : p.$variant === 'comment' ? '#55aa55' : p.$variant === 'refresh' ? '#5588aa' : p.$variant === 'catalog' ? '#aa55aa' : 'var(--background-color2)'};
+  color: ${(p) => (p.$variant ? '#000' : 'var(--text-color)')};
+  box-shadow: 2px 2px 0px var(--background-color);
 
   &:hover {
-    opacity: 1;
-    background-color: ${(p) =>
-      p.$variant === 'delete' ? '#dc2626' : p.$variant === 'comment' ? '#4caf50' : p.$variant === 'refresh' ? '#2563eb' : 'rgba(148, 163, 184, 0.95)'};
-    transform: scale(1.05);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0px #000;
+    filter: brightness(1.2);
   }
 
   &:active {
-    transform: scale(0.95);
+    transform: translate(1px, 1px);
+    box-shadow: 0px 0px 0px #000;
   }
 
   &:disabled {

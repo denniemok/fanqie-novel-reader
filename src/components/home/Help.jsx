@@ -11,15 +11,20 @@ const Section = styled.section`
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-color-secondary);
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--text-color);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin: 0;
   display: flex;
   align-items: center;
   gap: 8px;
+  background: var(--background-color2);
+  padding: 7px 12px;
+  border: 1px solid var(--border-color);
+  width: fit-content;
+  box-shadow: 2px 2px 0px var(--background-color);
 
   svg {
     width: 16px;
@@ -40,17 +45,20 @@ const HelpGrid = styled.div`
 const HelpCard = styled.div`
   padding: 20px;
   background-color: var(--background-color2);
-  border-radius: 20px;
-  border: 1px solid var(--border-color);
+  border-radius: 0;
+  border: var(--retro-border-width) solid var(--border-color);
   display: flex;
   flex-direction: column;
   gap: 12px;
+  box-shadow: var(--retro-shadow);
 
   h3 {
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 900;
     margin: 0;
     color: var(--text-color);
+    text-transform: uppercase;
+    font-family: inherit;
   }
 
   p {
@@ -58,18 +66,19 @@ const HelpCard = styled.div`
     color: var(--text-color-secondary);
     line-height: 1.6;
     margin: 0;
+    font-family: inherit;
 
     span {
       color: var(--accent-color);
-      font-weight: 500;
+      font-weight: 900;
     }
   }
 
   .code-box {
     padding: 10px 14px;
     background-color: var(--background-color);
-    border-radius: 10px;
-    font-family: monospace;
+    border-radius: 0;
+    font-family: inherit;
     font-size: 12px;
     color: var(--text-color-secondary);
     overflow-x: auto;
@@ -77,7 +86,7 @@ const HelpCard = styled.div`
 
     span {
       color: var(--accent-color);
-      font-weight: bold;
+      font-weight: 900;
     }
   }
 
@@ -86,22 +95,27 @@ const HelpCard = styled.div`
     align-items: center;
     justify-content: center;
     padding: 10px 20px;
-    border-radius: 12px;
+    border-radius: 0;
     background-color: var(--accent-color);
     color: #000;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 900;
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition: all 0.1s steps(2);
     align-self: flex-start;
+    text-transform: uppercase;
+    border: 2px solid #000;
+    box-shadow: 4px 4px 0px #000;
 
     &:hover {
       background-color: var(--accent-hover);
-      transform: scale(1.02);
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px #000;
     }
 
     &:active {
-      transform: scale(0.98);
+      transform: translate(1px, 1px);
+      box-shadow: 0px 0px 0px #000;
     }
   }
 `;
@@ -130,8 +144,9 @@ function Help() {
           <p>在輸入框中輸入 <span>書籍 ID</span> 或 <span>小說網址</span> 即可開始閱讀。</p>
         </HelpCard>
         <HelpCard>
-          <h3>Need MTL ?</h3>
-          <p>Use <span>Google Translate</span> or AI translation plugins in your browser to translate this site.</p>
+          <h3>開發初衷</h3>
+          <p>免除手機號登錄 · 粉碎無效廣告擾<br />
+          為繁體閱讀而生 · 讓小說回歸純粹<br /></p>
         </HelpCard>
       </HelpGrid>
     </Section>

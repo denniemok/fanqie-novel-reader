@@ -8,6 +8,18 @@ export const FONT_SIZE_KEY = 'fanqie-fontSize';
 export const FONT_FAMILY_KEY = 'fanqie-fontFamily';
 export const TRADITIONAL_CHINESE_KEY = 'fanqie-traditionalChinese';
 export const TEXT_BRIGHTNESS_KEY = 'fanqie-textBrightness';
+export const READER_BACKGROUND_KEY = 'fanqie-readerBackground';
+
+/** Reader background presets: { value: hex, label } */
+export const READER_BACKGROUND_OPTIONS = [
+  { value: '#0a0a0a', label: '深色', textColor: 'var(--text-color)' },
+  { value: '#1a1a1a', label: '灰黑', textColor: 'var(--text-color)' },
+  { value: '#c0d0c0', label: '青綠', textColor: '#1a1a1a' },
+  { value: '#ede5d0', label: '米黃', textColor: '#1a1a1a' },
+  { value: '#e0e0e0', label: '淺灰', textColor: '#1a1a1a' },
+  { value: '#fffef5', label: '米白', textColor: '#1a1a1a' },
+  { value: '#ffffff', label: '純白', textColor: '#1a1a1a' },
+];
 
 /** Chinese conversion modes: { value, label } */
 export const ZH_CONVERSION_OPTIONS = [
@@ -26,20 +38,22 @@ export const API_OPTIONS = [
 
 /** Chinese fonts for reader: { value: CSS font-family, label: display name } */
 export const CHINESE_FONTS = [
-  { value: 'Georgia, serif', label: '系統預設' },
-  { value: "'Noto Serif SC', serif", label: '思源宋體' },
-  { value: "'Noto Sans SC', sans-serif", label: '思源黑體' },
+  { value: "'Noto Serif TC', 'PMingLiU', Georgia, serif", label: '系統預設' },
+  { value: "'Noto Serif TC', serif", label: '思源宋體' },
+  { value: "'PMingLiU', serif", label: '新細明體' },
+  { value: "'STSong', '华文宋体', serif", label: '華文宋體' },
+  { value: "'BiauKai', '標楷體', serif", label: '標楷體' },
+  { value: "'Noto Sans TC', sans-serif", label: '思源黑體' },
   { value: "'Microsoft JhengHei', sans-serif", label: '微軟正黑體' },
-  { value: "'SimSun', serif", label: '宋體' },
 ];
 
 export const FONT_SIZE_MIN = 18;
-export const FONT_SIZE_MAX = 48;
+export const FONT_SIZE_MAX = 56;
 export const FONT_SIZE_DEFAULT = 32;
 export const FONT_SIZE_STEP = 2;
-export const TEXT_BRIGHTNESS_MIN = 35;
+export const TEXT_BRIGHTNESS_MIN = 15;
 export const TEXT_BRIGHTNESS_MAX = 100;
-export const TEXT_BRIGHTNESS_DEFAULT = 55;
+export const TEXT_BRIGHTNESS_DEFAULT = 50;
 export const TEXT_BRIGHTNESS_STEP = 5;
 export const READING_HISTORY_MAX = 50;
 export const MAX_CONCURRENT_DOWNLOADS = 10;

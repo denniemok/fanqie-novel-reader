@@ -1,5 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import { maybeConvert } from '../../utils/zh-convert';
+import { READER_BACKGROUND_OPTIONS } from '../../utils/constants';
 
 const ReaderWrapper = styled.div`
   margin: 0 auto;
@@ -7,7 +9,7 @@ const ReaderWrapper = styled.div`
   padding-top: calc(140px + env(safe-area-inset-top));
   padding-bottom: calc(100px + env(safe-area-inset-bottom));
   max-width: 800px;
-  background-color: var(--background-color);
+  background-color: ${(p) => p.$readerBackground ?? 'var(--background-color)'};
   min-height: 100vh;
 
   @media (max-width: 480px) {
@@ -17,31 +19,34 @@ const ReaderWrapper = styled.div`
   }
 
   p {
-    line-height: 1.8;
+    line-height: 2;
     font-size: ${(p) => p.$fontSize ?? 18}px;
-    color: color-mix(in srgb, var(--text-color) ${(p) => p.$textBrightness ?? 90}%, transparent);
-    margin-bottom: 1.5em;
+    color: color-mix(in srgb, ${(p) => p.$textColor ?? 'var(--text-color)'} ${(p) => p.$textBrightness ?? 90}%, transparent);
+    margin-bottom: 1.8em;
     text-align: justify;
-    letter-spacing: 0.02em;
-    font-family: ${(p) => p.$fontFamily ?? 'Georgia, serif'};
+    letter-spacing: 0.05em;
+    font-family: ${(p) => p.$fontFamily ?? 'Noto Serif TC, PMingLiU, Georgia, serif'};
   }
 
   br {
-    display: none; /* We use margin on p instead */
+    display: none;
   }
 `;
 
-function Reader({ chapterData, fontSize = 18, fontFamily = 'Georgia, serif', textBrightness = 90 }) {
+function Reader({ chapterData, fontSize = 18, fontFamily = 'Georgia, serif', textBrightness = 90, readerBackground, conversionMode = 'tw' }) {
+  const textColor = READER_BACKGROUND_OPTIONS.find((o) => o.value === readerBackground)?.textColor;
   if (!chapterData || !chapterData.content) return null;
 
+  const convertedContent = maybeConvert(chapterData.content, conversionMode);
+
   // Split content by newlines and wrap in <p> tags for better semantics and styling
-  const paragraphs = chapterData.content
+  const paragraphs = convertedContent
     .split('\n')
     .map(p => p.trim())
     .filter(p => p.length > 0);
 
   return (
-    <ReaderWrapper $fontSize={fontSize} $fontFamily={fontFamily} $textBrightness={textBrightness}>
+    <ReaderWrapper $fontSize={fontSize} $fontFamily={fontFamily} $textBrightness={textBrightness} $textColor={textColor} $readerBackground={readerBackground}>
       {paragraphs.map((text, index) => (
         <p key={index}>{text}</p>
       ))}

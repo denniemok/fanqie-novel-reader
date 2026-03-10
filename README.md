@@ -26,14 +26,14 @@
 > **專注於細節**：針對電子書愛好者深度優化的「黑夜模式」與字體排版。
 
 <p align="center">
-  <img src="https://i.imgur.com/5tjCcuc.gif" width="97%" alt="書架">
+  <img src="https://i.imgur.com/tyPeahq.gif" width="97%" alt="Demo">
 </p>
 
 <p align="center">
-  <img src="https://i.imgur.com/g50TSk6.png" width="24%" alt="書架">
-  <img src="https://i.imgur.com/SMNmPsw.png" width="24%" alt="目錄管理">
-  <img src="https://i.imgur.com/emXPcRQ.png" width="24%" alt="評論">
-  <img src="https://i.imgur.com/2TIg5z6.png" width="24%" alt="閱讀頁面">
+  <img src="https://i.imgur.com/iQXBAwn.png" width="24%" alt="書架">
+  <img src="https://i.imgur.com/qzPLZly.png" width="24%" alt="目錄">
+  <img src="https://i.imgur.com/NW1p9bj.png" width="24%" alt="評論">
+  <img src="https://i.imgur.com/4Fu72Do.png" width="24%" alt="閱讀">
 </p>
 
 <br>

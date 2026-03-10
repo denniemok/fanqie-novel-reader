@@ -3,21 +3,24 @@ import styled from 'styled-components';
 
 const ToastWrapper = styled.div`
   position: fixed;
-  top: calc(66px + env(safe-area-inset-top));
+  top: calc(80px + env(safe-area-inset-top));
   right: calc(16px + env(safe-area-inset-right));
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
   padding: 12px 20px;
-  background-color: rgba(255, 193, 7, 0.95);
-  border: 1px solid rgba(255, 193, 7, 0.6);
-  border-radius: 12px;
-  color: #1a1a1a;
+  background-color: var(--background-color2);
+  border: var(--retro-border-width) solid var(--accent-color);
+  border-radius: 0;
+  color: var(--accent-color);
   font-size: 14px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 6px 6px 0px var(--background-color);
   z-index: 9999;
   max-width: min(320px, calc(100vw - 48px));
+  font-family: inherit;
+  font-weight: 900;
+  text-transform: uppercase;
 `;
 
 const CloseButton = styled.button`
@@ -26,14 +29,15 @@ const CloseButton = styled.button`
   margin: -4px -4px 0 0;
   background: none;
   border: none;
-  color: #1a1a1a;
+  color: var(--accent-color);
   cursor: pointer;
   font-size: 20px;
   line-height: 1;
-  opacity: 0.7;
+  opacity: 0.8;
 
   &:hover {
     opacity: 1;
+    transform: scale(1.2);
   }
 `;
 

@@ -1,11 +1,13 @@
+import { useNavigate } from 'react-router-dom';
 import { Home } from 'lucide-react';
-import { IconLink } from './IconButton';
+import { IconButton } from './IconButton';
 
-function HomeButton({ title = '返回首頁' }) {
+function HomeButton() {
+  const navigate = useNavigate();
   return (
-    <IconLink to="/" title={title}>
+    <IconButton type="button" title="返回首頁" onClick={() => navigate('/')}>
       <Home size={20} strokeWidth={2.5} />
-    </IconLink>
+    </IconButton>
   );
 }
 

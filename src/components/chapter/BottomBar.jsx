@@ -12,8 +12,8 @@ const BottomBarWrapper = styled.div`
   height: 64px;
   padding-bottom: env(safe-area-inset-bottom);
   display: flex;
-  background-color: rgba(18, 18, 18, 0.95);
-  backdrop-filter: blur(10px);
+  background-color: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(8px);
   justify-content: space-around;
   align-items: center;
   z-index: 1000;
@@ -34,8 +34,8 @@ const BottomBarWrapper = styled.div`
   }
 
   a:hover {
-    color: var(--accent-color);
-    background-color: var(--hover-background-color);
+    color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.05);
   }
 `;
 
@@ -44,7 +44,7 @@ const IconWrapper = styled.span`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  opacity: ${(p) => (p.$disabled ? 0.15 : 1)};
+  opacity: ${(p) => (p.$disabled ? 0.2 : 1)};
 
   svg {
     width: 28px;

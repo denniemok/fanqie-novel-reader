@@ -24,7 +24,7 @@ const RightActions = styled.div`
   gap: 8px;
   flex-shrink: 0;
 
-  @media (max-width: 480px) {
+  @media (max-width: 900px) {
     gap: 2px;
   }
 `;
@@ -50,7 +50,7 @@ const ToolsToggle = styled.button`
     }
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: 900px) {
     display: flex;
   }
 `;
@@ -65,7 +65,7 @@ const Overlay = styled.div`
   pointer-events: ${(p) => (p.$visible ? 'auto' : 'none')};
   transition: opacity 0.2s ease;
 
-  @media (max-width: 480px) {
+  @media (max-width: 900px) {
     display: block;
   }
 `;
@@ -73,7 +73,7 @@ const Overlay = styled.div`
 const ToolsPanel = styled.div`
   display: none;
 
-  @media (max-width: 480px) {
+  @media (max-width: 900px) {
     display: flex;
     flex-direction: column;
     position: fixed;
@@ -103,7 +103,7 @@ const ToolsPanelHeader = styled.div`
   align-items: center;
   flex-shrink: 0;
 
-  @media (max-width: 480px) {
+  @media (max-width: 900px) {
     display: flex;
     margin-bottom: 12px;
     padding-bottom: 8px;
@@ -125,15 +125,15 @@ const ToolsPanelContent = styled.div`
   padding-bottom: 16px;
 `;
 
-function ActionBar({ children, panelTitle = '工具' }) {
+function ActionBar({ children }) {
   const [toolsExpanded, setToolsExpanded] = useState(false);
-  const isMobile = useMediaQuery('(max-width: 480px)');
+  const isMobile = useMediaQuery('(max-width: 900px)');
 
   return (
     <>
       <RightActions>
         {isMobile ? (
-          <ToolsToggle type="button" title={panelTitle} onClick={() => setToolsExpanded(true)}>
+          <ToolsToggle type="button" title="工具" onClick={() => setToolsExpanded(true)}>
             <SlidersHorizontal size={20} strokeWidth={2.5} />
           </ToolsToggle>
         ) : (
@@ -145,7 +145,7 @@ function ActionBar({ children, panelTitle = '工具' }) {
           <Overlay $visible={toolsExpanded} onClick={() => setToolsExpanded(false)} aria-hidden="true" />
           <ToolsPanel $open={toolsExpanded}>
             <ToolsPanelHeader>
-              <span>{panelTitle}</span>
+              <span>工具</span>
               <IconButton type="button" title="關閉" onClick={() => setToolsExpanded(false)}>
                 <X size={20} strokeWidth={2.5} />
               </IconButton>

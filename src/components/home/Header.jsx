@@ -7,39 +7,33 @@ const HeaderWrapper = styled.header`
   align-items: center;
   text-align: center;
   padding-top: calc(60px + env(safe-area-inset-top));
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   gap: 16px;
 `;
 
 const Title = styled.h1`
-  font-size: 32px;
-  font-weight: 800;
+  font-size: 36px;
+  font-weight: 900;
   margin: 0;
-  background: linear-gradient(135deg, var(--accent-color), #ffcc80);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-color);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 3px 3px 0px var(--background-color);
+  border: var(--retro-border-width) solid var(--border-color);
+  padding: 6px 30px;
+  background-color: var(--background-color2);
+  box-shadow: var(--retro-shadow);
 
   @media (max-width: 480px) {
-    font-size: 26px;
+    font-size: 28px;
+    padding: 6px 24px;
   }
-`;
-
-const Subtitle = styled.p`
-  font-size: 16px;
-  color: var(--text-color-secondary);
-  max-width: 400px;
-  /* line-height: 0.8; */
-  margin: 0;
 `;
 
 function Header() {
   return (
     <HeaderWrapper>
       <Title>番茄繁體閱讀</Title>
-      <Subtitle>
-        免除手機號登錄 · 粉碎無效廣告擾<br />
-        為繁體閱讀而生 · 讓小說回歸純粹<br />
-      </Subtitle>
     </HeaderWrapper>
   );
 }

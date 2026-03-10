@@ -7,7 +7,21 @@ const FooterWrapper = styled.footer`
   font-size: 13px;
   max-width: 800px;
   margin: 0 auto;
-  border-top: 1px solid var(--border-color);
+  border-top: var(--retro-border-width) solid var(--border-color);
+  font-family: inherit;
+
+  a {
+    color: var(--accent-color);
+    text-decoration: none;
+    border: 1px solid var(--accent-color);
+    padding: 2px 6px;
+    background: var(--background-color2);
+    
+    &:hover {
+      background: var(--accent-color);
+      color: #000;
+    }
+  }
 `;
 
 function Footer() {
