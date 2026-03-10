@@ -2,8 +2,8 @@
   "engines": {
     "node": ">=16.0.0"
   },
-  "name": "fanqienovel-book",
-  "version": "0.1.0",
+  "name": "fanqietc",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {

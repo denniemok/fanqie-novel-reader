@@ -16,7 +16,7 @@
 - **📖 繁體優化**：內建專業級轉換，尊重地域慣用語，提供最舒適的閱讀感。
 - **⚡ 極速下載**：高性能多線程並發預載，萬字長篇瞬間匯出 TXT。
 
-### 👉 **立即使用**：[https://fqnr.pages.dev](https://fqnr.pages.dev)
+### 👉 **立即使用**：[https://fanqietc.pages.dev](https://fanqietc.pages.dev)
 
 <br>
 
