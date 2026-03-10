@@ -38,13 +38,14 @@ export const API_OPTIONS = [
 
 /** Chinese fonts for reader: { value: CSS font-family, label: display name } */
 export const CHINESE_FONTS = [
-  { value: "'Noto Serif TC', 'PMingLiU', Georgia, serif", label: '系統預設' },
-  { value: "'Noto Serif TC', serif", label: '思源宋體' },
-  { value: "'PMingLiU', 'Noto Serif TC', serif", label: '新細明體' },
-  { value: "'STSong', '华文宋体', 'Noto Serif TC', serif", label: '華文宋體' },
-  { value: "'BiauKai', '標楷體', 'LXGW WenKai TC', serif", label: '標楷體' },
-  { value: "'Noto Sans TC', sans-serif", label: '思源黑體' },
-  { value: "'Microsoft JhengHei', 'Noto Sans TC', sans-serif", label: '微軟正黑體' },
+  { value: "'Noto Serif TC', 'Noto Serif SC', Georgia, serif", label: '系統預設' },
+  { value: "'Noto Serif TC', 'Noto Serif SC', serif", label: '思源宋體' },
+  { value: "'PMingLiU', 'Songti TC', 'Songti SC', serif", label: '新細明體' },
+  { value: "'STSong', '华文宋体', 'STFangsong', serif", label: '華文宋體' },
+  { value: "'BiauKai', '標楷體', 'Kaiti TC', 'Kaiti SC', serif", label: '標楷體' },
+  { value: "'LXGW WenKai TC', 'LXGW WenKai', serif", label: '霞鷸文楷' },
+  { value: "'Noto Sans TC', 'Noto Sans SC', sans-serif", label: '思源黑體' },
+  { value: "'Microsoft JhengHei', 'Heiti TC', 'Heiti SC', sans-serif", label: '微軟正黑體' },
 ];
 
 export const FONT_SIZE_MIN = 18;
