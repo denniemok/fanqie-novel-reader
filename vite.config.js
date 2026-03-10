@@ -8,8 +8,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: '番茄小說閱讀器',
-        short_name: 'FQNR',
+        name: '番茄繁體閱讀',
+        short_name: 'FanqieTC',
         theme_color: '#ff9800',
         background_color: '#121212',
         display: 'standalone',
