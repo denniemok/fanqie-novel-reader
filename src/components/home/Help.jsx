@@ -139,15 +139,6 @@ function Help() {
             .../page/<span>123456789</span>?...
           </div>
         </HelpCard>
-        <HelpCard>
-          <h3>加入書籍</h3>
-          <p>在輸入框中輸入 <span>書籍 ID</span> 或 <span>小說網址</span> 即可開始閱讀。</p>
-        </HelpCard>
-        <HelpCard>
-          <h3>開發初衷</h3>
-          <p>免除手機號登錄 · 粉碎無效廣告擾<br />
-          為繁體閱讀而生 · 讓小說回歸純粹<br /></p>
-        </HelpCard>
       </HelpGrid>
     </Section>
   );
