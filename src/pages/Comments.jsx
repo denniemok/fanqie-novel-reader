@@ -47,7 +47,7 @@ function Comments() {
       })
       .catch((err) => {
         if (err.name === 'AbortError') return;
-        console.error('獲取評論失敗：', err);
+        console.error('獲取評論失敗：', bookId, err);
         setCommentsError(formatErrorMessage(err, '獲取評論失敗，請稍後再試。'));
         setLoading(false);
       });

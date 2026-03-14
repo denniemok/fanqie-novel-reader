@@ -6,9 +6,9 @@ import { formatErrorMessage } from '../utils/errors';
 
 function handleBookError(err, setError) {
   if (err.name === 'AbortError') return;
-  console.error('獲取圖書資訊失敗：', err);
+  console.error('獲取書籍資訊失敗：', err);
   setError(
-    formatErrorMessage(err, '獲取圖書資訊失敗，請檢查 bookId 是否正確，或者稍後再試。')
+    formatErrorMessage(err, '獲取書籍資訊失敗，請檢查 bookId 是否正確，或者稍後再試。')
   );
 }
 

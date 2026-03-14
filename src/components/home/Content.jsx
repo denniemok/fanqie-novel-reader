@@ -6,6 +6,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { useConversionMode } from '../../hooks/useConversionMode';
 import { maybeConvert } from '../../utils/zh-convert';
 import { buildChapterOrCatalogUrl, buildCatalogUrl, buildCommentsUrl } from '../../utils/navigation';
+import { formatErrorMessage } from '../../utils/errors';
 import Bookshelf from './Bookshelf';
 import AddBook from './AddBook';
 import Help from './Help';
@@ -59,8 +60,8 @@ function Content() {
         await deleteBookData(bookId);
         setRefreshKey((k) => k + 1);
       } catch (err) {
-        console.error('Delete book failed:', err);
-        showToast('刪除失敗，請稍後再試。');
+        console.error('刪除書籍失敗：', bookId, err);
+        showToast(formatErrorMessage(err, '刪除書籍失敗，請稍後再試。'));
       }
     }
   };

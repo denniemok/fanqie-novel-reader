@@ -53,7 +53,7 @@ export function useChapterLoader(itemId, bookId) {
       })
       .catch((err) => {
         if (err.name === 'AbortError') return;
-        console.error('獲取章節內容失敗:', err);
+        console.error('獲取章節內容失敗:', itemId, err);
         setError(
           formatErrorMessage(err, '獲取章節內容失敗，來到沒有內容的荒原，請返回目錄重試！')
         );
