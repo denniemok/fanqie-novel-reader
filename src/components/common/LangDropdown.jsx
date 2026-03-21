@@ -2,7 +2,9 @@ import { Languages } from 'lucide-react';
 import IconDropdown from './IconDropdown';
 import { ZH_CONVERSION_OPTIONS } from '../../utils/constants';
 
-function ConversionDropdown({ value, onChange, title = '繁簡轉換' }) {
+export const LANG_DROPDOWN_TITLE = '繁簡轉換';
+
+function LangDropdown({ value, onChange, title = LANG_DROPDOWN_TITLE }) {
   return (
     <IconDropdown
       icon={<Languages size={20} strokeWidth={2.5} />}
@@ -15,4 +17,4 @@ function ConversionDropdown({ value, onChange, title = '繁簡轉換' }) {
   );
 }
 
-export default ConversionDropdown;
+export default LangDropdown;

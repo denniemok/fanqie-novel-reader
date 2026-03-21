@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import { Minus, Plus, Sun, Moon, RefreshCw, Type, Palette } from 'lucide-react';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import ActionBar from '../common/ActionBar';
-import HomeButton from '../common/HomeButton';
-import CatalogButton from '../common/CatalogButton';
-import ApiSourceDropdown from '../common/ApiSourceDropdown';
-import ConversionDropdown from '../common/ConversionDropdown';
+import HomeButton, { HOME_BUTTON_TITLE } from '../common/HomeButton';
+import CatalogButton, { CATALOG_BUTTON_TITLE } from '../common/CatalogButton';
+import ApiDropdown, { API_DROPDOWN_TITLE } from '../common/ApiDropdown';
+import LangDropdown, { LANG_DROPDOWN_TITLE } from '../common/LangDropdown';
 import { IconButton } from '../common/IconButton';
 import IconDropdown from '../common/IconDropdown';
 import { FONT_SIZE_MIN, FONT_SIZE_MAX, TEXT_BRIGHTNESS_MIN, TEXT_BRIGHTNESS_MAX, CHINESE_FONTS, READER_BACKGROUND_OPTIONS } from '../../utils/constants';
@@ -127,8 +127,8 @@ function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily,
           {bookInfo && <h3>{convertedBookName}</h3>}
         </TitleBlock>
         <ActionBar>
-            <HomeButton title="返回首頁" />
-            <ApiSourceDropdown title="API 來源" />
+            <HomeButton title={HOME_BUTTON_TITLE} />
+            <ApiDropdown title={API_DROPDOWN_TITLE} />
             {onFontSizeChange && (
               <IconButton
                 type="button"
@@ -160,7 +160,11 @@ function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily,
               />
             )}
             {onConversionModeChange && (
-              <ConversionDropdown value={conversionMode} onChange={onConversionModeChange} title="繁簡轉換" />
+              <LangDropdown
+                title={LANG_DROPDOWN_TITLE}
+                value={conversionMode}
+                onChange={onConversionModeChange}
+              />
             )}
             {onReaderBackgroundChange && (
               <IconDropdown
@@ -193,11 +197,14 @@ function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily,
               </IconButton>
             )}
             {onRefresh && (
-              <IconButton type="button" title="重新載入章節" onClick={onRefresh}>
+              <IconButton type="button" title="更新章節" onClick={onRefresh}>
                 <RefreshCw size={20} strokeWidth={2.5} />
               </IconButton>
             )}
-            <CatalogButton bookId={chapterData?.novel_data?.book_id} title="目錄" />
+            <CatalogButton
+              title={CATALOG_BUTTON_TITLE}
+              bookId={chapterData?.novel_data?.book_id}
+            />
           </ActionBar>
       </InfoRow>
       <ProgressBox aria-hidden="true">

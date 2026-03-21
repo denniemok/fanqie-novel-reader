@@ -1,9 +1,9 @@
 import React from 'react';
 import { ArrowUpDown, Bookmark, ChevronLeft, ChevronRight, CloudDownload, Download, FileText, MessageCircle, RefreshCw } from 'lucide-react';
 import TopBarBase from '../common/TopBarBase';
-import HomeButton from '../common/HomeButton';
-import ApiSourceDropdown from '../common/ApiSourceDropdown';
-import ConversionDropdown from '../common/ConversionDropdown';
+import HomeButton, { HOME_BUTTON_TITLE } from '../common/HomeButton';
+import ApiDropdown, { API_DROPDOWN_TITLE } from '../common/ApiDropdown';
+import LangDropdown, { LANG_DROPDOWN_TITLE } from '../common/LangDropdown';
 import { IconButton } from '../common/IconButton';
 import { buildChapterUrl, buildCommentsUrl } from '../../utils/navigation';
 
@@ -33,8 +33,8 @@ function TopBar({
 }) {
   return (
     <TopBarBase>
-      <HomeButton title="返回首頁" />
-      <ApiSourceDropdown title="API 來源" />
+      <HomeButton title={HOME_BUTTON_TITLE} />
+      <ApiDropdown title={API_DROPDOWN_TITLE} />
       {totalPages > 1 && (
         <IconButton
           type="button"
@@ -57,16 +57,20 @@ function TopBar({
       )}
       <IconButton
         type="button"
-        title={sortOrder === 'ascending' ? '升序排列 (點擊切換為降序)' : '降序排列 (點擊切換為升序)'}
+        title={sortOrder === 'ascending' ? '升序排列' : '降序排列'}
         onClick={onSortChange}
         style={sortOrder === 'descending' ? { color: 'var(--accent-color)' } : undefined}
       >
         <ArrowUpDown size={20} strokeWidth={2.5} />
       </IconButton>
-      <ConversionDropdown value={conversionMode} onChange={onConversionModeChange} title="繁簡轉換" />
+      <LangDropdown
+        title={LANG_DROPDOWN_TITLE}
+        value={conversionMode}
+        onChange={onConversionModeChange}
+      />
       <IconButton
         type="button"
-        title={hasUncachedChapters ? `批次下載 (${batchSize} 章)` : '全部已下載'}
+        title={hasUncachedChapters ? `批次下載 (${batchSize} 章)` : '已全部下載'}
         onClick={onBatchDownload}
         disabled={!hasUncachedChapters || anyDownloading || downloadingAll}
       >
@@ -74,7 +78,7 @@ function TopBar({
       </IconButton>
       <IconButton
         type="button"
-        title={downloadingAll ? '停止下載全部' : hasUncachedChapters ? `下載全部 (${uncachedItemIds.length} 章)` : '全部已下載'}
+        title={downloadingAll ? '停止下載' : hasUncachedChapters ? `下載全部 (${uncachedItemIds.length} 章)` : '已全部下載'}
         onClick={onDownloadAll}
         disabled={!hasUncachedChapters && !downloadingAll}
         style={downloadingAll ? { color: 'var(--accent-color)' } : undefined}
@@ -83,7 +87,7 @@ function TopBar({
       </IconButton>
       <IconButton
         type="button"
-        title="匯出為 TXT（僅包含已下載章節）"
+        title="匯出 TXT"
         onClick={onExportTxt}
       >
         <FileText size={20} strokeWidth={2.5} />
@@ -97,7 +101,7 @@ function TopBar({
       </IconButton>
       <IconButton
         type="button"
-        title="重新載入目錄"
+        title="更新目錄"
         onClick={onRefresh}
       >
         <RefreshCw size={20} strokeWidth={2.5} />

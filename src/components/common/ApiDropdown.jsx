@@ -3,13 +3,15 @@ import IconDropdown from './IconDropdown';
 import { useApiBase } from '../../hooks/useApiBase';
 import { API_OPTIONS } from '../../utils/constants';
 
-function ApiSourceDropdown({ title = 'API 來源' }) {
+export const API_DROPDOWN_TITLE = 'API 服務';
+
+function ApiDropdown({ title = API_DROPDOWN_TITLE }) {
   const [apiBase, handleApiChange] = useApiBase();
   return (
     <IconDropdown
       icon={<Globe size={20} strokeWidth={2.5} />}
       title={title}
-      ariaLabel="選擇 API 來源"
+      ariaLabel="選擇 API 服務"
       options={API_OPTIONS}
       value={apiBase}
       onChange={handleApiChange}
@@ -17,4 +19,4 @@ function ApiSourceDropdown({ title = 'API 來源' }) {
   );
 }
 
-export default ApiSourceDropdown;
+export default ApiDropdown;
