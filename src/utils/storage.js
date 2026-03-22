@@ -15,7 +15,6 @@ import {
   TEXT_BRIGHTNESS_DEFAULT,
   READER_BACKGROUND_KEY,
   READER_BACKGROUND_OPTIONS,
-  USE_PROXY_KEY,
 } from './constants';
 import { directoryCache, chapterCache, detailCache } from './cache';
 
@@ -174,17 +173,6 @@ export function getSortOrder() {
 export function setSortOrder(order) {
   const valid = order === 'ascending' || order === 'descending';
   return valid ? safeSetItem(SORT_ORDER_KEY, order) : false;
-}
-
-/** @returns {boolean} Whether to use proxy for API requests. Default: true when proxy is available. */
-export function getUseProxy() {
-  const raw = safeGetItem(USE_PROXY_KEY);
-  if (raw == null) return true;
-  return raw === 'true';
-}
-
-export function setUseProxy(enabled) {
-  return safeSetItem(USE_PROXY_KEY, enabled ? 'true' : 'false');
 }
 
 export async function isChapterCached(itemId) {

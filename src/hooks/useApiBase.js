@@ -4,9 +4,9 @@ import { getApiBase, setApiBase } from '../services/api';
 export function useApiBase() {
   const [apiBase, setApiBaseState] = useState(getApiBase);
 
-  const handleApiChange = useCallback((url) => {
-    setApiBase(url);
-    setApiBaseState(url);
+  const handleApiChange = useCallback((apiId) => {
+    setApiBase(apiId);
+    setApiBaseState(apiId);
   }, []);
 
   return [apiBase, handleApiChange];

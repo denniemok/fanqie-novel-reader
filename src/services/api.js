@@ -1,29 +1,45 @@
-import { API_BASE_KEY, API_OPTIONS, REQUEST_TIMEOUT_MS } from '../utils/constants';
-import { safeGetItem, safeSetItem, getUseProxy, setLastReadChapter } from '../utils/storage';
+import { API_BASE_KEY, API_OPTIONS, PROXY_URLS, REQUEST_TIMEOUT_MS } from '../utils/constants';
+import { safeGetItem, safeSetItem, setLastReadChapter } from '../utils/storage';
 import { directoryCache, chapterCache, detailCache } from '../utils/cache';
 
-const PROXY_AVAILABLE = import.meta.env.VITE_USE_PROXY === 'true';
 const DEFAULT_API_BASE = API_OPTIONS[0].value;
 
 export function getApiBase() {
-  return safeGetItem(API_BASE_KEY) || DEFAULT_API_BASE;
+  const raw = safeGetItem(API_BASE_KEY) || DEFAULT_API_BASE;
+  return API_OPTIONS.some((o) => o.value === raw) ? raw : DEFAULT_API_BASE;
 }
 
-export function setApiBase(url) {
-  safeSetItem(API_BASE_KEY, url);
+export function setApiBase(apiId) {
+  safeSetItem(API_BASE_KEY, apiId);
 }
 
-function getApiType() {
-  const base = getApiBase();
-  const api = API_OPTIONS.find((opt) => opt.value === base);
-  return api?.type ?? 1;
+let proxyRoundRobinIndex = 0;
+
+function getProxyBase() {
+  if (PROXY_URLS.length > 0) {
+    const base = PROXY_URLS[proxyRoundRobinIndex % PROXY_URLS.length];
+    proxyRoundRobinIndex += 1;
+    return base;
+  }
+  return ''; // same-origin
 }
 
-function useProxy(url) {
-  return PROXY_AVAILABLE && getUseProxy() && /^https?:\/\//.test(url);
+function buildProxyUrl(action, params) {
+  const api = getApiBase();
+  const proxyBase = getProxyBase();
+  const base = proxyBase ? proxyBase.replace(/\/$/, '') : '';
+  const q = new URLSearchParams({ api, action });
+  Object.entries(params || {}).forEach(([k, v]) => {
+    if (v != null && v !== '') q.set(k, String(v));
+  });
+  return `${base}/proxy?${q.toString()}`;
 }
 
-async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
+function getFetchUrl(action, params) {
+  return buildProxyUrl(action, params);
+}
+
+async function fetchWithTimeout(fetchUrl, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
   const controller = new AbortController();
   let timedOut = false;
   const timeoutId = setTimeout(() => {
@@ -42,14 +58,8 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_M
     });
   }
 
-  const fetchUrl = useProxy(url) ? '/proxy' : url;
-  const fetchOptions = { ...options, signal: controller.signal };
-  if (useProxy(url)) {
-    fetchOptions.headers = { ...fetchOptions.headers, 'X-Target-URL': url };
-  }
-
   try {
-    const res = await fetch(fetchUrl, fetchOptions);
+    const res = await fetch(fetchUrl, { ...options, signal: controller.signal });
     clearTimeout(timeoutId);
     return res;
   } catch (err) {
@@ -73,7 +83,8 @@ async function fetchAndValidate(url, options = {}) {
   } catch (parseErr) {
     throw new Error('Invalid response from server');
   }
-  if (json.code !== 200) throw new Error('Failed to fetch data');
+  const valid = (json.code !== undefined && json.code === 200) || (json.success !== undefined && json.success === true);
+  if (!valid) throw new Error('Failed to fetch data');
   return json;
 }
 
@@ -94,7 +105,7 @@ export async function fetchBookDetail(bookId, { forceRefresh = false, signal } =
     if (cached) return cached;
   }
 
-  const url = `${getApiBase()}/api/detail?book_id=${bookId}`;
+  const url = getFetchUrl('detail', { book_id: bookId });
   const json = await fetchAndValidate(url, { signal });
   
   const d = json.data?.data ?? {};
@@ -126,7 +137,7 @@ export async function fetchBookDirectory(bookId, { forceRefresh = false, signal 
     }
   }
 
-  const url = `${getApiBase()}/api/directory?book_id=${bookId}`;
+  const url = getFetchUrl('directory', { book_id: bookId });
   const options = { ...(forceRefresh && { cache: 'no-store' }), ...(signal && { signal }) };
   const json = await fetchAndValidate(url, options);
   
@@ -156,12 +167,7 @@ export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {
     }
   }
 
-  const apiType = getApiType();
-  const base = getApiBase();
-  const url = apiType === 2
-    ? `${base}/api.php?item_id=${itemId}`
-    : `${base}/api/content?tab=${encodeURIComponent('小说')}&item_id=${itemId}`;
-  
+  const url = getFetchUrl('content', { item_id: itemId });
   const json = await fetchAndValidate(url, { signal });
   
   const content = json.data?.content ?? '';
@@ -179,7 +185,7 @@ export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {
 }
 
 export async function fetchComments(bookId, { count = 20, offset = 1, signal } = {}) {
-  const url = `${getApiBase()}/api/comment?book_id=${bookId}&count=${count}&offset=${offset}`;
+  const url = getFetchUrl('comment', { book_id: bookId, count, offset });
   const json = await fetchAndValidate(url, { signal });
   return json.data ?? { data: { comment: [], comment_cnt: 0, context: '', has_more: false } };
 }

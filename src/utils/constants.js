@@ -4,7 +4,6 @@ export const CHAPTER_CACHE_KEY = 'fanqie-chapter';
 export const DETAIL_CACHE_KEY = 'fanqie-detail';
 export const READING_HISTORY_KEY = 'fanqie-readingHistory';
 export const API_BASE_KEY = 'apiBase';
-export const USE_PROXY_KEY = 'useProxy';
 export const SORT_ORDER_KEY = 'sortOrder';
 export const FONT_SIZE_KEY = 'fontSize';
 export const FONT_FAMILY_KEY = 'fontFamily';
@@ -30,10 +29,22 @@ export const ZH_CONVERSION_OPTIONS = [
   { value: 'hk', label: '香港繁體' },
 ];
 
-/** API sources: { value: base URL, label: display name, type: 1 or 2 } */
+/**
+ * External proxy URLs for round-robin. Deploy proxy to multiple CF Pages and add base URLs here.
+ * When non-empty, requests use these instead of same-origin /proxy.
+ */
+export const PROXY_URLS = [
+  'https://proxy-1.fanqietc.workers.dev',
+  'https://proxy-2.fanqietc.workers.dev',
+  'https://proxy-3.fanqietc.workers.dev',
+  'https://proxy-4.fanqietc.workers.dev',
+  'https://proxy-5.fanqietc.workers.dev',
+];
+
+/** API sources: { value: opaque ID (used with proxy), label: display name } — real URLs live in proxy only */
 export const API_OPTIONS = [
-  { value: 'https://qkfqapi.vv9v.cn', label: '基礎服務', type: 1 },
-  { value: 'https://api-v2.cenguigui.cn/api/tomato', label: '快速章節服務', type: 2 },
+  { value: 'basic-1', label: '基礎服務 1' },
+  { value: 'basic-2', label: '基礎服務 2' },
 ];
 
 /** Chinese fonts for reader: { value: CSS font-family, label: display name } */
@@ -52,7 +63,7 @@ export const FONT_SIZE_MIN = 18;
 export const FONT_SIZE_MAX = 56;
 export const FONT_SIZE_DEFAULT = 32;
 export const FONT_SIZE_STEP = 2;
-export const TEXT_BRIGHTNESS_MIN = 15;
+export const TEXT_BRIGHTNESS_MIN = 20;
 export const TEXT_BRIGHTNESS_MAX = 100;
 export const TEXT_BRIGHTNESS_DEFAULT = 50;
 export const TEXT_BRIGHTNESS_STEP = 5;

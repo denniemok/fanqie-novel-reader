@@ -61,6 +61,9 @@
 
 ## 🚢 部署與開發
 
+> [!CAUTION]
+> 為確保第三方 API 的服務安全與穩定，核心調用邏輯暫不開放原始碼。敬請見諒！
+
 本專案基於 **Vite + React** 構建，純前端實現，無需後端，可一鍵部署至任何靜態託管平台。
 
 ```bash
@@ -72,8 +75,7 @@ npm run dev # 開啟 http://localhost:5173 即可
 npm run build
 ```
 
-- **部署建議**：部署至 Cloudflare Pages，並在設定中新增環境變數 `VITE_USE_PROXY=true`，以透過 Functions 代理 API 請求避免 CORS。部署後，使用者可於各頁面頂欄的盾牌按鈕切換代理開關（預設開啟）。
-- **技術細節**：受 [fanqienovel-book](https://github.com/kailous/fanqienovel-book) 啟發重寫，應用直接呼叫 [番茄小說 API](https://github.com/POf-L/Fanqie-novel-Downloader)。
+**技術細節**：受 [fanqienovel-book](https://github.com/kailous/fanqienovel-book) 啟發重寫，應用會以負載平衡方式接入閉源代理端，透過中轉請求調用 [番茄小說 API](https://github.com/POf-L/Fanqie-novel-Downloader) 進行資料檢索與處理。
 
 <br>
 
@@ -88,6 +90,17 @@ src/
 ├── services/           # API 請求
 └── utils/              # 工具函式
 ```
+
+<br>
+
+## 💡 注意事項
+
+> [!IMPORTANT]
+> 本專案依賴第三方 API 提供服務，請在使用前詳閱以下說明。資源珍貴，請節制使用。
+
+- 由於使用第三方接口，服務可能隨時變更或失效。若發現應用無法正常運行，可至 [Issues](https://github.com/denniemok/fanqie-novel-reader/issues) 頁面回報。
+- 若遇到章節下載失敗，可能是 API 暫時性過載或維護中，請稍候再試。
+- 請勿短時間內頻繁調用，建議單次下載不超過 **500 章**，以減輕伺服器壓力。
 
 <br>
 
@@ -111,4 +124,4 @@ src/
 
 **如果你也喜歡這份純粹，請點個 ⭐ 支持我的持續維護！**
 
-歡迎至 [GitHub Issues](https://github.com/denniemok/fanqie-novel-reader/issues) 提出建議或回報問題。
+歡迎至 [Issues](https://github.com/denniemok/fanqie-novel-reader/issues) 提出建議或回報問題。

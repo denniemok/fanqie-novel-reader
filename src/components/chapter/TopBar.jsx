@@ -6,7 +6,6 @@ import ActionBar from '../common/ActionBar';
 import HomeButton, { HOME_BUTTON_TITLE } from '../common/HomeButton';
 import CatalogButton, { CATALOG_BUTTON_TITLE } from '../common/CatalogButton';
 import ApiDropdown, { API_DROPDOWN_TITLE } from '../common/ApiDropdown';
-import ProxyButton, { PROXY_BUTTON_TITLE } from '../common/ProxyButton';
 import LangDropdown, { LANG_DROPDOWN_TITLE } from '../common/LangDropdown';
 import { IconButton } from '../common/IconButton';
 import IconDropdown from '../common/IconDropdown';
@@ -130,7 +129,6 @@ function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily,
         <ActionBar>
             <HomeButton title={HOME_BUTTON_TITLE} />
             <ApiDropdown title={API_DROPDOWN_TITLE} />
-            <ProxyButton title={PROXY_BUTTON_TITLE} />
             {onFontSizeChange && (
               <IconButton
                 type="button"

@@ -1,9 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Search, Globe, Languages, Shield } from 'lucide-react';
+import { Search, Globe, Languages } from 'lucide-react';
 import { API_OPTIONS, ZH_CONVERSION_OPTIONS } from '../../utils/constants';
 import { useApiBase } from '../../hooks/useApiBase';
-import { useProxy } from '../../hooks/useProxy';
 import { useConversionMode } from '../../hooks/useConversionMode';
 import { parseBookIdFromInput } from '../../utils/parseBookId';
 
@@ -145,33 +144,8 @@ const SelectWrapper = styled.div`
   }
 `;
 
-const ProxyToggle = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background-color: ${(p) => (p.$enabled ? 'var(--accent-color)' : 'var(--background-color)')};
-  border: 1px solid var(--border-color);
-  color: ${(p) => (p.$enabled ? '#000' : 'var(--accent-color)')};
-  font-weight: 900;
-  font-size: 14px;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 0;
-  transition: all 0.1s steps(2);
-  font-family: inherit;
-
-  &:hover {
-    background-color: ${(p) => (p.$enabled ? 'var(--accent-hover)' : 'var(--hover-background-color)')};
-  }
-
-  &:focus {
-    outline: none;
-  }
-`;
-
 function AddBook({ onSubmit, refreshKey, conversionMode, onConversionModeChange }) {
   const [apiBase, handleApiChange] = useApiBase();
-  const [proxyEnabled, toggleProxy] = useProxy();
   const [localConversionMode, setLocalConversionMode] = useConversionMode();
   const isControlled = conversionMode !== undefined && onConversionModeChange !== undefined;
   const effectiveConversionMode = isControlled ? conversionMode : localConversionMode;
@@ -230,18 +204,6 @@ function AddBook({ onSubmit, refreshKey, conversionMode, onConversionModeChange 
                 </option>
               ))}
             </select>
-          </div>
-          <div>
-            <Shield size={14} />
-            <span>代理請求：</span>
-            <ProxyToggle
-              type="button"
-              $enabled={proxyEnabled}
-              title="代理請求"
-              onClick={toggleProxy}
-            >
-              {proxyEnabled ? '已開啟' : '已關閉'}
-            </ProxyToggle>
           </div>
         </SelectWrapper>
       </InputGroup>
