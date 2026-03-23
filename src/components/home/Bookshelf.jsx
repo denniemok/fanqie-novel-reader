@@ -48,7 +48,7 @@ function Bookshelf({ refreshKey, onBookClick, onCatalogClick, onCommentClick, on
           <BookCard
             key={bookId}
             bookId={bookId}
-            actionHint="前往目錄 →"
+            actionHint="前往目錄"
             onClick={() => onBookClick(bookId)}
             onCatalogClick={(e) => onCatalogClick(e, bookId)}
             onCommentClick={(e) => onCommentClick?.(e, bookId)}

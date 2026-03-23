@@ -166,16 +166,6 @@ function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily,
                 onChange={onConversionModeChange}
               />
             )}
-            {onReaderBackgroundChange && (
-              <IconDropdown
-                icon={<Palette size={20} strokeWidth={2.5} />}
-                title="閱讀背景"
-                ariaLabel="選擇閱讀背景顏色"
-                options={READER_BACKGROUND_OPTIONS}
-                value={readerBackground}
-                onChange={onReaderBackgroundChange}
-              />
-            )}
             {onTextBrightnessChange && (
               <IconButton
                 type="button"
@@ -195,6 +185,16 @@ function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily,
               >
                 <Sun size={20} strokeWidth={2.5} />
               </IconButton>
+            )}
+            {onReaderBackgroundChange && (
+              <IconDropdown
+                icon={<Palette size={20} strokeWidth={2.5} />}
+                title="閱讀背景"
+                ariaLabel="選擇閱讀背景顏色"
+                options={READER_BACKGROUND_OPTIONS}
+                value={readerBackground}
+                onChange={onReaderBackgroundChange}
+              />
             )}
             {onRefresh && (
               <IconButton type="button" title="刷新章節" onClick={onRefresh}>

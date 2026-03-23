@@ -175,8 +175,8 @@ function BookCard({ bookId, actionHint, onClick, onCatalogClick, onCommentClick,
           $variant="refresh"
           disabled={isRefreshing}
           onClick={(e) => { e.stopPropagation(); (onRefreshClick ?? refetch)(e); }}
-          title="重新整理"
-          aria-label="重新整理"
+          title="刷新目錄與書籍資料"
+          aria-label="刷新目錄與書籍資料"
         >
           {isRefreshing ? <SpinningIcon><Loader2 size={18} /></SpinningIcon> : <RefreshCw />}
         </ActionButton>

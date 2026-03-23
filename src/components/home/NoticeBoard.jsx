@@ -49,10 +49,13 @@ const NoticeCard = styled.div`
   }
 
   a {
+    display: inline-block;
     color: var(--accent-color);
     text-decoration: none;
     border: 1px solid var(--accent-color);
-    padding: 0 6px 2px;
+    padding: 0px 6px 1px;
+    line-height: 1.2;
+    vertical-align: baseline;
     background: var(--background-color2);
 
     &:hover {
@@ -67,6 +70,7 @@ function NoticeBoard() {
     <Section>
       <SectionTitle><Megaphone /> 公告</SectionTitle>
       <NoticeCard>
+        <b>2026-03-23</b> | 批次下載已加入冷卻時間，以較慢速進行，保障所有使用者。<br />
         <b>2026-03-22</b> | 請求將透過負載均衡代理轉發，請節制使用，以免影響其他使用者。<br />
         <b>2026-03-21</b> | 目錄章節排序可切換，進入書籍一律進入目錄，不再直接跳轉最新章節。<br />
         <b>2026-03-13</b> | 已移除無法使用的 API 服務，並標示各服務的可用範圍，改善錯誤訊息顯示。<br />
