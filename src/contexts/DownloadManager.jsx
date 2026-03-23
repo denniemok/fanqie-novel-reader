@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useCallback, useReducer, useRef, useEffect } from 'react';
 import { fetchItem } from '../services/api';
-import { MAX_CONCURRENT_DOWNLOADS } from '../utils/constants';
+import { MAX_CONCURRENT_DOWNLOADS, BATCH_COOLDOWN_MS, RETRY_DELAY_MS } from '../utils/constants';
 import { isChapterCached } from '../utils/storage';
 import { formatErrorMessage } from '../utils/errors';
 import { useToast } from './ToastContext';
@@ -50,6 +50,7 @@ export function DownloadManagerProvider({ children }) {
   });
   const queueRef = useRef([]);
   const activeCountRef = useRef(0);
+  const batchCooldownRef = useRef(null);
   const { showToast } = useToast();
 
   const processQueue = useCallback(() => {
@@ -63,7 +64,11 @@ export function DownloadManagerProvider({ children }) {
       dispatch({ type: 'START', itemId });
       fetchItem(itemId, { forceRefresh })
         .then(() => {})
-        .catch(() => fetchItem(itemId, { forceRefresh }))
+        .catch(() =>
+          new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS)).then(() =>
+            fetchItem(itemId, { forceRefresh })
+          )
+        )
         .catch((err) => {
           console.error('章節下載失敗：', itemId, err);
           showToast(formatErrorMessage(err, '章節下載失敗，請稍後再試。'));
@@ -110,10 +115,19 @@ export function DownloadManagerProvider({ children }) {
   }, [state.downloadAllBookId]);
 
   useEffect(() => {
-    if (!state.downloadAllBookId || state.downloadAllItemIds.length === 0) return;
+    let cancelled = false;
+
+    if (!state.downloadAllBookId || state.downloadAllItemIds.length === 0) {
+      if (batchCooldownRef.current) {
+        clearTimeout(batchCooldownRef.current);
+        batchCooldownRef.current = null;
+      }
+      return;
+    }
 
     Promise.all(state.downloadAllItemIds.map((id) => isChapterCached(id).then((cached) => ({ id, cached }))))
       .then((results) => {
+        if (cancelled) return;
         const uncachedItems = results.filter((r) => !r.cached).map((r) => r.id);
         if (uncachedItems.length === 0) {
           dispatch({ type: 'STOP_DOWNLOAD_ALL' });
@@ -121,10 +135,25 @@ export function DownloadManagerProvider({ children }) {
         }
         const currentlyDownloading = uncachedItems.some((id) => state.downloading.has(id));
         if (!currentlyDownloading) {
-          const batch = uncachedItems.slice(0, MAX_CONCURRENT_DOWNLOADS);
-          batch.forEach((itemId) => addToQueue(itemId, false));
+          if (batchCooldownRef.current) {
+            clearTimeout(batchCooldownRef.current);
+          }
+          batchCooldownRef.current = setTimeout(() => {
+            batchCooldownRef.current = null;
+            if (cancelled) return;
+            const batch = uncachedItems.slice(0, MAX_CONCURRENT_DOWNLOADS);
+            batch.forEach((itemId) => addToQueue(itemId, false));
+          }, BATCH_COOLDOWN_MS);
         }
       });
+
+    return () => {
+      cancelled = true;
+      if (batchCooldownRef.current) {
+        clearTimeout(batchCooldownRef.current);
+        batchCooldownRef.current = null;
+      }
+    };
   }, [state.downloadAllBookId, state.downloadAllItemIds, state.downloading, addToQueue]);
 
   const value = {
