@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { useToast } from '../contexts/ToastContext';
 import { fetchBookDetailAndDirectory } from '../utils/api-helpers';
 import { fetchBookDetail } from '../services/api';
 import { normalizeBookInfo } from '../utils/bookInfo';
@@ -13,6 +14,7 @@ function handleBookError(err, setError) {
 }
 
 export function useBookLoader(bookId, { detailOnly = false } = {}) {
+  const { showToast } = useToast();
   const [error, setError] = useState(null);
   const [bookInfo, setBookInfo] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -27,11 +29,12 @@ export function useBookLoader(bookId, { detailOnly = false } = {}) {
     }
 
     fetchBookDetailAndDirectory(bookId, { forceRefresh, signal })
-      .then((merged) => {
+      .then(({ merged, partialLoadMessage }) => {
         setBookInfo(normalizeBookInfo(merged, bookId));
+        if (partialLoadMessage) showToast(partialLoadMessage);
       })
       .catch((err) => handleBookError(err, setError));
-  }, [bookId, detailOnly]);
+  }, [bookId, detailOnly, showToast]);
 
   useEffect(() => {
     if (!bookId || detailOnly) return;
@@ -48,8 +51,9 @@ export function useBookLoader(bookId, { detailOnly = false } = {}) {
     setIsRefreshing(true);
     setError(null);
     fetchBookDetailAndDirectory(bookId, { forceRefresh: true, signal: controller.signal })
-      .then((merged) => {
+      .then(({ merged, partialLoadMessage }) => {
         setBookInfo(normalizeBookInfo(merged, bookId));
+        if (partialLoadMessage) showToast(partialLoadMessage);
         if (refetchAbortRef.current === controller) refetchAbortRef.current = null;
         setIsRefreshing(false);
       })
@@ -60,7 +64,7 @@ export function useBookLoader(bookId, { detailOnly = false } = {}) {
           setIsRefreshing(false);
         }
       });
-  }, [bookId, detailOnly]);
+  }, [bookId, detailOnly, showToast]);
 
   useEffect(() => {
     return () => refetchAbortRef.current?.abort();

@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { useToast } from '../contexts/ToastContext';
 import { fetchItem } from '../services/api';
 import { fetchBookDetailAndDirectory } from '../utils/api-helpers';
 import { buildNovelDataFromDirectory } from '../utils/chapter-helpers';
@@ -6,6 +7,7 @@ import { setLastReadChapter } from '../utils/storage';
 import { formatErrorMessage } from '../utils/errors';
 
 export function useChapterLoader(itemId, bookId) {
+  const { showToast } = useToast();
   const [error, setError] = useState(null);
   const [chapterData, setChapterData] = useState(null);
   const [bookInfo, setBookInfo] = useState(null);
@@ -29,12 +31,14 @@ export function useChapterLoader(itemId, bookId) {
       ? Promise.all([
           fetchItem(itemId, { forceRefresh, signal: effectiveSignal }),
           fetchBookDetailAndDirectory(bookId, { forceRefresh: false, signal: effectiveSignal }),
-        ]).then(([contentRes, mergedBookInfo]) => {
+        ]).then(([contentRes, bookLoad]) => {
           const contentData = contentRes.data.data;
+          const mergedBookInfo = bookLoad.merged;
           const novelData = buildNovelDataFromDirectory(itemId, bookId, mergedBookInfo.item_data_list);
           return {
             chapterData: { ...contentData, novel_data: novelData },
             bookInfo: mergedBookInfo,
+            partialLoadMessage: bookLoad.partialLoadMessage,
           };
         })
       : fetchItem(itemId, { forceRefresh, signal: effectiveSignal }).then((response) => ({
@@ -43,9 +47,10 @@ export function useChapterLoader(itemId, bookId) {
         }));
 
     loadPromise
-      .then(({ chapterData: data, bookInfo: info }) => {
+      .then(({ chapterData: data, bookInfo: info, partialLoadMessage }) => {
         setChapterData(data);
         setBookInfo(info);
+        if (partialLoadMessage) showToast(partialLoadMessage);
         if (bookId && itemId) {
           setLastReadChapter(bookId, itemId);
         }
@@ -59,7 +64,7 @@ export function useChapterLoader(itemId, bookId) {
         );
         setLoading(false);
       });
-  }, [itemId, bookId]);
+  }, [itemId, bookId, showToast]);
 
   useEffect(() => {
     return () => userFetchAbortRef.current?.abort();
