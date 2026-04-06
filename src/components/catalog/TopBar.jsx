@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUpDown, Bookmark, ChevronLeft, ChevronRight, CloudDownload, Download, FileText, MessageCircle, RefreshCw } from 'lucide-react';
+import { ArrowUpDown, Bookmark, ChevronLeft, ChevronRight, Download, FileText, MessageCircle, RefreshCw } from 'lucide-react';
 import TopBarBase from '../common/TopBarBase';
 import HomeButton, { HOME_BUTTON_TITLE } from '../common/HomeButton';
 import ApiDropdown, { API_DROPDOWN_TITLE } from '../common/ApiDropdown';
@@ -15,11 +15,8 @@ function TopBar({
   sortOrder,
   onSortChange,
   hasUncachedChapters,
-  batchSize,
   uncachedItemIds,
-  anyDownloading,
   downloadingAll,
-  onBatchDownload,
   onDownloadAll,
   onRefresh,
   onExportTxt,
@@ -70,20 +67,12 @@ function TopBar({
       />
       <IconButton
         type="button"
-        title={hasUncachedChapters ? `批次下載 (${batchSize} 章)` : '已全部下載'}
-        onClick={onBatchDownload}
-        disabled={!hasUncachedChapters || anyDownloading || downloadingAll}
-      >
-        <Download size={20} strokeWidth={2.5} />
-      </IconButton>
-      <IconButton
-        type="button"
         title={downloadingAll ? '停止下載' : hasUncachedChapters ? `下載全部 (${uncachedItemIds.length} 章)` : '已全部下載'}
         onClick={onDownloadAll}
         disabled={!hasUncachedChapters && !downloadingAll}
         style={downloadingAll ? { color: 'var(--accent-color)' } : undefined}
       >
-        <CloudDownload size={20} strokeWidth={2.5} />
+        <Download size={20} strokeWidth={2.5} />
       </IconButton>
       <IconButton
         type="button"

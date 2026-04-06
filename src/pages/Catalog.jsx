@@ -14,8 +14,6 @@ import { exportBookToTxt } from '../utils/exportBookTxt';
 import { useConversionMode } from '../hooks/useConversionMode';
 import { useBookLoader } from '../hooks/useBookLoader';
 import { useDownloadManager } from '../contexts/DownloadManager';
-import { MAX_CONCURRENT_DOWNLOADS } from '../utils/constants';
-
 const CHAPTERS_PER_PAGE = 50;
 
 const Content = styled.div`
@@ -33,7 +31,7 @@ function Catalog() {
   const lastReadItemId = bookId ? getLastReadChapter(bookId) : null;
   
   const { error, bookInfo, loadBook } = useBookLoader(bookId);
-  const { addToQueue, isDownloading, startDownloadAll, stopDownloadAll, isDownloadingAll, completedDownloads } = useDownloadManager();
+  const { startDownloadAll, stopDownloadAll, isDownloadingAll, completedDownloads } = useDownloadManager();
   const { showToast } = useToast();
   const [sortOrder, setSortOrderState] = useState(getSortOrder);
   const [conversionMode, setConversionMode] = useConversionMode();
@@ -73,14 +71,7 @@ function Catalog() {
     if (error) showToast(error);
   }, [error, showToast]);
   const hasUncachedChapters = uncachedItemIds.length > 0;
-  const anyDownloading = uncachedItemIds.some((id) => isDownloading(id));
-  const batchSize = Math.min(MAX_CONCURRENT_DOWNLOADS, uncachedItemIds.length);
   const downloadingAll = isDownloadingAll(bookId);
-
-  const handleBatchDownload = () => {
-    const batch = uncachedItemIds.slice(0, MAX_CONCURRENT_DOWNLOADS);
-    batch.forEach((itemId) => addToQueue(itemId, false));
-  };
 
   const handleDownloadAll = () => {
     if (downloadingAll) {
@@ -133,11 +124,8 @@ function Catalog() {
           sortOrder={sortOrder}
           onSortChange={handleSortChange}
           hasUncachedChapters={hasUncachedChapters}
-          batchSize={batchSize}
           uncachedItemIds={uncachedItemIds}
-          anyDownloading={anyDownloading}
           downloadingAll={downloadingAll}
-          onBatchDownload={handleBatchDownload}
           onDownloadAll={handleDownloadAll}
           onRefresh={() => loadBook(true)}
           onExportTxt={handleExportTxt}
