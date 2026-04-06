@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { deleteBookData } from '../../utils/storage';
+import { deleteBookData, moveReadingHistoryBook } from '../../utils/storage';
 import { useToast } from '../../contexts/ToastContext';
 import { useConversionMode } from '../../hooks/useConversionMode';
 import { maybeConvert } from '../../utils/zh-convert';
@@ -37,14 +37,14 @@ function Content() {
 
   const handleBookClick = goToCatalog;
 
-  const handleCatalogClick = (e, bookId) => {
-    e.stopPropagation();
-    goToCatalog(bookId);
-  };
-
   const handleCommentClick = (e, bookId) => {
     e.stopPropagation();
     navigate(buildCommentsUrl(bookId));
+  };
+
+  const handleReorderBook = (bookId, direction) => {
+    moveReadingHistoryBook(bookId, direction);
+    setRefreshKey((k) => k + 1);
   };
 
   const handleDeleteBook = async (e, bookId, bookInfo) => {
@@ -68,8 +68,8 @@ function Content() {
       <Bookshelf
         refreshKey={refreshKey}
         onBookClick={handleBookClick}
-        onCatalogClick={handleCatalogClick}
         onCommentClick={handleCommentClick}
+        onReorderBook={handleReorderBook}
         onDeleteClick={handleDeleteBook}
         conversionMode={conversionMode}
       />

@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { BookOpen } from 'lucide-react';
 import BookCard from './BookCard';
+import { SAMPLE_READING_HISTORY_BOOK_ID } from '../../utils/constants';
 import { getReadingHistory } from '../../utils/storage';
 
 const Section = styled.section`
@@ -34,24 +35,26 @@ const SectionTitle = styled.h2`
   }
 `;
 
-function Bookshelf({ refreshKey, onBookClick, onCatalogClick, onCommentClick, onDeleteClick, conversionMode }) {
+function Bookshelf({ refreshKey, onBookClick, onCommentClick, onReorderBook, onDeleteClick, conversionMode }) {
   const readingHistory = getReadingHistory();
-
-  if (readingHistory.length === 0) {
-    return null;
-  }
+  const isSampleOnly = readingHistory.length === 0;
+  const displayHistory =
+    isSampleOnly ? [{ bookId: SAMPLE_READING_HISTORY_BOOK_ID }] : readingHistory;
 
   return (
     <Section key={refreshKey}>
       <SectionTitle><BookOpen /> 閱讀歷史</SectionTitle>
-      {readingHistory.map(({ bookId }) => (
+      {displayHistory.map(({ bookId }, index) => (
           <BookCard
             key={bookId}
             bookId={bookId}
             actionHint="前往目錄"
             onClick={() => onBookClick(bookId)}
-            onCatalogClick={(e) => onCatalogClick(e, bookId)}
             onCommentClick={(e) => onCommentClick?.(e, bookId)}
+            reorderEnabled={!isSampleOnly}
+            canMoveUp={index > 0}
+            canMoveDown={index < displayHistory.length - 1}
+            onReorderBook={onReorderBook}
             onDeleteClick={onDeleteClick}
             conversionMode={conversionMode}
           />

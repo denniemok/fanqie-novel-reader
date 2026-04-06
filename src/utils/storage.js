@@ -71,7 +71,8 @@ export async function deleteBookData(bookId) {
   await directoryCache.remove(bookId);
   await detailCache.remove(bookId);
   await Promise.all(itemIds.map((itemId) => chapterCache.remove(itemId)));
-  const history = getReadingHistory().filter((e) => e.bookId !== bookId);
+  const bid = String(bookId);
+  const history = getReadingHistory().filter((e) => e.bookId !== bid);
   safeSetJSON(READING_HISTORY_KEY, history);
 }
 
@@ -82,26 +83,47 @@ export function getReadingHistory() {
 
 export function getLastReadChapter(bookId) {
   if (!bookId) return null;
-  const entry = getReadingHistory().find((e) => e.bookId === bookId);
+  const bid = String(bookId);
+  const entry = getReadingHistory().find((e) => e.bookId === bid);
   return entry ? entry.itemId : null;
 }
 
 export function setLastReadChapter(bookId, itemId) {
   if (!bookId) return false;
   const now = Date.now();
-  const existing = getReadingHistory().find((e) => e.bookId === bookId);
+  const bid = String(bookId);
+  const history = getReadingHistory().map((e) => ({ ...e }));
+  const existingIndex = history.findIndex((e) => e.bookId === bid);
+  const existing = existingIndex >= 0 ? history[existingIndex] : null;
 
   if (itemId != null && itemId !== '') {
-    let history = getReadingHistory().filter((e) => e.bookId !== bookId);
-    history.unshift({ bookId: String(bookId), itemId: String(itemId), lastReadAt: now });
-    history = history.slice(0, READING_HISTORY_MAX);
-    return safeSetJSON(READING_HISTORY_KEY, history);
+    const itemIdStr = String(itemId);
+    if (existingIndex >= 0) {
+      history[existingIndex] = {
+        ...history[existingIndex],
+        itemId: itemIdStr,
+        lastReadAt: now,
+      };
+    } else {
+      history.push({ bookId: bid, itemId: itemIdStr, lastReadAt: now });
+    }
+    return safeSetJSON(READING_HISTORY_KEY, history.slice(0, READING_HISTORY_MAX));
   }
   // catalog-only: add to history only if not already present (don't overwrite chapter)
   if (existing) return true;
-  let history = getReadingHistory().filter((e) => e.bookId !== bookId);
-  history.unshift({ bookId: String(bookId), itemId: null, lastReadAt: now });
-  history = history.slice(0, READING_HISTORY_MAX);
+  history.push({ bookId: bid, itemId: null, lastReadAt: now });
+  return safeSetJSON(READING_HISTORY_KEY, history.slice(0, READING_HISTORY_MAX));
+}
+
+/** Swap entry with the neighbor above or below; order is user-controlled, not time-based. */
+export function moveReadingHistoryBook(bookId, direction) {
+  const bid = String(bookId);
+  const history = getReadingHistory().map((e) => ({ ...e }));
+  const i = history.findIndex((e) => e.bookId === bid);
+  if (i < 0) return false;
+  const j = direction === 'up' ? i - 1 : i + 1;
+  if (j < 0 || j >= history.length) return false;
+  [history[i], history[j]] = [history[j], history[i]];
   return safeSetJSON(READING_HISTORY_KEY, history);
 }
 

@@ -128,7 +128,7 @@ function Help() {
         <HelpCard>
           <h3>找到書籍</h3>
           <p>造訪 <span>番茄小說網</span> 找到您想閱讀的小說。</p>
-          <a href="https://fanqienovel.com" target="_blank" rel="noopener noreferrer" className="link-button">
+          <a href="https://fanqienovel.com/library" target="_blank" rel="noopener noreferrer" className="link-button">
             前往番茄小說網
           </a>
         </HelpCard>
