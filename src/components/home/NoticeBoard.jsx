@@ -70,19 +70,13 @@ function NoticeBoard() {
     <Section>
       <SectionTitle><Megaphone /> 公告</SectionTitle>
       <NoticeCard>
+        <b>2026-04-06</b> | 新增多組快速服務供選擇。<br />
         <b>2026-03-25</b> | 目錄與詳情改為並行載入，部分載入失敗會顯示簡短提示。<br />
         <b>2026-03-23</b> | 批次下載已加入冷卻時間，以較慢速進行，保障所有使用者。<br />
         <b>2026-03-22</b> | 請求將透過負載均衡代理轉發，請節制使用，以免影響其他使用者。<br />
-        <b>2026-03-21</b> | 目錄章節排序可切換，進入書籍一律進入目錄，不再直接跳轉最新章節。<br />
-        <b>2026-03-10</b> | 章節頁頂部新增調色盤按鈕，可切換七種背景，淺色背景自動搭配深色文字以提升閱讀舒適度。<br />
-        <b>2026-03-10</b> | 介面全新改版：採用復古極簡風格，明體字型優化閱讀體驗，閱讀區更簡潔專注。<br />
-        <b>2026-03-10</b> | 繁簡轉換改為下拉選單，可選擇原文簡體、臺灣繁體、香港繁體，預設為臺灣繁體。<br />
-        <b>2026-03-09</b> | 章節快取已升級至 IndexedDB，不再受 localStorage 容量限制，可下載更多章節。
       </NoticeCard>
       <NoticeCard>
-        <b>2026-03-30</b> | 站長於例行檢查時發現一般服務已恢復，本站已重新啟用該服務。<br />
-        最近第三方 API 服務限流較嚴，服務偶有中斷，敬請見諒。<br />
-        站長會持續關注狀況，若有問題歡迎至 <a href="https://github.com/denniemok/fanqie-novel-reader/issues" target="_blank" rel="noopener noreferrer">Issues</a> 回報。<br />
+        若有問題歡迎至 <a href="https://github.com/denniemok/fanqie-novel-reader/issues" target="_blank" rel="noopener noreferrer">Issues</a> 回報。<br />
       </NoticeCard>
     </Section>
   );
