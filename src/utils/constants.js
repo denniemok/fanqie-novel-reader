@@ -33,6 +33,7 @@ export const ZH_CONVERSION_OPTIONS = [
 export const API_OPTIONS = [
   { value: 'basic-1', label: '基本服務 1' },
   { value: 'basic-2', label: '基本服務 2' },
+  { value: 'basic-3', label: '基本服務 3' },
 ];
 
 /** Chinese fonts for reader: { value: CSS font-family, label: display name } */
