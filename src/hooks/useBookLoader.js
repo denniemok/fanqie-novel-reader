@@ -17,6 +17,7 @@ export function useBookLoader(bookId, { detailOnly = false } = {}) {
   const { showToast } = useToast();
   const [error, setError] = useState(null);
   const [bookInfo, setBookInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const refetchAbortRef = useRef(null);
 
@@ -71,17 +72,25 @@ export function useBookLoader(bookId, { detailOnly = false } = {}) {
   }, []);
 
   useEffect(() => {
-    if (!detailOnly || !bookId) return;
+    if (!detailOnly || !bookId) {
+      setIsLoading(false);
+      return;
+    }
     setError(null);
+    setIsLoading(true);
     const controller = new AbortController();
     fetchBookDetail(bookId, { signal: controller.signal })
       .then((detail) => {
         const merged = { book_info: detail, item_data_list: [] };
         setBookInfo(normalizeBookInfo(merged, bookId));
+        setIsLoading(false);
       })
-      .catch((err) => handleBookError(err, setError));
+      .catch((err) => {
+        if (err.name !== 'AbortError') setIsLoading(false);
+        handleBookError(err, setError);
+      });
     return () => controller.abort();
   }, [detailOnly, bookId]);
 
-  return { error, bookInfo, loadBook, refetch, isRefreshing };
+  return { error, bookInfo, isLoading, loadBook, refetch, isRefreshing };
 }

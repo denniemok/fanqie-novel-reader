@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { ArrowDown, ArrowUp, Loader2, RefreshCw, Trash2 } from 'lucide-react';
 import Info from '../book/Info';
 import { useBookLoader } from '../../hooks/useBookLoader';
@@ -8,6 +8,68 @@ import { useToast } from '../../contexts/ToastContext';
 const spin = keyframes`
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+`;
+
+const shimmer = keyframes`
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+`;
+
+const shimmerStyle = css`
+  background: linear-gradient(
+    90deg,
+    var(--background-color2) 25%,
+    var(--border-color) 50%,
+    var(--background-color2) 75%
+  );
+  background-size: 800px 100%;
+  animation: ${shimmer} 1.4s ease-in-out infinite;
+`;
+
+const SkeletonCard = styled.div`
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  gap: 20px;
+  border-radius: 0;
+  background-color: var(--background-color2);
+  border: var(--retro-border-width) solid var(--border-color);
+  box-shadow: var(--retro-shadow);
+
+  @media (max-width: 480px) {
+    padding: 16px;
+    gap: 16px;
+  }
+`;
+
+const SkeletonCover = styled.div`
+  width: 100px;
+  height: 134px;
+  flex-shrink: 0;
+  border: 1px solid var(--border-color);
+  ${shimmerStyle}
+
+  @media (max-width: 480px) {
+    width: 80px;
+    height: 107px;
+  }
+`;
+
+const SkeletonText = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+`;
+
+const SkeletonLine = styled.div`
+  height: ${(p) => p.$height || '14px'};
+  width: ${(p) => p.$width || '100%'};
+  border-radius: 0;
+  ${shimmerStyle}
 `;
 
 const Card = styled.div`
@@ -152,14 +214,30 @@ function BookCard({
   canMoveDown,
   onReorderBook,
 }) {
-  const { bookInfo, refetch, isRefreshing, error } = useBookLoader(bookId, { detailOnly: true });
+  const { bookInfo, isLoading, refetch, isRefreshing, error } = useBookLoader(bookId, { detailOnly: true });
   const { showToast } = useToast();
 
   useEffect(() => {
     if (error) showToast(error);
   }, [error, showToast]);
 
-  if (!bookInfo) return null;
+  if (!bookInfo) {
+    if (isLoading) {
+      return (
+        <SkeletonCard>
+          <SkeletonCover />
+          <SkeletonText>
+            <SkeletonLine $height="22px" $width="70%" />
+            <SkeletonLine $height="14px" $width="40%" />
+            <SkeletonLine $height="13px" $width="90%" />
+            <SkeletonLine $height="13px" $width="75%" />
+            <SkeletonLine $height="20px" $width="50%" />
+          </SkeletonText>
+        </SkeletonCard>
+      );
+    }
+    return null;
+  }
 
   return (
     <Card onClick={onClick} $disabled={isRefreshing}>
