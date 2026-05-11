@@ -42,9 +42,10 @@ const LoadingWrapper = styled.div`
 `;
 
 const Spinner = styled.div`
+  flex-shrink: 0;
   border: 4px solid rgba(255, 115, 0, 0.3);
   border-top: 4px solid var(--high-color);
-  border-radius: 50%;
+  border-radius: 50% !important;
   width: 40px;
   height: 40px;
   animation: ${spin} 1s linear infinite;
