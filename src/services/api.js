@@ -115,8 +115,10 @@ async function fetchAndValidate(url, options = {}) {
   } catch (parseErr) {
     throw new Error('Invalid response from server');
   }
-  const valid = (json.code !== undefined && json.code === 0) || (json.success !== undefined && json.success === true);
-  if (!valid) throw new Error('Failed to fetch data');
+  const successOk = json.success !== undefined && json.success === true;
+  const codeOk = json.code !== undefined && json.code === 0;
+  if (!successOk && !codeOk) throw new Error('Failed to fetch data');
+  if (successOk) return json.data;
   return json;
 }
 
@@ -129,7 +131,7 @@ export async function fetchBookDetail(bookId, { forceRefresh = false, signal } =
   const url = getFetchUrl('detail', { book_id: bookId });
   const json = await fetchAndValidate(url, { signal });
 
-  const payload = json.data?.data;
+  const payload = json?.data;
   let d = {};
   if (Array.isArray(payload)) {
     d =
@@ -171,8 +173,8 @@ export async function fetchBookDirectory(bookId, { forceRefresh = false, signal 
   const url = getFetchUrl('directory', { book_id: bookId });
   const options = { ...(forceRefresh && { cache: 'no-store' }), ...(signal && { signal }) };
   const json = await fetchAndValidate(url, options);
-  
-  const { lists } = json.data || {};
+
+  const { lists } = json || {};
   if (!lists || lists.length === 0) {
     throw new Error('Invalid book ID or book not found');
   }
@@ -199,8 +201,8 @@ export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {
 
   const url = getFetchUrl('content', { item_id: itemId });
   const json = await fetchAndValidate(url, { signal });
-  
-  const content = json.data?.content ?? '';
+
+  const content = json?.content ?? '';
   const filteredContent = cleanText(content);
   await chapterCache.set(itemId, filteredContent);
   
@@ -210,5 +212,5 @@ export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {
 export async function fetchComments(bookId, { count = 20, offset = 1, signal } = {}) {
   const url = getFetchUrl('comment', { book_id: bookId, count, offset });
   const json = await fetchAndValidate(url, { signal });
-  return json.data ?? { data: { comment: [], comment_cnt: 0, context: '', has_more: false } };
+  return json ?? { data: { comment: [], comment_cnt: 0, context: '', has_more: false } };
 }
