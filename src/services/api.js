@@ -174,7 +174,7 @@ export async function fetchBookDirectory(bookId, { forceRefresh = false, signal 
     const cached = await directoryCache.get(bookId);
     if (cached) {
       setLastReadChapter(bookId, null);
-      return { data: { data: { data: cached } } };
+      return cached;
     }
   }
 
@@ -192,11 +192,11 @@ export async function fetchBookDirectory(bookId, { forceRefresh = false, signal 
     version: item.version,
   }));
   
-  const inner = { book_info: {}, item_data_list: itemDataList };
+  const inner = { item_data_list: itemDataList };
   await directoryCache.set(bookId, inner);
   setLastReadChapter(bookId, null);
   
-  return { data: { data: { data: inner } } };
+  return inner;
 }
 
 export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {

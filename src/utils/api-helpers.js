@@ -12,12 +12,12 @@ export async function fetchBookDetailAndDirectory(bookId, { forceRefresh = false
   let bookData;
   let hadDirectoryCache = false;
   if (dirSettled.status === 'fulfilled') {
-    bookData = dirSettled.value.data.data.data;
+    bookData = dirSettled.value;
   } else {
     console.error('獲取書籍目錄失敗:', bookId, dirSettled.reason);
     const cached = await directoryCache.get(bookId);
     hadDirectoryCache = cached != null;
-    bookData = cached ?? { book_info: {}, item_data_list: [] };
+    bookData = cached ?? { item_data_list: [] };
   }
 
   let detail = {};
@@ -42,7 +42,7 @@ export async function fetchBookDetailAndDirectory(bookId, { forceRefresh = false
 
   const merged = {
     ...bookData,
-    book_info: { ...bookData.book_info, ...detail },
+    book_info: { ...detail },
   };
 
   let partialLoadMessage = null;
