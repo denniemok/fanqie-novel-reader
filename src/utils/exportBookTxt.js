@@ -1,6 +1,7 @@
 import { chapterCache } from './cache';
 import { maybeConvert } from './zh-convert';
 import { getChapterTitle } from './chapter-helpers';
+import { addBlankLine } from './text';
 
 /**
  * Builds and downloads a book_id.txt file with book metadata and cached chapter content.
@@ -21,13 +22,11 @@ export async function exportBookToTxt({ bookId, bookInfo, itemDataList, conversi
 
   const lines = [
     bookName,
-    `作者：${author}`,
     '',
-    '簡介',
-    '────',
+    `${author}`,
+    '',
     abstract || '（無簡介）',
     '',
-    '正文',
     '═══════════════════════════════════════',
     '',
   ];
@@ -37,12 +36,15 @@ export async function exportBookToTxt({ bookId, bookInfo, itemDataList, conversi
     const content = await chapterCache.get(item.item_id);
     if (content == null || typeof content !== 'string') continue;
 
-    const converted = maybeConvert(content, conversionMode);
+    const plain = addBlankLine(content);
+    const converted = maybeConvert(plain, conversionMode);
     const chapterTitle = maybeConvert(getChapterTitle(item), conversionMode);
 
     lines.push(chapterTitle);
     lines.push('');
     lines.push(converted.trim());
+    lines.push('');
+    lines.push('═══════════════════════════════════════');
     lines.push('');
     exportedCount += 1;
   }

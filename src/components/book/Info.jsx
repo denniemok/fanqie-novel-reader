@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Modal from '../common/Modal';
-import { cleanAbstract, truncateText, MAX_ABSTRACT_LENGTH, MOBILE_ABSTRACT_LENGTH } from '../../utils/text';
+import { truncateText, MAX_ABSTRACT_LENGTH, MOBILE_ABSTRACT_LENGTH } from '../../utils/text';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 
@@ -309,9 +309,8 @@ function Info({ bookInfo, conversionMode = 'tw', variant, footer }) {
   const convertedWordNumber = useConvertedText(word_number, conversionMode);
   const convertedCreationStatus = useConvertedText(creation_status, conversionMode);
   
-  const fullAbstract = cleanAbstract(convertedAbstract);
   const maxLen = isMobile ? MOBILE_ABSTRACT_LENGTH : MAX_ABSTRACT_LENGTH;
-  const truncated = truncateText(fullAbstract, maxLen);
+  const truncated = truncateText(convertedAbstract, maxLen);
   const isCompact = variant === 'compact';
 
   if (!original_book_name && !author) return null;
@@ -358,7 +357,7 @@ function Info({ bookInfo, conversionMode = 'tw', variant, footer }) {
         {!isCompact && footer && <Footer>{footer}</Footer>}
       </TextBlock>
       {!isCompact && showFullAbstract && (
-        <Modal text={fullAbstract} onClose={() => setShowFullAbstract(false)} />
+        <Modal text={convertedAbstract} onClose={() => setShowFullAbstract(false)} />
       )}
     </InfoWrapper>
   );

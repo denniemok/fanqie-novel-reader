@@ -1,6 +1,7 @@
 import { API_BASE_KEY, API_OPTIONS, REQUEST_TIMEOUT_MS, RATE_LIMIT_RPM } from '../utils/constants';
 import { safeGetItem, safeSetItem, setLastReadChapter } from '../utils/storage';
 import { directoryCache, chapterCache, detailCache } from '../utils/cache';
+import { cleanText, cleanAbstract } from '../utils/text';
 
 /** Proxy URLs for round-robin. Set VITE_PROXY_URLS (comma-separated) in .env. */
 const PROXY_URLS = (import.meta.env.VITE_PROXY_URLS ?? '')
@@ -119,17 +120,6 @@ async function fetchAndValidate(url, options = {}) {
   return json;
 }
 
-function stripHtmlTagsAndNewlines(html) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-  let filteredText = (doc.body.textContent || '')
-    .replace(/\n+/g, '\n')
-    .replace(/\n\s*\n/g, '\n');
-  if (filteredText.startsWith('\n')) filteredText = filteredText.substring(1);
-  if (!filteredText.endsWith('\n')) filteredText += '\n';
-  return filteredText;
-}
-
 export async function fetchBookDetail(bookId, { forceRefresh = false, signal } = {}) {
   if (!forceRefresh) {
     const cached = await detailCache.get(bookId);
@@ -151,7 +141,7 @@ export async function fetchBookDetail(bookId, { forceRefresh = false, signal } =
   }
 
   const result = {
-    abstract: d.abstract || d.book_abstract_v2 || null,
+    abstract: cleanAbstract(d.abstract || d.book_abstract_v2) || null,
     author: d.author || null,
     audio_thumb_uri: d.audio_thumb_uri || d.thumb_url || d.bookshelf_thumb_url || null,
     original_book_name: d.original_book_name || d.book_name || null,
@@ -211,7 +201,7 @@ export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {
   const json = await fetchAndValidate(url, { signal });
   
   const content = json.data?.content ?? '';
-  const filteredContent = stripHtmlTagsAndNewlines(content);
+  const filteredContent = cleanText(content);
   await chapterCache.set(itemId, filteredContent);
   
   return { content: filteredContent };
