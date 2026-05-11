@@ -1,9 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Search, Globe, Languages } from 'lucide-react';
-import { API_OPTIONS, ZH_CONVERSION_OPTIONS } from '../../utils/constants';
-import { useApiBase } from '../../hooks/useApiBase';
-import { useConversionMode } from '../../hooks/useConversionMode';
+import { Search } from 'lucide-react';
 import { parseBookIdFromInput } from '../../utils/parseBookId';
 
 const Section = styled.section`
@@ -109,48 +106,7 @@ const Form = styled.form`
   }
 `;
 
-const SelectWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  font-size: 14px;
-  color: var(--text-color);
-  flex-wrap: wrap;
-  font-family: inherit;
-
-  div {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  select {
-    background-color: var(--background-color);
-    border: 1px solid var(--border-color);
-    color: var(--accent-color);
-    font-weight: 900;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 0;
-    transition: all 0.1s steps(2);
-
-    &:hover {
-      background-color: var(--hover-background-color);
-    }
-
-    &:focus {
-      outline: none;
-    }
-  }
-`;
-
-function AddBook({ onSubmit, refreshKey, conversionMode, onConversionModeChange }) {
-  const [apiBase, handleApiChange] = useApiBase();
-  const [localConversionMode, setLocalConversionMode] = useConversionMode();
-  const isControlled = conversionMode !== undefined && onConversionModeChange !== undefined;
-  const effectiveConversionMode = isControlled ? conversionMode : localConversionMode;
-  const handleConversionChange = isControlled ? onConversionModeChange : setLocalConversionMode;
-
+function AddBook({ onSubmit, refreshKey }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     const inputElement = document.getElementById('bookIdInput');
@@ -162,7 +118,9 @@ function AddBook({ onSubmit, refreshKey, conversionMode, onConversionModeChange 
 
   return (
     <Section>
-      <SectionTitle><Search /> 開始新閱讀</SectionTitle>
+      <SectionTitle>
+        <Search /> 開始新閱讀
+      </SectionTitle>
       <InputGroup>
         <Form onSubmit={handleSubmit}>
           <input
@@ -174,38 +132,6 @@ function AddBook({ onSubmit, refreshKey, conversionMode, onConversionModeChange 
           />
           <button type="submit">開始閱讀</button>
         </Form>
-        <SelectWrapper>
-          <div>
-            <Globe size={14} />
-            <span>API 服務：</span>
-            <select
-              value={apiBase}
-              onChange={(e) => handleApiChange(e.target.value)}
-              title="API 服務"
-            >
-              {API_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <Languages size={14} />
-            <span>繁簡轉換：</span>
-            <select
-              value={effectiveConversionMode}
-              onChange={(e) => handleConversionChange(e.target.value)}
-              title="繁簡轉換"
-            >
-              {ZH_CONVERSION_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </SelectWrapper>
       </InputGroup>
     </Section>
   );

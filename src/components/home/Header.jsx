@@ -6,9 +6,13 @@ const HeaderWrapper = styled.header`
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding-top: calc(60px + env(safe-area-inset-top));
+  padding-top: calc(76px + 36px + env(safe-area-inset-top));
   margin-bottom: 20px;
   gap: 16px;
+
+  @media (max-width: 480px) {
+    padding-top: calc(68px + 28px + env(safe-area-inset-top));
+  }
 `;
 
 const Title = styled.h1`
@@ -33,7 +37,7 @@ const Title = styled.h1`
 function Header() {
   return (
     <HeaderWrapper>
-      <Title>番茄繁體閱讀</Title>
+      <Title>閱讀番茄小說</Title>
     </HeaderWrapper>
   );
 }

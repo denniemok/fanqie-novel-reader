@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { deleteBookData, moveReadingHistoryBook } from '../../utils/storage';
 import { useToast } from '../../contexts/ToastContext';
-import { useConversionMode } from '../../hooks/useConversionMode';
 import { maybeConvert } from '../../utils/zh-convert';
 import { buildCatalogUrl } from '../../utils/navigation';
 import { formatErrorMessage } from '../../utils/errors';
@@ -26,12 +25,11 @@ const ContentWrapper = styled.div`
   }
 `;
 
-function Content() {
+function Content({ conversionMode = 'tw' }) {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [refreshKey, setRefreshKey] = useState(0);
   const [, setBookshelfRenderTick] = useState(0);
-  const [conversionMode, setConversionMode] = useConversionMode();
 
   const goToCatalog = (bookId) => navigate(buildCatalogUrl(bookId));
 
@@ -73,12 +71,7 @@ function Content() {
         conversionMode={conversionMode}
       />
 
-      <AddBook
-        onSubmit={handleBookInputSubmit}
-        refreshKey={refreshKey}
-        conversionMode={conversionMode}
-        onConversionModeChange={setConversionMode}
-      />
+      <AddBook onSubmit={handleBookInputSubmit} refreshKey={refreshKey} />
 
       <Help />
     </ContentWrapper>
