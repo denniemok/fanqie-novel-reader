@@ -203,7 +203,7 @@ export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {
   if (!forceRefresh) {
     const cached = await chapterCache.get(itemId);
     if (cached != null) {
-      return { data: { data: { content: cached, novel_data: null } } };
+      return { content: cached };
     }
   }
 
@@ -214,14 +214,7 @@ export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {
   const filteredContent = stripHtmlTagsAndNewlines(content);
   await chapterCache.set(itemId, filteredContent);
   
-  return {
-    data: {
-      data: {
-        content: filteredContent,
-        novel_data: null,
-      },
-    },
-  };
+  return { content: filteredContent };
 }
 
 export async function fetchComments(bookId, { count = 20, offset = 1, signal } = {}) {

@@ -32,7 +32,7 @@ export function useChapterLoader(itemId, bookId) {
           fetchItem(itemId, { forceRefresh, signal: effectiveSignal }),
           fetchBookDetailAndDirectory(bookId, { forceRefresh: false, signal: effectiveSignal }),
         ]).then(([contentRes, bookLoad]) => {
-          const contentData = contentRes.data.data;
+          const contentData = contentRes;
           const mergedBookInfo = bookLoad.merged;
           const novelData = buildNovelDataFromDirectory(itemId, bookId, mergedBookInfo.item_data_list);
           return {
@@ -42,7 +42,7 @@ export function useChapterLoader(itemId, bookId) {
           };
         })
       : fetchItem(itemId, { forceRefresh, signal: effectiveSignal }).then((response) => ({
-          chapterData: response.data.data,
+          chapterData: response,
           bookInfo: null,
         }));
 
