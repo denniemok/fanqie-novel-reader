@@ -2,6 +2,9 @@
 # https://docs.netlify.com/routing/headers/
 
 # Always fetch fresh so unregister logic cannot be stuck behind a long-lived cache
+/sw.js
+  Cache-Control: no-store
+
 /sw-cleaner.js
   Cache-Control: no-store
 
