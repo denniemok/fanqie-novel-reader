@@ -9,7 +9,6 @@ import {
   Grid2X2,
   LayoutList,
   Plus,
-  BookPlus,
   FolderPlus,
   FolderInput,
   Trash2,
@@ -266,7 +265,6 @@ const SortTrailingBtn = styled.button`
   line-height: 1;
   white-space: nowrap;
   transition: background 0.2s ease;
-  box-sizing: border-box;
 
   svg {
     width: 16px;
@@ -276,6 +274,20 @@ const SortTrailingBtn = styled.button`
 
   &:hover {
     background: ${(p) => (p.$active ? 'var(--accent-hover)' : 'var(--hover-background-color)')};
+  }
+
+  @media (max-width: 480px) {
+    min-width: ${TOOLBAR_CONTROL_HEIGHT};
+    width: ${TOOLBAR_CONTROL_HEIGHT};
+    padding: 0;
+    gap: 0;
+    flex-shrink: 0;
+  }
+`;
+
+const BtnLabel = styled.span`
+  @media (max-width: 480px) {
+    display: none;
   }
 `;
 
@@ -320,6 +332,14 @@ const ToggleBtn = styled.button`
   &:hover:not([disabled]) {
     background: ${(p) => (p.$active ? 'var(--accent-hover)' : 'var(--hover-background-color)')};
   }
+
+  @media (max-width: 480px) {
+    min-width: ${TOOLBAR_CONTROL_HEIGHT};
+    width: ${TOOLBAR_CONTROL_HEIGHT};
+    padding: 0;
+    gap: 0;
+    flex-shrink: 0;
+  }
 `;
 
 const GridLayout = styled.div`
@@ -328,7 +348,7 @@ const GridLayout = styled.div`
   gap: 16px;
   align-items: stretch;
 
-  @media (max-width: 450px) {
+  @media (max-width: 400px) {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
@@ -789,10 +809,12 @@ function Content({ conversionMode = 'tw' }) {
               onChange={handleSortChange}
               ariaLabel="書架排序方式"
               attachedLabel="排序"
+              hideAttachedLabelOnMobile
               embedded
               hasTrailing={sortBy !== 'manual' || canReorder}
               menuAlign="left"
               triggerMinWidth={108}
+              triggerMinWidthMobile={72}
               triggerBold
             />
             {sortBy !== 'manual' ? (
@@ -803,7 +825,7 @@ function Content({ conversionMode = 'tw' }) {
                 aria-label={sortDirection === 'desc' ? '降序排列' : '升序排列'}
               >
                 {sortDirection === 'desc' ? <ArrowDown /> : <ArrowUp />}
-                {sortDirection === 'desc' ? '降序' : '升序'}
+                <BtnLabel>{sortDirection === 'desc' ? '降序' : '升序'}</BtnLabel>
               </SortTrailingBtn>
             ) : canReorder ? (
               <SortTrailingBtn
@@ -815,7 +837,7 @@ function Content({ conversionMode = 'tw' }) {
                 aria-pressed={reorderMode}
               >
                 <ArrowUpDown />
-                調序
+                <BtnLabel>調序</BtnLabel>
               </SortTrailingBtn>
             ) : null}
           </SortUnit>
@@ -827,7 +849,8 @@ function Content({ conversionMode = 'tw' }) {
               aria-label="管理書籍"
               aria-pressed={settingsMode}
             >
-              <Settings /> 管理
+              <Settings />
+              <BtnLabel>管理</BtnLabel>
             </ToggleBtn>
           </ViewToggle>
           <ViewToggle>
@@ -837,7 +860,8 @@ function Content({ conversionMode = 'tw' }) {
               title="新增書籍"
               aria-label="新增書籍"
             >
-              <BookPlus /> 新書
+              <Plus />
+              <BtnLabel>新書</BtnLabel>
             </ToggleBtn>
           </ViewToggle>
           <ViewToggle>
@@ -845,15 +869,19 @@ function Content({ conversionMode = 'tw' }) {
               $active={viewMode === 'list'}
               onClick={() => handleViewModeChange('list')}
               title="列表視圖"
+              aria-label="列表視圖"
             >
-              <LayoutList /> 列表
+              <LayoutList />
+              <BtnLabel>列表</BtnLabel>
             </ToggleBtn>
             <ToggleBtn
               $active={viewMode === 'grid'}
               onClick={() => handleViewModeChange('grid')}
               title="格狀視圖"
+              aria-label="格狀視圖"
             >
-              <Grid2X2 /> 格狀
+              <Grid2X2 />
+              <BtnLabel>格狀</BtnLabel>
             </ToggleBtn>
           </ViewToggle>
         </ToolbarRight>

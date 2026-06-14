@@ -36,6 +36,14 @@ const AttachedLabel = styled.span`
   border-radius: 12px 0 0 12px;
   white-space: nowrap;
   flex-shrink: 0;
+
+  ${(p) =>
+    p.$hideOnMobile &&
+    `
+    @media (max-width: 480px) {
+      display: none;
+    }
+  `}
 `;
 
 const Trigger = styled.button`
@@ -92,6 +100,11 @@ const Trigger = styled.button`
       border-color: transparent;
     }
   `}
+
+  @media (max-width: 480px) {
+    min-width: ${(p) => p.$minWidthMobile ?? p.$minWidth ?? 96}px;
+    padding: 0 22px 0 8px;
+  }
 `;
 
 const TriggerText = styled.span`
@@ -225,8 +238,10 @@ function SelectDropdown({
   triggerMinHeight = 40,
   triggerBold = false,
   attachedLabel,
+  hideAttachedLabelOnMobile = false,
   embedded = false,
   hasTrailing = false,
+  triggerMinWidthMobile,
   renderOption,
   renderValue,
 }) {
@@ -254,7 +269,9 @@ function SelectDropdown({
 
   return (
     <SelectWrapper ref={ref} $attached={attached} $embedded={embedded}>
-      {attachedLabel && <AttachedLabel>{attachedLabel}</AttachedLabel>}
+      {attachedLabel && (
+        <AttachedLabel $hideOnMobile={hideAttachedLabelOnMobile}>{attachedLabel}</AttachedLabel>
+      )}
       <Trigger
         type="button"
         onClick={() => setOpen(!open)}
@@ -262,6 +279,7 @@ function SelectDropdown({
         aria-haspopup="listbox"
         aria-label={ariaLabel}
         $minWidth={triggerMinWidth}
+        $minWidthMobile={triggerMinWidthMobile}
         $minHeight={triggerMinHeight}
         $bold={triggerBold}
         $attached={grouped}
