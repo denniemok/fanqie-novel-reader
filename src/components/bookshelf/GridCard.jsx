@@ -365,15 +365,7 @@ function GridCard({
   }
 
   if (!bookInfo) {
-    return (
-      <SkeletonCard>
-        <SkeletonCover />
-        <SkeletonText>
-          <SkeletonLine $height="13px" $width="90%" />
-          <SkeletonLine $height="11px" $width="60%" />
-        </SkeletonText>
-      </SkeletonCard>
-    );
+    return null;
   }
 
   const handleCardClick = () => {

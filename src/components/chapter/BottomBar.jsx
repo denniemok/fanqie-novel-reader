@@ -53,9 +53,9 @@ const IconWrapper = styled.span`
 `;
 
 function BottomBar({ chapterData, bookId }) {
-  if (!chapterData || !chapterData.novel_data) return null;
+  if (!chapterData) return null;
 
-  const { pre_item_id, next_item_id } = chapterData.novel_data;
+  const { pre_item_id, next_item_id } = chapterData.novel_data ?? {};
 
   return (
     <BottomBarWrapper>

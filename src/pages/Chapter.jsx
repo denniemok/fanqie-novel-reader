@@ -54,7 +54,7 @@ function Chapter() {
   return (
     <PageWrapper $withBottomPadding={false} $backgroundColor={readerBackground}>
       {loading ? (
-        <Loading onAbort={() => navigate('/')} />
+        <Loading onAbort={() => navigate(bookId ? buildCatalogUrl(bookId) : '/')} />
       ) : (
         <>
           {chapterData && (
@@ -62,6 +62,8 @@ function Chapter() {
               <TopBar
                 chapterData={chapterData}
                 bookInfo={bookInfo}
+                bookId={bookId}
+                itemId={itemId}
                 fontSize={fontSize}
                 onFontSizeChange={handleFontSizeChange}
                 fontFamily={fontFamily}

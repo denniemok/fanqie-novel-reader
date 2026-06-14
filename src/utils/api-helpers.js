@@ -40,6 +40,14 @@ export async function fetchBookDetailAndDirectory(bookId, { forceRefresh = false
     throw dirSettled.reason ?? detailSettled.reason;
   }
 
+  if (
+    dirSettled.status === 'rejected' &&
+    !hadDirectoryCache &&
+    !(bookData.item_data_list?.length)
+  ) {
+    throw dirSettled.reason ?? new Error('獲取書籍目錄失敗，請檢查 bookId 是否正確，或者稍後再試。');
+  }
+
   const merged = {
     ...bookData,
     book_info: { ...detail },

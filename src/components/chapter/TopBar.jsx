@@ -111,20 +111,25 @@ const ProgressText = styled.div`
   }
 `;
 
-function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily, onFontFamilyChange, textBrightness, onTextBrightnessChange, readerBackground, onReaderBackgroundChange, conversionMode = 'tw', onConversionModeChange, onRefresh }) {
-  const convertedTitle = useConvertedText(chapterData?.novel_data?.title, conversionMode);
+function TopBar({ chapterData, bookInfo, bookId, itemId, fontSize, onFontSizeChange, fontFamily, onFontFamilyChange, textBrightness, onTextBrightnessChange, readerBackground, onReaderBackgroundChange, conversionMode = 'tw', onConversionModeChange, onRefresh }) {
+  const novelData = chapterData?.novel_data;
+  const convertedTitle = useConvertedText(novelData?.title, conversionMode);
   const convertedBookName = useConvertedText(bookInfo?.book_info?.original_book_name, conversionMode);
 
-  if (!chapterData || !chapterData.novel_data) return null;
+  if (!chapterData) return null;
 
-  const { order, serial_count } = chapterData.novel_data;
-  const progress = ((parseInt(order) / parseInt(serial_count)) * 100).toFixed(1);
+  const catalogBookId = bookId ?? novelData?.book_id;
+  const displayTitle = convertedTitle || (itemId ? `第 ${itemId} 章` : '章節');
+  const { order, serial_count } = novelData ?? {};
+  const progress = order && serial_count
+    ? ((parseInt(order, 10) / parseInt(serial_count, 10)) * 100).toFixed(1)
+    : null;
 
   return (
     <TopBarWrapper>
       <InfoRow>
         <TitleBlock>
-          <h1>{convertedTitle}</h1>
+          <h1>{displayTitle}</h1>
           {bookInfo && <h3>{convertedBookName}</h3>}
         </TitleBlock>
         <ActionBar>
@@ -202,11 +207,10 @@ function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily,
                 <RefreshCw size={20} strokeWidth={2.5} />
               </IconButton>
             )}
-            <CatalogButton
-              bookId={chapterData?.novel_data?.book_id}
-            />
+            <CatalogButton bookId={catalogBookId} />
           </ActionBar>
       </InfoRow>
+      {progress != null && (
       <ProgressBox aria-hidden="true">
         <ProgressBarContainer>
           <Progress style={{ width: `${progress}%` }} />
@@ -215,6 +219,7 @@ function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily,
           <span className="current">{order}</span> / {serial_count}
         </ProgressText>
       </ProgressBox>
+      )}
     </TopBarWrapper>
   );
 }

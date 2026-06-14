@@ -51,6 +51,7 @@ export function DownloadManagerProvider({ children }) {
   const queueRef = useRef([]);
   const activeCountRef = useRef(0);
   const batchCooldownRef = useRef(null);
+  const abortControllersRef = useRef(new Map());
   const { showToast } = useToast();
 
   const processQueue = useCallback(() => {
@@ -62,18 +63,28 @@ export function DownloadManagerProvider({ children }) {
       if (state.downloading.has(itemId)) continue;
       activeCountRef.current += 1;
       dispatch({ type: 'START', itemId });
-      fetchItem(itemId, { forceRefresh })
+      const controller = new AbortController();
+      abortControllersRef.current.set(itemId, controller);
+      const { signal } = controller;
+
+      const runFetch = () => fetchItem(itemId, { forceRefresh, signal });
+
+      runFetch()
         .then(() => {})
-        .catch(() =>
-          new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS)).then(() =>
-            fetchItem(itemId, { forceRefresh })
-          )
-        )
         .catch((err) => {
+          if (err.name === 'AbortError') throw err;
+          return new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS)).then(() => {
+            if (signal.aborted) throw new DOMException('The operation was aborted.', 'AbortError');
+            return runFetch();
+          });
+        })
+        .catch((err) => {
+          if (err.name === 'AbortError') return;
           console.error('章節下載失敗：', itemId, err);
           showToast(formatErrorMessage(err, '章節下載失敗，請稍後再試。'));
         })
         .finally(() => {
+          abortControllersRef.current.delete(itemId);
           activeCountRef.current -= 1;
           dispatch({ type: 'END', itemId });
           processQueue();
@@ -107,6 +118,13 @@ export function DownloadManagerProvider({ children }) {
   }, [addToQueue]);
 
   const stopDownloadAll = useCallback(() => {
+    queueRef.current = [];
+    if (batchCooldownRef.current) {
+      clearTimeout(batchCooldownRef.current);
+      batchCooldownRef.current = null;
+    }
+    abortControllersRef.current.forEach((controller) => controller.abort());
+    abortControllersRef.current.clear();
     dispatch({ type: 'STOP_DOWNLOAD_ALL' });
   }, []);
 
