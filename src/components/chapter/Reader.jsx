@@ -13,6 +13,10 @@ const ReaderWrapper = styled.div`
   min-height: 100vh;
   min-height: 100dvh;
 
+  @supports (-webkit-touch-callout: none) {
+    min-height: -webkit-fill-available;
+  }
+
   @media (max-width: 480px) {
     padding: 24px 16px 100px 16px;
     padding-top: calc(130px + env(safe-area-inset-top));

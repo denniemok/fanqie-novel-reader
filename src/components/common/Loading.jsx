@@ -21,6 +21,10 @@ const LoadingWrapper = styled.div`
   justify-content: center;
   height: 100vh;
   height: 100dvh;
+
+  @supports (-webkit-touch-callout: none) {
+    height: -webkit-fill-available;
+  }
   gap: 10px;
 
   p {

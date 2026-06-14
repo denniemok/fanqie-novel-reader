@@ -7,6 +7,10 @@ const PageWrapper = styled.div`
   width: 100%;
   background-color: ${(p) => p.$backgroundColor ?? 'var(--background-color)'};
   ${(p) => p.$withBottomPadding && 'padding-bottom: env(safe-area-inset-bottom);'}
+
+  @supports (-webkit-touch-callout: none) {
+    min-height: -webkit-fill-available;
+  }
 `;
 
 export default PageWrapper;

@@ -6,6 +6,10 @@ const Page = styled.div`
   flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
+
+  @supports (-webkit-touch-callout: none) {
+    min-height: -webkit-fill-available;
+  }
 `;
 
 const Main = styled.main`

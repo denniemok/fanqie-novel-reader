@@ -10,6 +10,10 @@ const ErrorWrapper = styled.div`
   justify-content: center;
   height: 100vh;
   height: 100dvh;
+
+  @supports (-webkit-touch-callout: none) {
+    height: -webkit-fill-available;
+  }
   gap: 16px;
   background-color: var(--background-color);
   padding: 16px;
