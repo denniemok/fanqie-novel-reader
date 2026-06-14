@@ -67,8 +67,8 @@ body {
   -webkit-text-size-adjust: 100%;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: none;
-  min-height: 100dvh;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 a, span, h1, h2, h3, h4, h5, h6, p, li {

@@ -97,6 +97,12 @@ const Tab = styled.button`
     background: ${(p) => (p.$active ? 'var(--accent-hover)' : 'var(--hover-background-color)')};
     color: ${(p) => (p.$active ? '#000' : 'var(--text-color)')};
   }
+
+  @media (max-width: 374px) {
+    padding: 10px 12px;
+    font-size: 13px;
+    max-width: 120px;
+  }
 `;
 
 const AddTabBtn = styled.button`
@@ -227,6 +233,10 @@ const ToolbarRight = styled.div`
   gap: 8px;
   margin-left: auto;
   flex-wrap: wrap;
+
+  @media (max-width: 374px) {
+    gap: 4px;
+  }
 `;
 
 const SortUnit = styled.div`

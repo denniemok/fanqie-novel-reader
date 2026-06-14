@@ -47,8 +47,8 @@ export const ModalHeader = styled.div`
 
 const ModalCloseButton = styled.button`
   padding: 0;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   box-sizing: border-box;
   border: 1px solid var(--border-color);
   background: var(--background-color2);
@@ -61,8 +61,8 @@ const ModalCloseButton = styled.button`
   transition: all 0.1s steps(2);
 
   svg {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
   }
 
   &:hover {

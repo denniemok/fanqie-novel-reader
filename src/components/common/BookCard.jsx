@@ -193,7 +193,9 @@ const ActionButtons = styled.div`
 `;
 
 const ActionButton = styled.button`
-  padding: 6px;
+  padding: 8px;
+  min-width: 36px;
+  min-height: 36px;
   border-radius: 0;
   border: 1px solid var(--border-color);
   cursor: pointer;

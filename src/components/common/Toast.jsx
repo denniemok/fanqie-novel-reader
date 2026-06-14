@@ -26,8 +26,10 @@ const ToastWrapper = styled.div`
 
 const CloseButton = styled.button`
   flex-shrink: 0;
-  padding: 0;
-  margin: 0;
+  padding: 8px;
+  min-width: 36px;
+  min-height: 36px;
+  margin: -8px -8px -8px 0;
   background: none;
   border: none;
   color: var(--accent-color);
@@ -35,6 +37,9 @@ const CloseButton = styled.button`
   font-size: 20px;
   line-height: 1;
   opacity: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     opacity: 1;

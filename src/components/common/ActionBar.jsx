@@ -33,9 +33,9 @@ const ToolsToggle = styled.button`
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 8px;
-  min-width: 40px;
-  min-height: 40px;
+  padding: 10px;
+  min-width: 44px;
+  min-height: 44px;
   color: var(--text-color-secondary);
   background: none;
   border: none;
@@ -80,7 +80,6 @@ const ToolsPanel = styled.div`
     top: calc(12px + env(safe-area-inset-top));
     right: 0;
     width: min(240px, 85vw);
-    flex-direction: column;
     align-items: stretch;
     gap: 0;
     padding: 12px;
@@ -93,7 +92,9 @@ const ToolsPanel = styled.div`
     box-shadow: -8px 0 24px rgba(0, 0, 0, 0.4);
     transform: translateX(${(p) => (p.$open ? '0' : '100%')});
     transition: transform 0.25s ease-out;
-    overflow: visible;
+    max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 `;
 

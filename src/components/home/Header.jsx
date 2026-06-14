@@ -27,10 +27,19 @@ const Title = styled.h1`
   padding: 6px 30px;
   background-color: var(--background-color2);
   box-shadow: var(--retro-shadow);
+  max-width: calc(100vw - 32px);
+  box-sizing: border-box;
+  text-align: center;
 
   @media (max-width: 400px) {
     font-size: 28px;
     padding: 6px 24px;
+    letter-spacing: 1px;
+  }
+
+  @media (max-width: 340px) {
+    font-size: 24px;
+    padding: 6px 16px;
   }
 `;
 

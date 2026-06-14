@@ -90,6 +90,7 @@ const PaginationButton = styled.button`
   align-items: center;
   gap: 6px;
   padding: 10px 20px;
+  min-height: 44px;
   border-radius: 12px;
   border: 1px solid var(--border-color);
   background: var(--background-color2);

@@ -87,9 +87,9 @@ const MenuItem = styled.li`
   }
 
   .chapter-actions button {
-    padding: 6px;
-    min-width: 32px;
-    min-height: 32px;
+    padding: 8px;
+    min-width: 40px;
+    min-height: 40px;
   }
 
   .chapter-actions svg {

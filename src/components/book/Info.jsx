@@ -92,6 +92,13 @@ const CoverWrapper = styled.div`
       height: 134px;
       box-shadow: 3px 3px 0px var(--background-color);
     }
+
+    @media (max-width: 374px) {
+      img {
+        width: 72px;
+        height: 96px;
+      }
+    }
   }
 `;
 
@@ -104,6 +111,10 @@ const CoverMeta = styled.div`
 
   .variant-compact & {
     width: 100px;
+
+    @media (max-width: 374px) {
+      width: 72px;
+    }
   }
 `;
 
@@ -169,6 +180,10 @@ const TitleBlock = styled.div`
     font-size: 20px;
     white-space: nowrap;
     -webkit-line-clamp: 1;
+
+    @media (max-width: 374px) {
+      font-size: 16px;
+    }
   }
 
   .variant-compact & h3 {
@@ -199,7 +214,7 @@ const Abstract = styled.p`
 const ShowMore = styled.button`
   background: var(--background-color2);
   border: 1px solid var(--border-color);
-  padding: 2px 6px;
+  padding: 6px 10px;
   font-size: 12px;
   font-weight: 900;
   color: var(--accent-color);
@@ -207,6 +222,7 @@ const ShowMore = styled.button`
   transition: all 0.1s steps(2);
   margin-right: 8px;
   text-transform: uppercase;
+  min-height: 32px;
 
   &:hover {
     background: var(--accent-color);

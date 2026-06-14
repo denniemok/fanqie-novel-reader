@@ -9,7 +9,7 @@ const BottomBarWrapper = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
-  height: 64px;
+  height: 56px;
   padding-bottom: env(safe-area-inset-bottom);
   display: flex;
   background-color: rgba(0, 0, 0, 0.95);

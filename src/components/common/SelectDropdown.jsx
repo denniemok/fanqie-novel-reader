@@ -147,6 +147,7 @@ const Menu = styled.div`
   `}
   min-width: 100%;
   width: max-content;
+  max-width: calc(100vw - 32px);
   max-height: 280px;
   overflow-y: auto;
   background-color: rgba(18, 18, 18, 0.98);

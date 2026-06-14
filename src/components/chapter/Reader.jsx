@@ -11,7 +11,7 @@ const ReaderWrapper = styled.div`
   max-width: 800px;
   background-color: ${(p) => p.$readerBackground ?? 'var(--background-color)'};
   min-height: 100vh;
-  min-height: 100svh;
+  min-height: 100dvh;
 
   @media (max-width: 480px) {
     padding: 24px 16px 100px 16px;

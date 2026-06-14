@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const PageWrapper = styled.div`
   min-height: 100vh;
-  min-height: 100svh;
+  min-height: 100dvh;
   overflow-x: hidden;
   width: 100%;
   background-color: ${(p) => p.$backgroundColor ?? 'var(--background-color)'};

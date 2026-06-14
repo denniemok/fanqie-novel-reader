@@ -8,8 +8,8 @@ const ErrorWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100dvh;
   height: 100vh;
+  height: 100dvh;
   gap: 16px;
   background-color: var(--background-color);
   padding: 16px;

@@ -13,7 +13,7 @@ const Grid = styled.div`
   gap: 16px;
   align-items: stretch;
 
-  @media (max-width: 450px) {
+  @media (max-width: 400px) {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
