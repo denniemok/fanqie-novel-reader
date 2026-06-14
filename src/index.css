@@ -105,7 +105,11 @@
   background-image:
     radial-gradient(ellipse 70% 45% at 15% 8%, rgba(232, 138, 170, 0.1) 0%, transparent 55%),
     radial-gradient(ellipse 50% 35% at 88% 92%, rgba(140, 120, 150, 0.1) 0%, transparent 50%),
-    radial-gradient(circle, rgba(120, 100, 110, 0.08) 1px, transparent 1px);
+    radial-gradient(circle, rgba(120, 100, 110, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(42, 34, 48, 0.72), rgba(42, 34, 48, 0.82)),
+    url('/bg-dark.webp');
+  background-size: 100% 100%, 100% 100%, 32px 32px, cover, cover;
+  background-position: center, center, center, center, center;
 }
 
 *, *::before, *::after {
@@ -174,8 +178,11 @@ body {
   background-image:
     radial-gradient(ellipse 70% 45% at 15% 8%, rgba(201, 128, 154, 0.1) 0%, transparent 55%),
     radial-gradient(ellipse 50% 35% at 88% 92%, rgba(180, 160, 175, 0.08) 0%, transparent 50%),
-    radial-gradient(circle, rgba(160, 140, 130, 0.05) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 32px 32px;
+    radial-gradient(circle, rgba(160, 140, 130, 0.05) 1px, transparent 1px),
+    linear-gradient(rgba(240, 233, 228, 0.5), rgba(240, 233, 228, 0.62)),
+    url('/bg-light.webp');
+  background-size: 100% 100%, 100% 100%, 32px 32px, cover, cover;
+  background-position: center, center, center, center, center;
   background-attachment: fixed;
   transition: background-color 0.4s ease, color 0.4s ease;
 }

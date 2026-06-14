@@ -1,16 +1,7 @@
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { Check, X, Loader2 } from 'lucide-react';
-
-const spin = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-`;
-
-const SpinningIcon = styled.span`
-  display: flex;
-  animation: ${spin} 1s linear infinite;
-`;
+import { CardSpinningIcon } from '../common/CardActionButton';
 
 const StatusWrapper = styled.span`
   display: flex;
@@ -21,9 +12,9 @@ function Status({ isDownloading, isCached }) {
   if (isDownloading) {
     return (
       <StatusWrapper>
-        <SpinningIcon>
+        <CardSpinningIcon $duration="1s">
           <Loader2 size={18} />
-        </SpinningIcon>
+        </CardSpinningIcon>
       </StatusWrapper>
     );
   }

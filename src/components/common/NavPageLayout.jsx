@@ -1,15 +1,11 @@
 import styled from 'styled-components';
 import Footer from './Footer';
+import { minViewportHeight } from '../../utils/styled/viewport';
 
 const Page = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  min-height: 100dvh;
-
-  @supports (-webkit-touch-callout: none) {
-    min-height: -webkit-fill-available;
-  }
+  ${minViewportHeight}
 `;
 
 const Main = styled.main`

@@ -84,9 +84,23 @@ const tileStyles = css`
   & > span {
     position: relative;
     z-index: 1;
+    flex-shrink: 0;
+    min-width: 0;
   }
 
-  @media (min-width: 600px) {
+  @media (max-width: 700px) {
+    aspect-ratio: auto;
+    min-height: 112px;
+    padding: 14px 10px;
+    gap: 6px;
+
+    & > svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  @media (min-width: 701px) {
     padding: 20px 10px;
   }
 
@@ -120,11 +134,16 @@ const TileLabel = styled.span`
   color: var(--text-color);
   letter-spacing: 0.06em;
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.25;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  @media (max-width: 700px) {
+    font-size: 15px;
+    letter-spacing: 0.04em;
+  }
 `;
 
 const TileSubLabel = styled.span`
@@ -132,12 +151,18 @@ const TileSubLabel = styled.span`
   color: var(--text-color-secondary);
   letter-spacing: 0.02em;
   text-align: center;
-  line-height: 1.3;
+  line-height: 1.35;
   width: 100%;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+
+  @media (max-width: 700px) {
+    font-size: 11px;
+    line-height: 1.3;
+    -webkit-line-clamp: 1;
+  }
 `;
 
 function NavGrid() {

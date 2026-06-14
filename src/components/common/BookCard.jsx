@@ -1,30 +1,11 @@
 import React, { useEffect } from 'react';
-import styled, { keyframes, css } from 'styled-components';
+import styled from 'styled-components';
 import { GripVertical, Loader2, RefreshCw, Trash2, FolderInput } from 'lucide-react';
 import Info from '../book/Info';
 import { useBookLoader } from '../../hooks/useBookLoader';
 import { useToast } from '../../contexts/ToastContext';
-
-const spin = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-`;
-
-const shimmer = keyframes`
-  0% { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-`;
-
-const shimmerStyle = css`
-  background: linear-gradient(
-    90deg,
-    var(--background-color2) 25%,
-    var(--border-color) 50%,
-    var(--background-color2) 75%
-  );
-  background-size: 800px 100%;
-  animation: ${shimmer} 1.4s ease-in-out infinite;
-`;
+import { shimmerStyle } from '../../utils/styled/animations';
+import { CardActionButton, CardSpinningIcon, CardLoadingOverlay } from './CardActionButton';
 
 const SkeletonCard = styled.div`
   display: flex;
@@ -173,32 +154,6 @@ const DragHandle = styled.div`
   }
 `;
 
-const SpinningIcon = styled.span`
-  display: flex;
-  will-change: transform;
-  animation: ${spin} 0.8s linear infinite;
-`;
-
-const LoadingOverlay = styled.div`
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(240, 233, 228, 0.88);
-  backdrop-filter: blur(4px);
-  border-radius: var(--border-radius-sm);
-  z-index: 10;
-
-  svg {
-    width: 40px;
-    height: 40px;
-    color: var(--accent-color);
-    will-change: transform;
-    animation: ${spin} 0.8s linear infinite;
-  }
-`;
-
 const ActionButtons = styled.div`
   position: absolute;
   top: 10px;
@@ -208,50 +163,6 @@ const ActionButtons = styled.div`
   align-items: center;
   z-index: 11;
   pointer-events: auto; /* stay clickable when Card has pointer-events: none during refresh */
-`;
-
-const ActionButton = styled.button`
-  padding: 8px;
-  min-width: 36px;
-  min-height: 36px;
-  border-radius: var(--border-radius-sm);
-  border: 1px solid var(--border-color);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.1s steps(2);
-  background-color: ${(p) =>
-    p.$variant === 'delete'
-      ? '#e8a0a8'
-        : p.$variant === 'refresh'
-        ? '#a0c8e8'
-        : p.$variant === 'collection'
-          ? '#e8d0a0'
-          : 'var(--background-color2)'};
-  color: ${(p) => (p.$variant ? 'var(--text-on-accent)' : 'var(--text-color)')};
-  box-shadow: var(--retro-shadow);
-
-  &:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: var(--retro-shadow-hover);
-    filter: brightness(1.08);
-  }
-
-  &:active {
-    transform: translate(1px, 1px);
-    box-shadow: none;
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.7;
-  }
-
-  svg {
-    width: 18px;
-    height: 18px;
-  }
 `;
 
 function BookCard({
@@ -301,9 +212,9 @@ function BookCard({
   return (
     <Card onClick={handleCardClick} $disabled={isRefreshing} $isDragging={isDragging} $reorderMode={reorderMode}>
       {isRefreshing && (
-        <LoadingOverlay>
+        <CardLoadingOverlay>
           <Loader2 />
-        </LoadingOverlay>
+        </CardLoadingOverlay>
       )}
       {dragHandleProps && (
         <DragHandle {...dragHandleProps} aria-label="拖曳排序">
@@ -313,7 +224,7 @@ function BookCard({
       {settingsMode && !reorderMode && (
       <ActionButtons>
         {onAddToCollection && (
-          <ActionButton
+          <CardActionButton
             type="button"
             $variant="collection"
             onClick={(e) => { e.stopPropagation(); onAddToCollection(bookId); }}
@@ -321,9 +232,9 @@ function BookCard({
             aria-label="加入收藏夾"
           >
             <FolderInput />
-          </ActionButton>
+          </CardActionButton>
         )}
-        <ActionButton
+        <CardActionButton
           type="button"
           $variant="refresh"
           disabled={isRefreshing}
@@ -331,9 +242,9 @@ function BookCard({
           title="刷新目錄與書籍資料"
           aria-label="刷新目錄與書籍資料"
         >
-          {isRefreshing ? <SpinningIcon><Loader2 size={18} /></SpinningIcon> : <RefreshCw />}
-        </ActionButton>
-        <ActionButton
+          {isRefreshing ? <CardSpinningIcon><Loader2 size={18} /></CardSpinningIcon> : <RefreshCw />}
+        </CardActionButton>
+        <CardActionButton
           type="button"
           $variant="delete"
           onClick={(e) => { e.stopPropagation(); onDeleteClick(e, bookId, bookInfo); }}
@@ -341,7 +252,7 @@ function BookCard({
           aria-label="刪除此書的本地資料"
         >
           <Trash2 />
-        </ActionButton>
+        </CardActionButton>
       </ActionButtons>
       )}
       <CardBody>

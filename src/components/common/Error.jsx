@@ -2,18 +2,14 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { GrayButton } from './GrayButton';
+import { viewportHeight } from '../../utils/styled/viewport';
 
 const ErrorWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  height: 100dvh;
-
-  @supports (-webkit-touch-callout: none) {
-    height: -webkit-fill-available;
-  }
+  ${viewportHeight}
   gap: 16px;
   background-color: var(--background-color);
   padding: 16px;

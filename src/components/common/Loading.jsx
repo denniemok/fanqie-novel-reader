@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { GrayButton } from './GrayButton';
+import { viewportHeight } from '../../utils/styled/viewport';
 
 const bounce = keyframes`
   0%, 80%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
@@ -12,12 +13,7 @@ const LoadingWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  height: 100dvh;
-
-  @supports (-webkit-touch-callout: none) {
-    height: -webkit-fill-available;
-  }
+  ${viewportHeight}
   gap: 16px;
 
   p {
