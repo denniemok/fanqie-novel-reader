@@ -52,7 +52,7 @@ export function useChapterLoader(itemId, bookId) {
         setBookInfo(info);
         if (partialLoadMessage) showToast(partialLoadMessage);
         if (bookId && itemId) {
-          setLastReadChapter(bookId, itemId);
+          void setLastReadChapter(bookId, itemId);
         }
         setLoading(false);
       })

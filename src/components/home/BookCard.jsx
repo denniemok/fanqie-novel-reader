@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
-import { ArrowDown, ArrowUp, Loader2, RefreshCw, Trash2 } from 'lucide-react';
+import { BookmarkPlus, GripVertical, Loader2, RefreshCw, Trash2 } from 'lucide-react';
 import Info from '../book/Info';
 import { useBookLoader } from '../../hooks/useBookLoader';
 import { useToast } from '../../contexts/ToastContext';
@@ -76,13 +76,8 @@ const Card = styled.div`
   display: flex;
   width: 100%;
   box-sizing: border-box;
-  padding: 20px;
-  gap: 20px;
-
-  @media (max-width: 480px) {
-    padding: 16px;
-    gap: 16px;
-  }
+  align-items: stretch;
+  gap: 0;
   border-radius: 0;
   background-color: var(--background-color2);
   border: var(--retro-border-width) solid var(--border-color);
@@ -95,30 +90,69 @@ const Card = styled.div`
   box-shadow: var(--retro-shadow);
 
   &:hover {
-    transform: translate(-2px, -2px);
-    border-color: var(--accent-color);
-    background-color: var(--hover-background-color);
-    box-shadow: 6px 6px 0px var(--background-color);
+    border-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--border-color)' : 'var(--accent-color)')};
+    background-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--background-color2)' : 'var(--hover-background-color)')};
+    transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(-2px, -2px)')};
+    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : '6px 6px 0px var(--background-color)')};
   }
 
-  .action-hint {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
-    background: var(--accent-color);
-    color: var(--background-color);
-    padding: 4px 8px;
-    border-radius: 0;
-    font-size: 11px;
-    font-weight: 900;
-    text-transform: uppercase;
-    opacity: 0;
-    border: 1px solid var(--border-color);
-    transition: all 0.1s steps(2);
+  &:active {
+    transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(1px, 1px)')};
+    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : '0px 0px 0px var(--background-color)')};
   }
 
-  &:hover .action-hint {
-    opacity: 1;
+  ${(p) => p.$isDragging && `
+    outline: 2px dashed var(--accent-color);
+    outline-offset: -2px;
+  `}
+`;
+
+const CardBody = styled.div`
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  padding: 20px;
+  gap: 20px;
+
+  @media (max-width: 480px) {
+    padding: 16px;
+    gap: 16px;
+  }
+`;
+
+const DragHandle = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  align-self: stretch;
+  background: var(--background-color);
+  border-right: 1px solid var(--border-color);
+  color: var(--text-color-secondary);
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+
+  &:active {
+    cursor: grabbing;
+    color: var(--accent-color);
+    background: var(--background-color2);
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  @media (max-width: 480px) {
+    width: 32px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
   }
 `;
 
@@ -170,13 +204,11 @@ const ActionButton = styled.button`
   background-color: ${(p) =>
     p.$variant === 'delete'
       ? '#aa5555'
-      : p.$variant === 'refresh'
+        : p.$variant === 'refresh'
         ? '#5588aa'
-        : p.$variant === 'reorderUp'
-          ? '#aa55aa'
-          : p.$variant === 'reorderDown'
-            ? '#55aa55'
-            : 'var(--background-color2)'};
+        : p.$variant === 'collection'
+          ? '#aa8833'
+          : 'var(--background-color2)'};
   color: ${(p) => (p.$variant ? '#000' : 'var(--text-color)')};
   box-shadow: 2px 2px 0px var(--background-color);
 
@@ -204,15 +236,16 @@ const ActionButton = styled.button`
 
 function BookCard({
   bookId,
-  actionHint,
   onClick,
   onRefreshClick,
   onDeleteClick,
+  onAddToCollection,
   conversionMode,
-  reorderEnabled,
-  canMoveUp,
-  canMoveDown,
-  onReorderBook,
+  dragHandleProps,
+  isDragging,
+  canClick,
+  reorderMode,
+  settingsMode = false,
 }) {
   const { bookInfo, isLoading, refetch, isRefreshing, error } = useBookLoader(bookId, { detailOnly: true });
   const { showToast } = useToast();
@@ -239,43 +272,36 @@ function BookCard({
     return null;
   }
 
+  const handleCardClick = () => {
+    if (reorderMode) return;
+    if (canClick && !canClick()) return;
+    onClick?.();
+  };
+
   return (
-    <Card onClick={onClick} $disabled={isRefreshing}>
+    <Card onClick={handleCardClick} $disabled={isRefreshing} $isDragging={isDragging} $reorderMode={reorderMode}>
       {isRefreshing && (
         <LoadingOverlay>
           <Loader2 />
         </LoadingOverlay>
       )}
+      {dragHandleProps && (
+        <DragHandle {...dragHandleProps} aria-label="拖曳排序">
+          <GripVertical />
+        </DragHandle>
+      )}
+      {settingsMode && !reorderMode && (
       <ActionButtons>
-        {reorderEnabled && onReorderBook && (
-          <>
-            <ActionButton
-              type="button"
-              $variant="reorderUp"
-              disabled={!canMoveUp}
-              onClick={(e) => {
-                e.stopPropagation();
-                onReorderBook(bookId, 'up');
-              }}
-              title="上移"
-              aria-label="在閱讀歷史中上移"
-            >
-              <ArrowUp />
-            </ActionButton>
-            <ActionButton
-              type="button"
-              $variant="reorderDown"
-              disabled={!canMoveDown}
-              onClick={(e) => {
-                e.stopPropagation();
-                onReorderBook(bookId, 'down');
-              }}
-              title="下移"
-              aria-label="在閱讀歷史中下移"
-            >
-              <ArrowDown />
-            </ActionButton>
-          </>
+        {onAddToCollection && (
+          <ActionButton
+            type="button"
+            $variant="collection"
+            onClick={(e) => { e.stopPropagation(); onAddToCollection(bookId); }}
+            title="加入收藏夾"
+            aria-label="加入收藏夾"
+          >
+            <BookmarkPlus />
+          </ActionButton>
         )}
         <ActionButton
           type="button"
@@ -297,12 +323,14 @@ function BookCard({
           <Trash2 />
         </ActionButton>
       </ActionButtons>
-      <Info
-        bookInfo={bookInfo}
-        conversionMode={conversionMode}
-        variant="compact"
-      />
-      <div className="action-hint">{actionHint}</div>
+      )}
+      <CardBody>
+        <Info
+          bookInfo={bookInfo}
+          conversionMode={conversionMode}
+          variant="compact"
+        />
+      </CardBody>
     </Card>
   );
 }

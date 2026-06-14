@@ -3,7 +3,7 @@ import TopBarBase from '../common/TopBarBase';
 import ApiDropdown, { API_DROPDOWN_TITLE } from '../common/ApiDropdown';
 import LangDropdown, { LANG_DROPDOWN_TITLE } from '../common/LangDropdown';
 
-function HomeTopBar({ conversionMode, onConversionModeChange }) {
+function NewBookTopBar({ conversionMode, onConversionModeChange }) {
   return (
     <TopBarBase>
       <ApiDropdown title={API_DROPDOWN_TITLE} />
@@ -12,4 +12,4 @@ function HomeTopBar({ conversionMode, onConversionModeChange }) {
   );
 }
 
-export default HomeTopBar;
+export default NewBookTopBar;

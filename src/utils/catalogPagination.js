@@ -1,9 +1,6 @@
 export const CHAPTERS_PER_PAGE = 50;
 
-/**
- * Build chapter-number page ranges. Full 50-chapter buckets stay intact; a partial
- * final bucket is split at decade boundaries (e.g. 451-463 → 451-460, 461-463).
- */
+/** Build chapter-number page ranges with up to `chaptersPerPage` chapters each. */
 export function getPageRanges(totalChapters, chaptersPerPage = CHAPTERS_PER_PAGE) {
   if (totalChapters <= 0) return [{ start: 1, end: 1 }];
 
@@ -11,22 +8,9 @@ export function getPageRanges(totalChapters, chaptersPerPage = CHAPTERS_PER_PAGE
   let start = 1;
 
   while (start <= totalChapters) {
-    const bucketEnd = Math.min(start + chaptersPerPage - 1, totalChapters);
-    const isPartialBucket = bucketEnd - start + 1 < chaptersPerPage;
-
-    if (isPartialBucket) {
-      let subStart = start;
-      while (subStart <= bucketEnd) {
-        const decadeEnd = Math.ceil(subStart / 10) * 10;
-        const subEnd = Math.min(decadeEnd, bucketEnd);
-        ranges.push({ start: subStart, end: subEnd });
-        subStart = subEnd + 1;
-      }
-    } else {
-      ranges.push({ start, end: bucketEnd });
-    }
-
-    start = bucketEnd + 1;
+    const end = Math.min(start + chaptersPerPage - 1, totalChapters);
+    ranges.push({ start, end });
+    start = end + 1;
   }
 
   return ranges;

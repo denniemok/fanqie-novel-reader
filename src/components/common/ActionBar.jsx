@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SlidersHorizontal, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { IconButton } from './IconButton';
 import styled from 'styled-components';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
@@ -134,7 +134,7 @@ function ActionBar({ children }) {
       <RightActions>
         {isMobile ? (
           <ToolsToggle type="button" title="工具" onClick={() => setToolsExpanded(true)}>
-            <SlidersHorizontal size={20} strokeWidth={2.5} />
+            <Menu size={20} strokeWidth={2.5} />
           </ToolsToggle>
         ) : (
           children

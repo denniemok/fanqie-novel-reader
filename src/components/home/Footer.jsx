@@ -1,8 +1,10 @@
 import styled from 'styled-components';
 
 const FooterWrapper = styled.footer`
+  width: 100%;
+  flex-shrink: 0;
   text-align: center;
-  padding: 24px 24px calc(24px + env(safe-area-inset-bottom));
+  padding: 20px 24px calc(20px + env(safe-area-inset-bottom));
   color: var(--text-color-secondary);
   font-size: 13px;
   max-width: 800px;

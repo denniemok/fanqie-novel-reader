@@ -1,27 +1,40 @@
 import { useSearchParams, Navigate } from 'react-router-dom';
+import styled from 'styled-components';
 import Content from '../components/home/Content';
 import Footer from '../components/home/Footer';
 import Header from '../components/home/Header';
-import HomeTopBar from '../components/home/HomeTopBar';
-import { useConversionMode } from '../hooks/useConversionMode';
 import { buildCatalogUrl } from '../utils/navigation';
+
+const Page = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+`;
+
+const Main = styled.main`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
 
 function Home() {
   const [searchParams] = useSearchParams();
   const bookId = searchParams.get('bookId');
-  const [conversionMode, setConversionMode] = useConversionMode();
 
   if (bookId) {
     return <Navigate to={buildCatalogUrl(bookId)} replace />;
   }
 
   return (
-    <>
-      <HomeTopBar conversionMode={conversionMode} onConversionModeChange={setConversionMode} />
-      <Header />
-      <Content conversionMode={conversionMode} />
+    <Page>
+      <Main>
+        <Header />
+        <Content />
+      </Main>
       <Footer />
-    </>
+    </Page>
   );
 }
 

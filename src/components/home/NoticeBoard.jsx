@@ -7,7 +7,6 @@ const Section = styled.section`
   flex-direction: column;
   gap: 16px;
   width: 100%;
-  margin-bottom: 40px;
 `;
 
 const SectionTitle = styled.h2`
@@ -73,7 +72,7 @@ function NoticeBoard() {
         <b>2026-04-06</b> | 新增多組 API 服務；閱讀歷史改為手動排序；無歷史時顯示範例書。<br />
       </NoticeCard>
       <NoticeCard>
-        若有問題歡迎至 <a href="https://github.com/denniemok/fanqie-novel-reader/issues" target="_blank" rel="noopener noreferrer">Issues</a> 回報。<br />
+        <b>2026-06-14</b> | 首頁新增書架、新書、公告與回報入口；書架支援排序、格狀視圖與收藏夾管理。<br />
       </NoticeCard>
     </Section>
   );

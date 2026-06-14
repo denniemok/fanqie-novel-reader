@@ -1,7 +1,12 @@
 import {
   SORT_ORDER_KEY,
   READING_HISTORY_KEY,
+  READING_HISTORY_LEGACY_KEY,
   READING_HISTORY_MAX,
+  COLLECTIONS_KEY,
+  BOOKSHELF_VIEW_MODE_KEY,
+  BOOKSHELF_SORT_KEY,
+  BOOKSHELF_SORT_DIRECTION_KEY,
   FONT_SIZE_KEY,
   FONT_SIZE_MIN,
   FONT_SIZE_MAX,
@@ -16,7 +21,7 @@ import {
   READER_BACKGROUND_KEY,
   READER_BACKGROUND_OPTIONS,
 } from './constants';
-import { directoryCache, chapterCache, detailCache } from './cache';
+import { directoryCache, chapterCache, detailCache, getStoreItem, setStoreItem } from './cache';
 
 export function safeGetItem(key) {
   if (typeof window === 'undefined') return null;
@@ -72,27 +77,49 @@ export async function deleteBookData(bookId) {
   await detailCache.remove(bookId);
   await Promise.all(itemIds.map((itemId) => chapterCache.remove(itemId)));
   const bid = String(bookId);
-  const history = getReadingHistory().filter((e) => e.bookId !== bid);
-  safeSetJSON(READING_HISTORY_KEY, history);
+  const history = (await getReadingHistory()).filter((e) => e.bookId !== bid);
+  await saveReadingHistory(history);
+  const collections = (await getCollections()).map((c) => ({
+    ...c,
+    bookIds: c.bookIds.filter((id) => id !== bid),
+  }));
+  await saveCollections(collections);
 }
 
-export function getReadingHistory() {
-  const raw = safeGetJSON(READING_HISTORY_KEY);
-  return Array.isArray(raw) ? raw : [];
+async function migrateReadingHistoryFromLocalStorage() {
+  const legacy = safeGetJSON(READING_HISTORY_LEGACY_KEY);
+  if (!Array.isArray(legacy)) return null;
+  await setStoreItem(READING_HISTORY_KEY, legacy);
+  safeRemoveItem(READING_HISTORY_LEGACY_KEY);
+  return legacy;
 }
 
-export function getLastReadChapter(bookId) {
+async function saveReadingHistory(history) {
+  return setStoreItem(READING_HISTORY_KEY, history);
+}
+
+export async function getReadingHistory() {
+  const fromIdb = await getStoreItem(READING_HISTORY_KEY);
+  if (Array.isArray(fromIdb)) return fromIdb;
+  const migrated = await migrateReadingHistoryFromLocalStorage();
+  if (Array.isArray(migrated)) return migrated;
+  await saveReadingHistory([]);
+  return [];
+}
+
+export async function getLastReadChapter(bookId) {
   if (!bookId) return null;
   const bid = String(bookId);
-  const entry = getReadingHistory().find((e) => e.bookId === bid);
+  const history = await getReadingHistory();
+  const entry = history.find((e) => e.bookId === bid);
   return entry ? entry.itemId : null;
 }
 
-export function setLastReadChapter(bookId, itemId) {
+export async function setLastReadChapter(bookId, itemId) {
   if (!bookId) return false;
   const now = Date.now();
   const bid = String(bookId);
-  const history = getReadingHistory().map((e) => ({ ...e }));
+  const history = (await getReadingHistory()).map((e) => ({ ...e }));
   const existingIndex = history.findIndex((e) => e.bookId === bid);
   const existing = existingIndex >= 0 ? history[existingIndex] : null;
 
@@ -107,24 +134,23 @@ export function setLastReadChapter(bookId, itemId) {
     } else {
       history.push({ bookId: bid, itemId: itemIdStr, lastReadAt: now });
     }
-    return safeSetJSON(READING_HISTORY_KEY, history.slice(0, READING_HISTORY_MAX));
+    return saveReadingHistory(history.slice(0, READING_HISTORY_MAX));
   }
-  // catalog-only: add to history only if not already present (don't overwrite chapter)
   if (existing) return true;
   history.push({ bookId: bid, itemId: null, lastReadAt: now });
-  return safeSetJSON(READING_HISTORY_KEY, history.slice(0, READING_HISTORY_MAX));
+  return saveReadingHistory(history.slice(0, READING_HISTORY_MAX));
 }
 
-/** Swap entry with the neighbor above or below; order is user-controlled, not time-based. */
-export function moveReadingHistoryBook(bookId, direction) {
-  const bid = String(bookId);
-  const history = getReadingHistory().map((e) => ({ ...e }));
-  const i = history.findIndex((e) => e.bookId === bid);
-  if (i < 0) return false;
-  const j = direction === 'up' ? i - 1 : i + 1;
-  if (j < 0 || j >= history.length) return false;
-  [history[i], history[j]] = [history[j], history[i]];
-  return safeSetJSON(READING_HISTORY_KEY, history);
+/** Move entry from one index to another; order is user-controlled, not time-based. */
+export async function reorderReadingHistory(fromIndex, toIndex) {
+  const history = (await getReadingHistory()).map((e) => ({ ...e }));
+  if (fromIndex < 0 || fromIndex >= history.length || toIndex < 0 || toIndex >= history.length) {
+    return false;
+  }
+  if (fromIndex === toIndex) return true;
+  const [item] = history.splice(fromIndex, 1);
+  history.splice(toIndex, 0, item);
+  return saveReadingHistory(history);
 }
 
 export function getFontSize() {
@@ -207,5 +233,93 @@ export async function deleteChapter(itemId) {
   if (!itemId) return false;
   await chapterCache.remove(itemId);
   return true;
+}
+
+// ── Collections ──────────────────────────────────────────────────────────────
+
+export async function getCollections() {
+  const fromIdb = await getStoreItem(COLLECTIONS_KEY);
+  if (Array.isArray(fromIdb)) return fromIdb;
+  await saveCollections([]);
+  return [];
+}
+
+export async function saveCollections(collections) {
+  return setStoreItem(COLLECTIONS_KEY, collections);
+}
+
+export async function createCollection(name) {
+  if (!name?.trim()) return null;
+  const collections = await getCollections();
+  const newCollection = { id: `col_${Date.now()}`, name: name.trim(), bookIds: [] };
+  collections.push(newCollection);
+  await saveCollections(collections);
+  return newCollection;
+}
+
+export async function deleteCollection(collectionId) {
+  const collections = (await getCollections()).filter((c) => c.id !== collectionId);
+  return saveCollections(collections);
+}
+
+export async function renameCollection(collectionId, name) {
+  if (!name?.trim()) return false;
+  const collections = (await getCollections()).map((c) =>
+    c.id === collectionId ? { ...c, name: name.trim() } : c
+  );
+  return saveCollections(collections);
+}
+
+export async function addBookToCollection(collectionId, bookId) {
+  const bid = String(bookId);
+  const collections = (await getCollections()).map((c) => {
+    if (c.id !== collectionId) return c;
+    if (c.bookIds.includes(bid)) return c;
+    return { ...c, bookIds: [...c.bookIds, bid] };
+  });
+  return saveCollections(collections);
+}
+
+export async function removeBookFromCollection(collectionId, bookId) {
+  const bid = String(bookId);
+  const collections = (await getCollections()).map((c) =>
+    c.id === collectionId ? { ...c, bookIds: c.bookIds.filter((id) => id !== bid) } : c
+  );
+  return saveCollections(collections);
+}
+
+// ── Bookshelf view mode ───────────────────────────────────────────────────────
+
+export function getBookshelfViewMode() {
+  const raw = safeGetItem(BOOKSHELF_VIEW_MODE_KEY);
+  return raw === 'grid' ? 'grid' : 'list';
+}
+
+export function setBookshelfViewMode(mode) {
+  const valid = mode === 'list' || mode === 'grid';
+  return valid ? safeSetItem(BOOKSHELF_VIEW_MODE_KEY, mode) : false;
+}
+
+/** @returns {'manual'|'rating'|'update'|'chapters'|'words'} */
+export function getBookshelfSort() {
+  const raw = safeGetItem(BOOKSHELF_SORT_KEY);
+  const valid = ['manual', 'rating', 'update', 'chapters', 'words'];
+  return valid.includes(raw) ? raw : 'manual';
+}
+
+export function setBookshelfSort(sort) {
+  const valid = ['manual', 'rating', 'update', 'chapters', 'words'];
+  return valid.includes(sort) ? safeSetItem(BOOKSHELF_SORT_KEY, sort) : false;
+}
+
+/** @returns {'asc'|'desc'} */
+export function getBookshelfSortDirection() {
+  const raw = safeGetItem(BOOKSHELF_SORT_DIRECTION_KEY);
+  return raw === 'asc' ? 'asc' : 'desc';
+}
+
+export function setBookshelfSortDirection(direction) {
+  const valid = direction === 'asc' || direction === 'desc';
+  return valid ? safeSetItem(BOOKSHELF_SORT_DIRECTION_KEY, direction) : false;
 }
 

@@ -1,0 +1,54 @@
+export const BOOKSHELF_SORT_OPTIONS = [
+  { value: 'manual', label: '手動' },
+  { value: 'rating', label: '評分' },
+  { value: 'update', label: '更新日期' },
+  { value: 'chapters', label: '章節數' },
+  { value: 'words', label: '字數' },
+];
+
+const SORT_FIELD = {
+  rating: 'score',
+  update: 'updateTime',
+  chapters: 'chapters',
+  words: 'words',
+};
+
+/** @param {object|null} detail */
+/** @param {object|null} directory */
+export function extractBookshelfSortMeta(detail, directory) {
+  const d = detail || {};
+  const scoreRaw = d.score;
+  const score = scoreRaw && scoreRaw !== '0' ? parseFloat(scoreRaw) : null;
+  const updateTime = d.last_publish_time ? parseInt(d.last_publish_time, 10) : null;
+  const words = d.word_number && d.word_number !== '0' ? parseInt(d.word_number, 10) : null;
+  const fromDir = directory?.item_data_list?.length;
+  const fromDetail = d.content_chapter_number && d.content_chapter_number !== '0'
+    ? parseInt(d.content_chapter_number, 10)
+    : null;
+  const chapters = fromDir || fromDetail || null;
+  return {
+    score: Number.isFinite(score) ? score : null,
+    updateTime: Number.isFinite(updateTime) ? updateTime : null,
+    words: Number.isFinite(words) ? words : null,
+    chapters: Number.isFinite(chapters) ? chapters : null,
+  };
+}
+
+/** @param {Array<{bookId: string}>} items */
+export function sortBookshelfItems(items, sortBy, metaMap, direction = 'desc') {
+  if (sortBy === 'manual' || !SORT_FIELD[sortBy]) return items;
+  const field = SORT_FIELD[sortBy];
+  const desc = direction !== 'asc';
+  return [...items]
+    .map((item, index) => ({ item, index }))
+    .sort((a, b) => {
+      const va = metaMap[a.item.bookId]?.[field] ?? null;
+      const vb = metaMap[b.item.bookId]?.[field] ?? null;
+      if (va == null && vb == null) return a.index - b.index;
+      if (va == null) return 1;
+      if (vb == null) return -1;
+      if (va !== vb) return desc ? vb - va : va - vb;
+      return a.index - b.index;
+    })
+    .map(({ item }) => item);
+}

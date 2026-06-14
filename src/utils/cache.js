@@ -18,3 +18,16 @@ export function createCacheHelpers(cacheKeyPrefix) {
 export const directoryCache = createCacheHelpers(DIRECTORY_CACHE_KEY);
 export const chapterCache = createCacheHelpers(CHAPTER_CACHE_KEY);
 export const detailCache = createCacheHelpers(DETAIL_CACHE_KEY);
+
+/** Single-document keys (history, collections, etc.) in the same IndexedDB store. */
+export function getStoreItem(key) {
+  return store.getItem(key);
+}
+
+export function setStoreItem(key, value) {
+  return store.setItem(key, value);
+}
+
+export function removeStoreItem(key) {
+  return store.removeItem(key);
+}

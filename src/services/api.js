@@ -165,7 +165,7 @@ export async function fetchBookDirectory(bookId, { forceRefresh = false, signal 
   if (!forceRefresh) {
     const cached = await directoryCache.get(bookId);
     if (cached) {
-      setLastReadChapter(bookId, null);
+      await setLastReadChapter(bookId, null);
       return cached;
     }
   }
@@ -186,7 +186,7 @@ export async function fetchBookDirectory(bookId, { forceRefresh = false, signal 
   
   const inner = { item_data_list: itemDataList };
   await directoryCache.set(bookId, inner);
-  setLastReadChapter(bookId, null);
+  await setLastReadChapter(bookId, null);
   
   return inner;
 }

@@ -30,7 +30,7 @@ function Catalog() {
   const navigate = useNavigate();
   const bookId = searchParams.get('bookId');
   const pageParam = parseInt(searchParams.get('page') || '1', 10);
-  const lastReadItemId = bookId ? getLastReadChapter(bookId) : null;
+  const [lastReadItemId, setLastReadItemId] = useState(null);
 
   const { error, bookInfo, loadBook } = useBookLoader(bookId);
   const { startDownloadAll, stopDownloadAll, isDownloadingAll, completedDownloads } = useDownloadManager();
@@ -49,6 +49,14 @@ function Catalog() {
   const totalPages = getTotalPages(totalChapters, CHAPTERS_PER_PAGE);
   const safePageParam = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
   const currentPage = Math.min(safePageParam, totalPages) - 1;
+
+  useEffect(() => {
+    if (!bookId) {
+      setLastReadItemId(null);
+      return;
+    }
+    getLastReadChapter(bookId).then(setLastReadItemId);
+  }, [bookId]);
 
   useEffect(() => {
     if (!bookInfo || safePageParam <= totalPages) return;

@@ -148,7 +148,7 @@ function Menu({
           </MenuItem>
         ))}
       </MenuList>
-      <PageBar {...pageBarProps} />
+      <PageBar {...pageBarProps} menuOpensUp />
     </>
   );
 }

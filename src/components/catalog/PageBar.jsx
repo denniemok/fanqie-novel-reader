@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowUpDown, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowDown, ArrowUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 
 const Bar = styled.div`
@@ -127,7 +127,6 @@ const SelectChevron = styled(ChevronDown)`
 
 const PageMenu = styled.div`
   position: absolute;
-  top: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
   min-width: 100%;
@@ -143,6 +142,17 @@ const PageMenu = styled.div`
   padding: 8px;
   scrollbar-width: thin;
   scrollbar-color: var(--border-color) transparent;
+
+  ${(p) =>
+    p.$openUpward
+      ? `
+    bottom: calc(100% + 8px);
+    top: auto;
+  `
+      : `
+    top: calc(100% + 8px);
+    bottom: auto;
+  `}
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -216,7 +226,7 @@ function PageOptionLabel({ pageNumber, rangeStart, rangeEnd, showRange = false }
   return <PageLine>第 {pageNumber} 頁</PageLine>;
 }
 
-function PageDropdown({ pageOptions, currentPage, onPageSelect }) {
+function PageDropdown({ pageOptions, currentPage, onPageSelect, openUpward = false }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const selected = pageOptions.find((opt) => opt.value === String(currentPage)) ?? pageOptions[0];
@@ -245,7 +255,7 @@ function PageDropdown({ pageOptions, currentPage, onPageSelect }) {
         <SelectChevron size={14} aria-hidden="true" />
       </PageTrigger>
       {open && (
-        <PageMenu role="listbox" aria-label="章節頁面">
+        <PageMenu role="listbox" aria-label="章節頁面" $openUpward={openUpward}>
           {pageOptions.map((opt) => (
             <PageOption
               key={opt.value}
@@ -282,6 +292,7 @@ function PageBar({
   onPageSelect,
   sortOrder,
   onSortChange,
+  menuOpensUp = false,
 }) {
   const showPagination = pageOptions.length > 1;
 
@@ -292,7 +303,7 @@ function PageBar({
       onClick={onSortChange}
       style={sortOrder === 'descending' ? { color: 'var(--accent-color)' } : undefined}
     >
-      <ArrowUpDown size={18} />
+      {sortOrder === 'ascending' ? <ArrowUp size={18} /> : <ArrowDown size={18} />}
     </NavButton>
   );
 
@@ -308,6 +319,7 @@ function PageBar({
               pageOptions={pageOptions}
               currentPage={currentPage}
               onPageSelect={onPageSelect}
+              openUpward={menuOpensUp}
             />
             {sortButton}
             <NavButton type="button" title="下一頁" onClick={onPageNext} disabled={!canGoNext}>
