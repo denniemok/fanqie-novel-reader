@@ -15,9 +15,19 @@ import {
   Edit2,
   Settings,
 } from 'lucide-react';
-import BookCard from '../home/BookCard';
+import BookCard from '../common/BookCard';
 import GridCard from './GridCard';
 import SortableBooks from './SortableBooks';
+import ConfirmModal from '../common/ConfirmModal';
+import {
+  Modal,
+  ModalTitleBar,
+  ModalBody,
+  ModalText,
+  ModalFooterRow,
+  ModalInput,
+  ModalPrimaryButton,
+} from '../common/ModalBase';
 import { useToast } from '../../contexts/ToastContext';
 import { maybeConvert } from '../../utils/zh-convert';
 import { buildCatalogUrl } from '../../utils/navigation';
@@ -50,20 +60,22 @@ const ALL_TAB = 'all';
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  flex: 1;
   padding-top: calc(100px + env(safe-area-inset-top));
   padding-left: 24px;
   padding-right: 24px;
-  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  padding-bottom: 24px;
   max-width: 800px;
   margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
   gap: 20px;
 
   @media (max-width: 480px) {
     padding-top: calc(88px + env(safe-area-inset-top));
     padding-left: 16px;
     padding-right: 16px;
-    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    padding-bottom: 16px;
   }
 `;
 
@@ -129,10 +141,12 @@ const AddTabBtn = styled.button`
   }
 `;
 
+const TOOLBAR_CONTROL_HEIGHT = '32px';
+
 const NewTabRow = styled.div`
   display: flex;
-  gap: 8px;
-  align-items: center;
+  gap: 4px;
+  align-items: stretch;
 `;
 
 const NewTabInput = styled.input`
@@ -156,14 +170,22 @@ const NewTabInput = styled.input`
 `;
 
 const SmallIconBtn = styled.button`
-  padding: 6px;
+  padding: 0;
+  width: ${TOOLBAR_CONTROL_HEIGHT};
+  height: ${TOOLBAR_CONTROL_HEIGHT};
+  box-sizing: border-box;
   border: 1px solid var(--border-color);
   background: ${(p) =>
-    p.$variant === 'delete' ? '#aa5555' : p.$variant === 'confirm' ? '#55aa55' : 'var(--background-color2)'};
+    p.$variant === 'delete' || p.$variant === 'cancel'
+      ? '#aa5555'
+      : p.$variant === 'confirm'
+        ? '#55aa55'
+        : 'var(--background-color2)'};
   color: ${(p) => (p.$variant ? '#000' : 'var(--text-color)')};
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-shrink: 0;
   transition: all 0.1s steps(2);
 
@@ -179,27 +201,40 @@ const SmallIconBtn = styled.button`
 
 const TabActions = styled.div`
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
+  min-height: ${TOOLBAR_CONTROL_HEIGHT};
 `;
 
 const TabActionGroup = styled.div`
   display: flex;
+  align-items: stretch;
   gap: 4px;
+`;
+
+const RenameRow = styled.div`
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
 `;
 
 const ViewToggle = styled.div`
   display: flex;
+  align-items: stretch;
   gap: 0;
+  height: ${TOOLBAR_CONTROL_HEIGHT};
+  box-sizing: border-box;
   border: 1px solid var(--border-color);
   overflow: hidden;
 `;
 
 const ToolbarRight = styled.div`
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: 8px;
   margin-left: auto;
   flex-wrap: wrap;
@@ -207,23 +242,35 @@ const ToolbarRight = styled.div`
 
 const SortWrapper = styled.label`
   display: flex;
+  align-items: stretch;
+  height: ${TOOLBAR_CONTROL_HEIGHT};
+  box-sizing: border-box;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  white-space: nowrap;
+`;
+
+const SortLabel = styled.span`
+  display: flex;
   align-items: center;
-  gap: 6px;
+  padding: 0 10px;
   font-size: 12px;
   font-weight: 700;
   color: var(--text-color-secondary);
-  white-space: nowrap;
+  background: var(--background-color2);
+  border-right: 1px solid var(--border-color);
 `;
 
 const SortControl = styled.div`
   display: flex;
   align-items: stretch;
-  border: 1px solid var(--border-color);
+  min-width: 0;
   overflow: hidden;
 `;
 
 const SortSelect = styled.select`
-  padding: 6px 10px;
+  padding: 0 10px;
+  height: 100%;
   background: var(--background-color2);
   color: var(--text-color);
   border: none;
@@ -231,6 +278,7 @@ const SortSelect = styled.select`
   font-size: 12px;
   font-weight: 700;
   font-family: inherit;
+  line-height: 1;
   cursor: pointer;
   outline: none;
   max-width: 120px;
@@ -241,7 +289,8 @@ const SortSelect = styled.select`
 `;
 
 const SortTrailingBtn = styled.button`
-  padding: 6px 8px;
+  padding: 0 10px;
+  height: 100%;
   background: ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--background-color2)')};
   color: ${(p) => (p.$active ? '#000' : 'var(--accent-color)')};
   border: none;
@@ -249,12 +298,19 @@ const SortTrailingBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 4px;
   flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  font-family: inherit;
   transition: all 0.1s steps(2);
 
   svg {
     width: 14px;
     height: 14px;
+    flex-shrink: 0;
   }
 
   &:hover {
@@ -273,16 +329,20 @@ const ReorderHint = styled.div`
 `;
 
 const ToggleBtn = styled.button`
-  padding: 6px 10px;
+  padding: 0 10px;
+  height: 100%;
   background: ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--background-color2)')};
   color: ${(p) => (p.$active ? '#000' : 'var(--text-color-secondary)')};
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   font-size: 12px;
   font-weight: 700;
+  font-family: inherit;
+  line-height: 1;
   transition: all 0.1s steps(2);
 
   svg {
@@ -303,6 +363,7 @@ const GridLayout = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 16px;
+  align-items: stretch;
 
   @media (max-width: 480px) {
     grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
@@ -329,62 +390,19 @@ const EmptyHint = styled.div`
 const RenameInput = styled.input`
   flex: 1;
   min-width: 0;
-  padding: 6px 10px;
+  height: ${TOOLBAR_CONTROL_HEIGHT};
+  box-sizing: border-box;
+  padding: 0 10px;
   background: var(--background-color);
   border: 1px solid var(--accent-color);
   color: var(--text-color);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   font-family: inherit;
   outline: none;
 `;
 
 // ── Add to Collection Modal ───────────────────────────────────────────────────
-
-const ModalOverlay = styled.div`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-`;
-
-const ModalBox = styled.div`
-  background: var(--background-color2);
-  border: var(--retro-border-width) solid var(--border-color);
-  box-shadow: var(--retro-shadow);
-  width: 100%;
-  max-width: 380px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-`;
-
-const ModalTitle = styled.div`
-  font-size: 14px;
-  font-weight: 900;
-  color: var(--text-color);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 12px 16px;
-  background: var(--background-color);
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const ModalBody = styled.div`
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 320px;
-  overflow-y: auto;
-`;
 
 const CollectionOption = styled.button`
   display: flex;
@@ -413,54 +431,6 @@ const CollectionOption = styled.button`
   }
 `;
 
-const ModalCreateRow = styled.div`
-  display: flex;
-  gap: 8px;
-  padding: 12px 16px;
-  border-top: 1px solid var(--border-color);
-`;
-
-const ModalInput = styled.input`
-  flex: 1;
-  padding: 8px 10px;
-  background: var(--background-color);
-  border: 1px solid var(--border-color);
-  color: var(--text-color);
-  font-size: 13px;
-  font-family: inherit;
-  outline: none;
-
-  &:focus {
-    border-color: var(--accent-color);
-  }
-
-  &::placeholder {
-    color: var(--text-color-secondary);
-    opacity: 0.5;
-  }
-`;
-
-const ModalCreateBtn = styled.button`
-  padding: 8px 12px;
-  background: var(--accent-color);
-  color: #000;
-  border: 2px solid #000;
-  font-size: 12px;
-  font-weight: 900;
-  cursor: pointer;
-  white-space: nowrap;
-  box-shadow: 2px 2px 0px #000;
-  transition: all 0.1s steps(2);
-  text-transform: uppercase;
-  font-family: inherit;
-
-  &:hover {
-    background: var(--accent-hover);
-    transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0px #000;
-  }
-`;
-
 // ── Main component ────────────────────────────────────────────────────────────
 
 function BookshelfContent({ conversionMode = 'tw' }) {
@@ -484,6 +454,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
   const [editingTabName, setEditingTabName] = useState('');
   const [reorderMode, setReorderMode] = useState(false);
   const [settingsMode, setSettingsMode] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState(null);
   const newTabInputRef = useRef(null);
   const renameInputRef = useRef(null);
 
@@ -549,30 +520,60 @@ function BookshelfContent({ conversionMode = 'tw' }) {
     window.scrollTo(0, scrollY);
   }, []);
 
-  const handleDeleteBook = async (e, bookId, bookInfo) => {
-    e.stopPropagation();
-    const bookName = bookInfo?.book_info?.original_book_name;
-    const convertedName = maybeConvert(bookName, conversionMode) || bookId;
-    if (window.confirm(`確定要刪除「${convertedName}」的所有本地資料嗎？`)) {
-      try {
-        await deleteBookData(bookId);
-        setRefreshKey((k) => k + 1);
-      } catch (err) {
-        showToast(formatErrorMessage(err, '刪除書籍失敗，請稍後再試。'));
-      }
+  const closeConfirmDialog = () => setConfirmDialog(null);
+
+  const handleConfirmDialog = async () => {
+    if (!confirmDialog) return;
+    try {
+      await confirmDialog.onConfirm();
+      setConfirmDialog(null);
+    } catch (err) {
+      showToast(formatErrorMessage(err, confirmDialog.errorMessage ?? '操作失敗，請稍後再試。'));
     }
   };
 
-  const handleRemoveFromCollection = async (e, bookId, bookInfo) => {
+  const handleDeleteBook = (e, bookId, bookInfo) => {
+    e.stopPropagation();
+    const bookName = bookInfo?.book_info?.original_book_name;
+    const convertedName = maybeConvert(bookName, conversionMode) || bookId;
+    setConfirmDialog({
+      title: '刪除書籍',
+      message: (
+        <ModalText>
+          確定要刪除「<strong>{convertedName}</strong>」的所有本地資料嗎？此操作無法復原。
+        </ModalText>
+      ),
+      confirmLabel: '刪除',
+      variant: 'danger',
+      errorMessage: '刪除書籍失敗，請稍後再試。',
+      onConfirm: async () => {
+        await deleteBookData(bookId);
+        setRefreshKey((k) => k + 1);
+      },
+    });
+  };
+
+  const handleRemoveFromCollection = (e, bookId, bookInfo) => {
     e.stopPropagation();
     if (!activeCollection) return;
     const bookName = bookInfo?.book_info?.original_book_name;
     const convertedName = maybeConvert(bookName, conversionMode) || bookId;
-    if (window.confirm(`確定要從「${activeCollection.name}」移除「${convertedName}」嗎？`)) {
-      await removeBookFromCollection(activeTab, bookId);
-      await reloadData();
-      setRenderTick((k) => k + 1);
-    }
+    setConfirmDialog({
+      title: '移除書籍',
+      message: (
+        <ModalText>
+          確定要從「<strong>{activeCollection.name}</strong>」移除「<strong>{convertedName}</strong>」嗎？
+        </ModalText>
+      ),
+      confirmLabel: '移除',
+      variant: 'danger',
+      errorMessage: '移除書籍失敗，請稍後再試。',
+      onConfirm: async () => {
+        await removeBookFromCollection(activeTab, bookId);
+        await reloadData();
+        setRenderTick((k) => k + 1);
+      },
+    });
   };
 
   const handleAddToCollection = useCallback((bookId) => {
@@ -608,13 +609,25 @@ function BookshelfContent({ conversionMode = 'tw' }) {
     if (col) setActiveTab(col.id);
   };
 
-  const handleDeleteTab = async () => {
+  const handleDeleteTab = () => {
     if (!activeCollection) return;
-    if (!window.confirm(`確定要刪除收藏夾「${activeCollection.name}」嗎？`)) return;
-    await deleteCollection(activeTab);
-    await reloadData();
-    setActiveTab(ALL_TAB);
-    setEditingTab(false);
+    setConfirmDialog({
+      title: '刪除收藏夾',
+      message: (
+        <ModalText>
+          確定要刪除收藏夾「<strong>{activeCollection.name}</strong>」嗎？
+        </ModalText>
+      ),
+      confirmLabel: '刪除',
+      variant: 'danger',
+      errorMessage: '刪除收藏夾失敗，請稍後再試。',
+      onConfirm: async () => {
+        await deleteCollection(activeTab);
+        await reloadData();
+        setActiveTab(ALL_TAB);
+        setEditingTab(false);
+      },
+    });
   };
 
   const handleStartRenameTab = () => {
@@ -758,7 +771,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
           <SmallIconBtn $variant="confirm" onClick={handleCreateNewTab} title="建立">
             <Check />
           </SmallIconBtn>
-          <SmallIconBtn onClick={() => { setShowNewTabInput(false); setNewTabName(''); }} title="取消">
+          <SmallIconBtn onClick={() => { setShowNewTabInput(false); setNewTabName(''); }} title="取消" $variant="cancel">
             <X />
           </SmallIconBtn>
         </NewTabRow>
@@ -786,7 +799,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
       <TabActions>
         {activeCollection && (
           editingTab ? (
-            <>
+            <RenameRow>
               <RenameInput
                 ref={renameInputRef}
                 value={editingTabName}
@@ -800,11 +813,11 @@ function BookshelfContent({ conversionMode = 'tw' }) {
                 <SmallIconBtn $variant="confirm" onClick={handleConfirmRenameTab} title="確認">
                   <Check />
                 </SmallIconBtn>
-                <SmallIconBtn onClick={() => setEditingTab(false)} title="取消">
+                <SmallIconBtn $variant="cancel" onClick={() => setEditingTab(false)} title="取消">
                   <X />
                 </SmallIconBtn>
               </TabActionGroup>
-            </>
+            </RenameRow>
           ) : (
             <TabActionGroup>
               <SmallIconBtn onClick={handleStartRenameTab} title="重新命名">
@@ -818,7 +831,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
         )}
         <ToolbarRight>
           <SortWrapper>
-            排序
+            <SortLabel>排序</SortLabel>
             <SortControl>
               <SortSelect
                 value={sortBy}
@@ -840,6 +853,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
                   aria-label={sortDirection === 'desc' ? '降序排列' : '升序排列'}
                 >
                   {sortDirection === 'desc' ? <ArrowDown /> : <ArrowUp />}
+                  {sortDirection === 'desc' ? '降序' : '升序'}
                 </SortTrailingBtn>
               ) : canReorder ? (
                 <SortTrailingBtn
@@ -851,6 +865,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
                   aria-pressed={reorderMode}
                 >
                   <ArrowUpDown />
+                  調序
                 </SortTrailingBtn>
               ) : null}
             </SortControl>
@@ -886,54 +901,60 @@ function BookshelfContent({ conversionMode = 'tw' }) {
       </TabActions>
 
       {reorderMode && canReorder && (
-        <ReorderHint>拖曳書籍左上角的握把以調整順序，完成後再次點擊退出</ReorderHint>
+      <ReorderHint>拖曳書籍左上角的握把以調整順序，完成後再次點擊「調序」退出</ReorderHint>
       )}
 
       {settingsMode && !reorderMode && (
-        <ReorderHint>書籍上已顯示管理按鈕，可加入收藏夾、刷新或刪除，完成後再次點擊退出</ReorderHint>
+        <ReorderHint>書籍上已顯示管理按鈕，可加入收藏夾、刷新或刪除，完成後再次點擊「管理」退出</ReorderHint>
       )}
 
       {renderBooks()}
 
       {addToCollectionBookId && (
-        <ModalOverlay onClick={() => setAddToCollectionBookId(null)}>
-          <ModalBox onClick={(e) => e.stopPropagation()}>
-            <ModalTitle>
-              加入收藏夾
-              <SmallIconBtn onClick={() => setAddToCollectionBookId(null)}>
-                <X />
-              </SmallIconBtn>
-            </ModalTitle>
-            <ModalBody>
-              {collections.length === 0 ? (
-                <EmptyHint>尚無收藏夾，請先建立一個</EmptyHint>
-              ) : (
-                collections.map((col) => {
-                  const checked = col.bookIds.includes(String(addToCollectionBookId));
-                  return (
-                    <CollectionOption
-                      key={col.id}
-                      $checked={checked}
-                      onClick={() => handleToggleBookInCollection(col.id, addToCollectionBookId)}
-                    >
-                      {col.name}
-                      {checked && <Check className="check" />}
-                    </CollectionOption>
-                  );
-                })
-              )}
-            </ModalBody>
-            <ModalCreateRow>
-              <ModalInput
-                value={newCollectionName}
-                onChange={(e) => setNewCollectionName(e.target.value)}
-                placeholder="新增收藏夾…"
-                onKeyDown={(e) => { if (e.key === 'Enter') handleCreateCollectionFromModal(); }}
-              />
-              <ModalCreateBtn onClick={handleCreateCollectionFromModal}>建立</ModalCreateBtn>
-            </ModalCreateRow>
-          </ModalBox>
-        </ModalOverlay>
+        <Modal onClose={() => setAddToCollectionBookId(null)}>
+          <ModalTitleBar title="加入收藏夾" onClose={() => setAddToCollectionBookId(null)} />
+          <ModalBody>
+            {collections.length === 0 ? (
+              <EmptyHint>尚無收藏夾，請先建立一個</EmptyHint>
+            ) : (
+              collections.map((col) => {
+                const checked = col.bookIds.includes(String(addToCollectionBookId));
+                return (
+                  <CollectionOption
+                    key={col.id}
+                    $checked={checked}
+                    onClick={() => handleToggleBookInCollection(col.id, addToCollectionBookId)}
+                  >
+                    {col.name}
+                    {checked && <Check className="check" />}
+                  </CollectionOption>
+                );
+              })
+            )}
+          </ModalBody>
+          <ModalFooterRow>
+            <ModalInput
+              value={newCollectionName}
+              onChange={(e) => setNewCollectionName(e.target.value)}
+              placeholder="新增收藏夾…"
+              onKeyDown={(e) => { if (e.key === 'Enter') handleCreateCollectionFromModal(); }}
+            />
+            <ModalPrimaryButton type="button" onClick={handleCreateCollectionFromModal}>
+              建立
+            </ModalPrimaryButton>
+          </ModalFooterRow>
+        </Modal>
+      )}
+
+      {confirmDialog && (
+        <ConfirmModal
+          title={confirmDialog.title}
+          message={confirmDialog.message}
+          confirmLabel={confirmDialog.confirmLabel}
+          variant={confirmDialog.variant}
+          onConfirm={handleConfirmDialog}
+          onCancel={closeConfirmDialog}
+        />
       )}
         </>
       )}

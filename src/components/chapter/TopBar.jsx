@@ -4,6 +4,7 @@ import { Minus, Plus, Sun, Moon, RefreshCw, Type, Palette } from 'lucide-react';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import ActionBar from '../common/ActionBar';
 import HomeButton, { HOME_BUTTON_TITLE } from '../common/HomeButton';
+import BookshelfButton, { BOOKSHELF_BUTTON_TITLE } from '../common/BookshelfButton';
 import CatalogButton, { CATALOG_BUTTON_TITLE } from '../common/CatalogButton';
 import ApiDropdown, { API_DROPDOWN_TITLE } from '../common/ApiDropdown';
 import LangDropdown, { LANG_DROPDOWN_TITLE } from '../common/LangDropdown';
@@ -128,7 +129,7 @@ function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily,
         </TitleBlock>
         <ActionBar>
             <HomeButton title={HOME_BUTTON_TITLE} />
-            <ApiDropdown title={API_DROPDOWN_TITLE} />
+            <BookshelfButton title={BOOKSHELF_BUTTON_TITLE} />
             {onFontSizeChange && (
               <IconButton
                 type="button"
@@ -196,6 +197,7 @@ function TopBar({ chapterData, bookInfo, fontSize, onFontSizeChange, fontFamily,
                 onChange={onReaderBackgroundChange}
               />
             )}
+            <ApiDropdown title={API_DROPDOWN_TITLE} />
             {onRefresh && (
               <IconButton type="button" title="刷新章節" onClick={onRefresh}>
                 <RefreshCw size={20} strokeWidth={2.5} />

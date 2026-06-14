@@ -29,6 +29,8 @@ const spin = keyframes`
 const SkeletonCard = styled.div`
   display: flex;
   flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
   background-color: var(--background-color2);
   border: var(--retro-border-width) solid var(--border-color);
   overflow: hidden;
@@ -57,6 +59,8 @@ const SkeletonLine = styled.div`
 const Card = styled.div`
   display: flex;
   flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
   background-color: var(--background-color2);
   border: var(--retro-border-width) solid var(--border-color);
   cursor: pointer;
@@ -174,7 +178,12 @@ const Info = styled.div`
   display: flex;
   flex-direction: column;
   gap: 3px;
-  min-height: 44px;
+  min-height: 62px;
+  box-sizing: border-box;
+
+  @media (max-width: 480px) {
+    min-height: 58px;
+  }
 `;
 
 const Title = styled.div`
@@ -186,9 +195,11 @@ const Title = styled.div`
   -webkit-box-orient: vertical;
   overflow: hidden;
   line-height: 1.35;
+  min-height: calc(13px * 1.35 * 2);
 
   @media (max-width: 480px) {
     font-size: 12px;
+    min-height: calc(12px * 1.35 * 2);
   }
 `;
 
@@ -198,7 +209,8 @@ const Author = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  opacity: 0.85;
+  opacity: ${(p) => (p.$empty ? 0 : 0.85)};
+  min-height: 11px;
 `;
 
 const ActionsOverlay = styled.div`
@@ -352,7 +364,17 @@ function GridCard({
     );
   }
 
-  if (!bookInfo) return null;
+  if (!bookInfo) {
+    return (
+      <SkeletonCard>
+        <SkeletonCover />
+        <SkeletonText>
+          <SkeletonLine $height="13px" $width="90%" />
+          <SkeletonLine $height="11px" $width="60%" />
+        </SkeletonText>
+      </SkeletonCard>
+    );
+  }
 
   const handleCardClick = () => {
     if (reorderMode) return;
@@ -418,7 +440,7 @@ function GridCard({
 
       <Info>
         <Title>{convertedName || bookId}</Title>
-        {convertedAuthor && <Author>{convertedAuthor}</Author>}
+        <Author $empty={!convertedAuthor}>{convertedAuthor || '\u00A0'}</Author>
       </Info>
     </Card>
   );

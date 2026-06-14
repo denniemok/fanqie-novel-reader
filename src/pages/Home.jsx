@@ -1,7 +1,7 @@
 import { useSearchParams, Navigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Content from '../components/home/Content';
-import Footer from '../components/home/Footer';
+import Footer from '../components/common/Footer';
 import Header from '../components/home/Header';
 import { buildCatalogUrl } from '../utils/navigation';
 

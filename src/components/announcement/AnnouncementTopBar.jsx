@@ -1,12 +1,16 @@
 import React from 'react';
 import TopBarBase from '../common/TopBarBase';
-import ApiDropdown, { API_DROPDOWN_TITLE } from '../common/ApiDropdown';
+import HomeButton, { HOME_BUTTON_TITLE } from '../common/HomeButton';
+import BookshelfButton, { BOOKSHELF_BUTTON_TITLE } from '../common/BookshelfButton';
+import NewBookButton, { NEW_BOOK_BUTTON_TITLE } from '../common/NewBookButton';
 import LangDropdown, { LANG_DROPDOWN_TITLE } from '../common/LangDropdown';
 
 function AnnouncementTopBar({ conversionMode, onConversionModeChange }) {
   return (
     <TopBarBase>
-      <ApiDropdown title={API_DROPDOWN_TITLE} />
+      <HomeButton title={HOME_BUTTON_TITLE} />
+      <BookshelfButton title={BOOKSHELF_BUTTON_TITLE} />
+      <NewBookButton title={NEW_BOOK_BUTTON_TITLE} />
       <LangDropdown title={LANG_DROPDOWN_TITLE} value={conversionMode} onChange={onConversionModeChange} />
     </TopBarBase>
   );

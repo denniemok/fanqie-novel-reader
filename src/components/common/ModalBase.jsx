@@ -1,0 +1,200 @@
+import React from 'react';
+import styled from 'styled-components';
+import { X } from 'lucide-react';
+
+export const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
+    max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+`;
+
+export const ModalBox = styled.div`
+  background: var(--background-color2);
+  border: var(--retro-border-width) solid var(--border-color);
+  box-shadow: var(--retro-shadow);
+  width: 100%;
+  max-width: ${(p) => p.$maxWidth ?? '380px'};
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`;
+
+export const ModalHeader = styled.div`
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 12px 16px;
+  background: var(--background-color);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+`;
+
+const ModalCloseButton = styled.button`
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  box-sizing: border-box;
+  border: 1px solid var(--border-color);
+  background: var(--background-color2);
+  color: var(--text-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.1s steps(2);
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    filter: brightness(1.2);
+  }
+`;
+
+export const ModalBody = styled.div`
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+`;
+
+export const ModalText = styled.p`
+  font-size: 13px;
+  color: var(--text-color-secondary);
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-line;
+  word-break: break-word;
+
+  strong {
+    color: var(--text-color);
+    font-weight: 900;
+  }
+`;
+
+export const ModalFooter = styled.div`
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+  justify-content: flex-end;
+`;
+
+export const ModalFooterRow = styled.div`
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+`;
+
+export const ModalInput = styled.input`
+  flex: 1;
+  padding: 8px 10px;
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+
+  &:focus {
+    border-color: var(--accent-color);
+  }
+
+  &::placeholder {
+    color: var(--text-color-secondary);
+    opacity: 0.5;
+  }
+`;
+
+const modalButtonStyles = `
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.1s steps(2);
+  text-transform: uppercase;
+  font-family: inherit;
+
+  &:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0px #000;
+  }
+`;
+
+export const ModalPrimaryButton = styled.button`
+  ${modalButtonStyles}
+  background: var(--accent-color);
+  color: #000;
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0px #000;
+
+  &:hover {
+    background: var(--accent-hover);
+  }
+`;
+
+export const ModalSecondaryButton = styled.button`
+  ${modalButtonStyles}
+  background: var(--background-color2);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  box-shadow: 2px 2px 0px var(--background-color);
+
+  &:hover {
+    background: var(--hover-background-color);
+  }
+`;
+
+export const ModalDangerButton = styled.button`
+  ${modalButtonStyles}
+  background: #aa5555;
+  color: #000;
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0px #000;
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+`;
+
+export function Modal({ onClose, children, maxWidth }) {
+  return (
+    <ModalOverlay onClick={onClose}>
+      <ModalBox onClick={(e) => e.stopPropagation()} $maxWidth={maxWidth}>
+        {children}
+      </ModalBox>
+    </ModalOverlay>
+  );
+}
+
+export function ModalTitleBar({ title, onClose }) {
+  return (
+    <ModalHeader>
+      <span>{title}</span>
+      {onClose && (
+        <ModalCloseButton type="button" onClick={onClose} title="關閉" aria-label="關閉">
+          <X />
+        </ModalCloseButton>
+      )}
+    </ModalHeader>
+  );
+}

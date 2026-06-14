@@ -1,26 +1,28 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { Search, Info as InfoIcon } from 'lucide-react';
+import { Globe, Library } from 'lucide-react';
+import { GrayButton } from '../common/GrayButton';
 import { parseBookIdFromInput } from '../../utils/parseBookId';
 import { buildCatalogUrl } from '../../utils/navigation';
-
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  padding-top: calc(76px + env(safe-area-inset-top));
+  flex: 1;
+  padding-top: calc(76px + 48px + env(safe-area-inset-top));
   padding-left: 24px;
   padding-right: 24px;
-  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  padding-bottom: 24px;
   max-width: 800px;
   margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 
   @media (max-width: 480px) {
-    padding-top: calc(68px + env(safe-area-inset-top));
+    padding-top: calc(68px + 32px + env(safe-area-inset-top));
     padding-left: 16px;
     padding-right: 16px;
-    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    padding-bottom: 16px;
   }
 `;
 
@@ -30,27 +32,9 @@ const Section = styled.section`
   gap: 24px;
   width: 100%;
   margin-bottom: 40px;
-`;
 
-const SectionTitle = styled.h2`
-  font-size: 16px;
-  font-weight: 900;
-  color: var(--text-color);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--background-color2);
-  padding: 7px 12px;
-  border: 1px solid var(--border-color);
-  width: fit-content;
-  box-shadow: 2px 2px 0px var(--background-color);
-
-  svg {
-    width: 16px;
-    height: 16px;
+  &:last-child {
+    margin-bottom: 0;
   }
 `;
 
@@ -129,8 +113,9 @@ const HelpGrid = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 20px;
 
-  @media (max-width: 600px) {
+  @media (max-width: 780px) {
     grid-template-columns: 1fr;
+    gap:40px;
   }
 `;
 
@@ -179,34 +164,34 @@ const HelpCard = styled.div`
       font-weight: 900;
     }
   }
+`;
 
-  a.link-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 20px;
-    background-color: var(--accent-color);
-    color: #000;
-    font-size: 14px;
-    font-weight: 900;
-    text-decoration: none;
-    transition: all 0.1s steps(2);
-    align-self: flex-start;
-    text-transform: uppercase;
-    border: 2px solid #000;
-    box-shadow: 4px 4px 0px #000;
+const linkButtonStyles = `
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  font-size: 13px;
+  padding: 12px 14px;
+  line-height: 1.2;
+  text-align: center;
 
-    &:hover {
-      background-color: var(--accent-hover);
-      transform: translate(-2px, -2px);
-      box-shadow: 6px 6px 0px #000;
-    }
-
-    &:active {
-      transform: translate(1px, 1px);
-      box-shadow: 0px 0px 0px #000;
-    }
+  svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
   }
+`;
+
+const ExternalLinkButton = styled(GrayButton).attrs({ as: 'a' })`
+  ${linkButtonStyles}
+`;
+
+const LinkButtonRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
 `;
 
 function NewBookContent() {
@@ -225,9 +210,6 @@ function NewBookContent() {
   return (
     <Wrapper>
       <Section>
-        <SectionTitle>
-          <Search /> 開始新閱讀
-        </SectionTitle>
         <InputGroup>
           <Form onSubmit={handleSubmit}>
             <input
@@ -244,20 +226,28 @@ function NewBookContent() {
       </Section>
 
       <Section>
-        <SectionTitle><InfoIcon /> 幫助指南</SectionTitle>
         <HelpGrid>
           <HelpCard>
             <h3>找到書籍</h3>
             <p>造訪 <span>番茄小說網</span> 找到您想閱讀的小說。</p>
-            <a href="https://fanqienovel.com/library" target="_blank" rel="noopener noreferrer" className="link-button">
-              前往番茄小說網
-            </a>
-          </HelpCard>
+            <LinkButtonRow>
+              <ExternalLinkButton href="https://fanqienovel.com" target="_blank" rel="noopener noreferrer">
+                <Globe aria-hidden />
+                番茄小說網
+              </ExternalLinkButton>
+              <ExternalLinkButton href="https://fanqienovel.com/library" target="_blank" rel="noopener noreferrer">
+                <Library aria-hidden />
+                番茄小說書庫
+              </ExternalLinkButton>
+            </LinkButtonRow>          </HelpCard>
           <HelpCard>
-            <h3>獲取書籍 ID</h3>
-            <p>在小說詳情頁的網址中找到那一串數字：</p>
+            <h3>獲取書籍 ID 或網址</h3>
+            <p>在小說詳情頁的網址中找到那一串數字或網址：</p>
             <div className="code-box">
-              ...fanqienovel.com/page/<span>123456789</span>?...
+            https://fanqienovel.com/page/<span>123456789</span>?...
+            </div>
+            <div className="code-box">
+            <span>https://fanqienovel.com/page/123456789?...</span>
             </div>
           </HelpCard>
         </HelpGrid>

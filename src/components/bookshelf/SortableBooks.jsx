@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 const List = styled.div`
   display: flex;
@@ -11,6 +11,7 @@ const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 16px;
+  align-items: stretch;
 
   @media (max-width: 480px) {
     grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
@@ -18,28 +19,21 @@ const Grid = styled.div`
   }
 `;
 
-const ListItem = styled.div`
+const SortableItem = styled.div`
   position: relative;
   z-index: ${(p) => (p.$isDragging ? 1 : 'auto')};
 
-  &::before {
-    content: '';
-    display: ${(p) => (p.$showDropIndicator ? 'block' : 'none')};
-    position: absolute;
-    top: -9px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--accent-color);
-    box-shadow: 0 0 6px var(--accent-color);
-    pointer-events: none;
-    z-index: 3;
-  }
-`;
+  ${(p) => p.$isGrid && css`
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 
-const GridItem = styled.div`
-  position: relative;
-  z-index: ${(p) => (p.$isDragging ? 1 : 'auto')};
+    & > * {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+    }
+  `}
 
   &::after {
     content: '';
@@ -190,14 +184,14 @@ function SortableBooks({ items, getKey, onReorder, renderItem, layout = 'list' }
   const canClick = useCallback(() => Date.now() > suppressClickUntil.current, []);
 
   const Container = isGrid ? Grid : List;
-  const Item = isGrid ? GridItem : ListItem;
 
   return (
     <Container>
       {items.map((item, index) => (
-        <Item
+        <SortableItem
           key={getKey(item)}
           ref={(el) => { itemRefs.current[index] = el; }}
+          $isGrid={isGrid}
           $isDragging={draggingIndex === index}
           $showDropIndicator={draggingIndex != null && overIndex === index && draggingIndex !== index}
         >
@@ -210,7 +204,7 @@ function SortableBooks({ items, getKey, onReorder, renderItem, layout = 'list' }
             canClick,
             reorderMode: true,
           })}
-        </Item>
+        </SortableItem>
       ))}
     </Container>
   );
