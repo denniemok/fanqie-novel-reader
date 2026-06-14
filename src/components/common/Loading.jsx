@@ -2,16 +2,9 @@ import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { GrayButton } from './GrayButton';
 
-const spin = keyframes`
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`;
-
-const dots = keyframes`
-  0%, 20% { color: rgba(0,0,0,0); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
-  40% { color: var(--text-color); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
-  60% { text-shadow: .25em 0 0 var(--text-color), .5em 0 0 rgba(0,0,0,0); }
-  80%, 100% { text-shadow: .25em 0 0 var(--text-color), .5em 0 0 var(--text-color); }
+const bounce = keyframes`
+  0%, 80%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
+  40% { transform: translateY(-10px) scale(1.15); opacity: 1; }
 `;
 
 const LoadingWrapper = styled.div`
@@ -25,39 +18,40 @@ const LoadingWrapper = styled.div`
   @supports (-webkit-touch-callout: none) {
     height: -webkit-fill-available;
   }
-  gap: 10px;
+  gap: 16px;
 
   p {
-    font-size: 1rem;
+    font-family: var(--display-font-family);
+    font-size: 1.05rem;
     color: var(--text-color);
-
-    &::after {
-      content: '.';
-      animation: ${dots} 1s steps(5, end) infinite;
-    }
+    letter-spacing: 0.08em;
   }
 
   .counter {
-    &::after {
-      content: none;
-      animation: none;
-    }
+    font-size: 0.9rem;
+    color: var(--text-color-secondary);
   }
 `;
 
-const Spinner = styled.div`
-  flex-shrink: 0;
-  border: 4px solid rgba(255, 115, 0, 0.3);
-  border-top: 4px solid var(--high-color);
+const DotsRow = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Dot = styled.span`
+  width: 14px;
+  height: 14px;
   border-radius: 50% !important;
-  width: 40px;
-  height: 40px;
-  animation: ${spin} 1s linear infinite;
-  margin: 0 auto;
+  background: var(--accent-color);
+  animation: ${bounce} 1.2s ease-in-out infinite;
+  animation-delay: ${(p) => p.$delay}s;
+  box-shadow: 0 2px 6px rgba(160, 120, 130, 0.35);
 `;
 
 const AbortButton = styled(GrayButton)`
-  margin-top: 16px;
+  margin-top: 8px;
 `;
 
 function Loading({ onAbort }) {
@@ -70,8 +64,12 @@ function Loading({ onAbort }) {
 
   return (
     <LoadingWrapper>
-      <Spinner />
-      <p>載入中</p>
+      <DotsRow>
+        <Dot $delay={0} />
+        <Dot $delay={0.15} />
+        <Dot $delay={0.3} />
+      </DotsRow>
+      <p>載入中…</p>
       <p className="counter">{seconds} 秒</p>
       {onAbort && (
         <AbortButton type="button" onClick={onAbort}>

@@ -1,6 +1,30 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+
+const menuScrollStyles = css`
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 0;
+  }
+
+  @media (hover: hover) {
+    &::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-color);
+    }
+  }
+`;
 
 const SelectWrapper = styled.div`
   position: relative;
@@ -13,7 +37,7 @@ const SelectWrapper = styled.div`
     !p.$embedded &&
     `
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: ${p.$square ? '0' : 'var(--border-radius-sm)'};
     transition: border-color 0.2s ease;
 
     &:hover,
@@ -33,7 +57,7 @@ const AttachedLabel = styled.span`
   font-family: var(--ui-font-family);
   color: var(--text-color-secondary);
   background: var(--background-color2);
-  border-radius: 12px 0 0 12px;
+  border-radius: ${(p) => (p.$square ? '0' : 'var(--border-radius-sm) 0 0 var(--border-radius-sm)')};
   white-space: nowrap;
   flex-shrink: 0;
 
@@ -55,7 +79,7 @@ const Trigger = styled.button`
   min-height: ${(p) => (p.$embedded ? '0' : `${p.$minHeight ?? 40}px`)};
   height: ${(p) => (p.$embedded ? '100%' : 'auto')};
   padding: 0 24px 0 10px;
-  border-radius: 12px;
+  border-radius: ${(p) => (p.$square ? '0' : 'var(--border-radius-sm)')};
   border: 1px solid var(--border-color);
   background: var(--background-color2);
   color: var(--text-color);
@@ -81,7 +105,7 @@ const Trigger = styled.button`
     !p.$embedded &&
     `
     border: none;
-    border-radius: ${p.$hasTrailing ? '0' : '0 12px 12px 0'};
+    border-radius: ${p.$square ? '0' : p.$hasTrailing ? '0' : '0 var(--border-radius-sm) var(--border-radius-sm) 0'};
 
     &:hover,
     &:focus {
@@ -93,7 +117,7 @@ const Trigger = styled.button`
     p.$embedded &&
     `
     border: none;
-    border-radius: ${p.$hasTrailing ? '0' : '0 12px 12px 0'};
+    border-radius: ${p.$square ? '0' : p.$hasTrailing ? '0' : '0 var(--border-radius-sm) var(--border-radius-sm) 0'};
 
     &:hover,
     &:focus {
@@ -150,15 +174,15 @@ const Menu = styled.div`
   max-width: calc(100vw - 32px);
   max-height: 280px;
   overflow-y: auto;
-  background-color: rgba(18, 18, 18, 0.98);
+  overflow-x: hidden;
+  background-color: var(--dropdown-bg);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-radius: ${(p) => (p.$square ? '0' : 'var(--border-radius-sm)')};
+  box-shadow: var(--panel-shadow);
   z-index: 1100;
-  padding: 8px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-color) transparent;
+  padding: 4px;
+  ${menuScrollStyles}
 
   ${(p) =>
     p.$openUpward
@@ -170,26 +194,6 @@ const Menu = styled.div`
     top: calc(100% + 8px);
     bottom: auto;
   `}
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-    margin: 4px 0;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 999px;
-  }
-
-  @media (hover: hover) {
-    &::-webkit-scrollbar-thumb:hover {
-      background: var(--text-color-secondary);
-    }
-  }
 `;
 
 const Option = styled.button`
@@ -201,7 +205,7 @@ const Option = styled.button`
   text-align: left;
   background: none;
   border: none;
-  border-radius: 8px;
+  border-radius: ${(p) => (p.$square ? '0' : 'var(--border-radius-xs)')};
   cursor: pointer;
   transition: background 0.2s;
   font-family: inherit;
@@ -218,7 +222,7 @@ const Option = styled.button`
   ${(p) =>
     p.$active &&
     `
-    background-color: var(--hover-background-color);
+    background-color: var(--accent-soft);
     color: var(--accent-color);
     font-weight: 600;
   `}
@@ -241,6 +245,7 @@ function SelectDropdown({
   attachedLabel,
   hideAttachedLabelOnMobile = false,
   embedded = false,
+  square = false,
   hasTrailing = false,
   triggerMinWidthMobile,
   renderOption,
@@ -269,9 +274,11 @@ function SelectDropdown({
   const triggerLabel = renderValue ? renderValue(selected) : renderLabel(selected);
 
   return (
-    <SelectWrapper ref={ref} $attached={attached} $embedded={embedded}>
+    <SelectWrapper ref={ref} $attached={attached} $embedded={embedded} $square={square}>
       {attachedLabel && (
-        <AttachedLabel $hideOnMobile={hideAttachedLabelOnMobile}>{attachedLabel}</AttachedLabel>
+        <AttachedLabel $hideOnMobile={hideAttachedLabelOnMobile} $square={square}>
+          {attachedLabel}
+        </AttachedLabel>
       )}
       <Trigger
         type="button"
@@ -285,6 +292,7 @@ function SelectDropdown({
         $bold={triggerBold}
         $attached={grouped}
         $embedded={embedded}
+        $square={square}
         $hasTrailing={hasTrailing}
       >
         <TriggerText>{triggerLabel}</TriggerText>
@@ -296,6 +304,7 @@ function SelectDropdown({
           aria-label={menuAriaLabel ?? ariaLabel}
           $openUpward={openUpward}
           $menuAlign={menuAlign}
+          $square={square}
         >
           {options.map((opt) => (
             <Option
@@ -304,6 +313,7 @@ function SelectDropdown({
               role="option"
               aria-selected={opt.value === value}
               $active={opt.value === value}
+              $square={square}
               onClick={() => {
                 onChange(opt.value);
                 setOpen(false);

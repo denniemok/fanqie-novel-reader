@@ -59,7 +59,7 @@ const Overlay = styled.div`
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--overlay-bg);
   z-index: 1000;
   opacity: ${(p) => (p.$visible ? 1 : 0)};
   pointer-events: ${(p) => (p.$visible ? 'auto' : 'none')};
@@ -83,13 +83,13 @@ const ToolsPanel = styled.div`
     align-items: stretch;
     gap: 0;
     padding: 12px;
-    background-color: rgba(18, 18, 18, 0.98);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border-color);
+    background-color: var(--background-color2);
+    backdrop-filter: blur(16px);
+    border: var(--retro-border-width) solid var(--border-color);
     border-right: none;
-    border-radius: 12px 0 0 12px;
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
     z-index: 1001;
-    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--panel-shadow);
     transform: translateX(${(p) => (p.$open ? '0' : '100%')});
     transition: transform 0.25s ease-out;
     max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));

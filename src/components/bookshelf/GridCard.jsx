@@ -33,6 +33,7 @@ const SkeletonCard = styled.div`
   box-sizing: border-box;
   background-color: var(--background-color2);
   border: var(--retro-border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm);
   overflow: hidden;
   box-shadow: var(--retro-shadow);
 `;
@@ -61,26 +62,41 @@ const Card = styled.div`
   flex-direction: column;
   height: 100%;
   box-sizing: border-box;
-  background-color: var(--background-color2);
+  background: var(--card-surface);
   border: var(--retro-border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
   position: relative;
   overflow: hidden;
   box-shadow: var(--retro-shadow);
-  transition: all 0.1s steps(2);
+  transition: var(--transition-default);
   opacity: ${(p) => (p.$disabled ? 0.7 : 1)};
   pointer-events: ${(p) => (p.$disabled ? 'none' : 'auto')};
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, var(--accent-soft) 0%, transparent 55%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
 
   &:hover {
     border-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--border-color)' : 'var(--accent-color)')};
     background-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--background-color2)' : 'var(--hover-background-color)')};
     transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(-2px, -2px)')};
-    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : '6px 6px 0px var(--background-color)')};
+    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : 'var(--retro-shadow-hover)')};
+
+    &::after {
+      opacity: ${(p) => (p.$reorderMode || p.$isDragging ? 0 : 0.5)};
+    }
   }
 
   &:active {
     transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(1px, 1px)')};
-    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : '0px 0px 0px var(--background-color)')};
+    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : 'none')};
   }
 
   ${(p) => p.$isDragging && `
@@ -107,7 +123,7 @@ const DragHandle = styled.div`
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
-  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--retro-shadow);
 
   &:active {
     cursor: grabbing;
@@ -124,28 +140,34 @@ const DragHandle = styled.div`
 const CoverWrapper = styled.div`
   position: relative;
   width: 100%;
+  overflow: hidden;
+
+  &:hover img {
+    transform: scale(1.03);
+  }
 `;
 
 const CoverImg = styled.img`
   width: 100%;
   aspect-ratio: 3 / 4;
   object-fit: cover;
-  opacity: 0.65;
+  background-color: var(--cover-bg);
+  opacity: 0.9;
   border-bottom: 1px solid var(--border-color);
   display: block;
+  transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
 `;
 
 const CoverPlaceholder = styled.div`
   width: 100%;
   aspect-ratio: 3 / 4;
-  background-color: var(--background-color);
+  background-color: var(--cover-bg);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 11px;
   color: var(--text-color-secondary);
-  opacity: 0.5;
 `;
 
 const CoverMetaOverlayBottom = styled.div`
@@ -164,7 +186,7 @@ const CoverMetaOverlayBottom = styled.div`
 const CoverMetaLine = styled.div`
   font-size: 10px;
   font-weight: 700;
-  color: #f0f0f0;
+  color: var(--text-on-accent);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -173,8 +195,8 @@ const CoverMetaLine = styled.div`
   max-width: 100%;
   box-sizing: border-box;
   padding: 3px 6px;
-  background: rgba(0, 0, 0, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(201, 128, 154, 0.85);
+  border: 1px solid rgba(255, 248, 245, 0.4);
 `;
 
 const Info = styled.div`
@@ -192,7 +214,8 @@ const Info = styled.div`
 
 const Title = styled.div`
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 600;
+  font-family: var(--display-font-family);
   color: var(--text-color);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -228,14 +251,14 @@ const ActionsOverlay = styled.div`
   gap: 4px;
   padding: 6px;
   pointer-events: auto;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.35) 70%, transparent 100%);
+  background: linear-gradient(to bottom, rgba(240, 233, 228, 0.9) 0%, rgba(240, 233, 228, 0.4) 70%, transparent 100%);
 `;
 
 const ActionBtn = styled.button`
   padding: 8px;
   min-width: 36px;
   min-height: 36px;
-  border-radius: 0;
+  border-radius: var(--border-radius-xs);
   border: 1px solid var(--border-color);
   cursor: pointer;
   display: flex;
@@ -245,24 +268,24 @@ const ActionBtn = styled.button`
   transition: all 0.1s steps(2);
   background-color: ${(p) =>
     p.$variant === 'delete'
-      ? '#aa5555'
+      ? '#e8a0a8'
       : p.$variant === 'refresh'
-        ? '#5588aa'
+        ? '#a0c8e8'
         : p.$variant === 'collection'
-          ? '#aa8833'
+          ? '#e8d0a0'
           : 'var(--background-color2)'};
-  color: #000;
-  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
+  color: ${(p) => (p.$variant ? 'var(--text-on-accent)' : 'var(--text-color)')};
+  box-shadow: var(--retro-shadow);
 
   &:hover {
-    filter: brightness(1.15);
+    filter: brightness(1.08);
     transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.6);
+    box-shadow: var(--retro-shadow-hover);
   }
 
   &:active {
     transform: translate(1px, 1px);
-    box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: none;
   }
 
   &:disabled {
@@ -287,7 +310,8 @@ const LoadingOverlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(240, 233, 228, 0.88);
+  backdrop-filter: blur(4px);
   z-index: 10;
 
   svg {

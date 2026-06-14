@@ -10,19 +10,35 @@ const Section = styled.section`
 `;
 
 const NoticeCard = styled.div`
-  padding: 20px;
-  background-color: var(--background-color2);
-  border-radius: 0;
-  border: var(--retro-border-width) solid var(--border-color);
+  padding: 18px 20px;
+  background: var(--card-surface);
+  border-radius: var(--border-radius-sm);
+  border: var(--retro-border-width) dashed var(--border-color);
   font-size: 14px;
   color: var(--text-color);
-  line-height: 1.6;
+  line-height: 1.65;
   box-shadow: var(--retro-shadow);
   font-family: inherit;
+  transition: var(--transition-default);
+
+  @media (hover: hover) {
+    &:hover {
+      border-color: color-mix(in srgb, var(--accent-color) 40%, var(--border-color));
+      transform: translateX(2px);
+    }
+  }
 
   b {
+    display: inline-block;
     color: var(--accent-color);
-    text-decoration: underline;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    background: var(--accent-soft);
+    padding: 2px 8px;
+    border-radius: var(--border-radius-xs);
+    margin-right: 4px;
   }
 
   a {
@@ -37,7 +53,7 @@ const NoticeCard = styled.div`
 
     &:hover {
       background: var(--accent-color);
-      color: #000;
+      color: var(--text-on-accent);
     }
   }
 `;

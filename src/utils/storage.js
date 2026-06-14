@@ -20,6 +20,7 @@ import {
   TEXT_BRIGHTNESS_DEFAULT,
   READER_BACKGROUND_KEY,
   READER_BACKGROUND_OPTIONS,
+  THEME_KEY,
 } from './constants';
 import { directoryCache, chapterCache, detailCache, getStoreItem, setStoreItem } from './cache';
 
@@ -338,5 +339,15 @@ export function getBookshelfSortDirection() {
 export function setBookshelfSortDirection(direction) {
   const valid = direction === 'asc' || direction === 'desc';
   return valid ? safeSetItem(BOOKSHELF_SORT_DIRECTION_KEY, direction) : false;
+}
+
+/** @returns {'light'|'dark'} */
+export function getTheme() {
+  return safeGetItem(THEME_KEY) === 'dark' ? 'dark' : 'light';
+}
+
+export function setTheme(theme) {
+  if (theme !== 'light' && theme !== 'dark') return false;
+  return safeSetItem(THEME_KEY, theme);
 }
 

@@ -32,7 +32,7 @@ const SkeletonCard = styled.div`
   box-sizing: border-box;
   padding: 20px;
   gap: 20px;
-  border-radius: 0;
+  border-radius: var(--border-radius-sm);
   background-color: var(--background-color2);
   border: var(--retro-border-width) solid var(--border-color);
   box-shadow: var(--retro-shadow);
@@ -48,6 +48,7 @@ const SkeletonCover = styled.div`
   height: 134px;
   flex-shrink: 0;
   border: 1px solid var(--border-color);
+  background-color: var(--cover-bg);
   ${shimmerStyle}
 
   @media (max-width: 480px) {
@@ -68,7 +69,7 @@ const SkeletonText = styled.div`
 const SkeletonLine = styled.div`
   height: ${(p) => p.$height || '14px'};
   width: ${(p) => p.$width || '100%'};
-  border-radius: 0;
+  border-radius: var(--border-radius-sm);
   ${shimmerStyle}
 `;
 
@@ -78,27 +79,43 @@ const Card = styled.div`
   box-sizing: border-box;
   align-items: stretch;
   gap: 0;
-  border-radius: 0;
-  background-color: var(--background-color2);
+  border-radius: var(--border-radius-sm);
+  background: var(--card-surface);
   border: var(--retro-border-width) solid var(--border-color);
   cursor: pointer;
-  transition: all 0.1s steps(2);
+  transition: var(--transition-default);
   position: relative;
   overflow: hidden;
   pointer-events: ${(p) => (p.$disabled ? 'none' : 'auto')};
   opacity: ${(p) => (p.$disabled ? 0.7 : 1)};
   box-shadow: var(--retro-shadow);
 
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--accent-color);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
   &:hover {
     border-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--border-color)' : 'var(--accent-color)')};
     background-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--background-color2)' : 'var(--hover-background-color)')};
     transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(-2px, -2px)')};
-    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : '6px 6px 0px var(--background-color)')};
+    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : 'var(--retro-shadow-hover)')};
+
+    &::before {
+      opacity: ${(p) => (p.$reorderMode || p.$isDragging ? 0 : 1)};
+    }
   }
 
   &:active {
     transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(1px, 1px)')};
-    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : '0px 0px 0px var(--background-color)')};
+    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : 'none')};
   }
 
   ${(p) => p.$isDragging && `
@@ -168,8 +185,9 @@ const LoadingOverlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.7);
-  border-radius: 0;
+  background: rgba(240, 233, 228, 0.88);
+  backdrop-filter: blur(4px);
+  border-radius: var(--border-radius-sm);
   z-index: 10;
 
   svg {
@@ -196,7 +214,7 @@ const ActionButton = styled.button`
   padding: 8px;
   min-width: 36px;
   min-height: 36px;
-  border-radius: 0;
+  border-radius: var(--border-radius-sm);
   border: 1px solid var(--border-color);
   cursor: pointer;
   display: flex;
@@ -205,24 +223,24 @@ const ActionButton = styled.button`
   transition: all 0.1s steps(2);
   background-color: ${(p) =>
     p.$variant === 'delete'
-      ? '#aa5555'
+      ? '#e8a0a8'
         : p.$variant === 'refresh'
-        ? '#5588aa'
+        ? '#a0c8e8'
         : p.$variant === 'collection'
-          ? '#aa8833'
+          ? '#e8d0a0'
           : 'var(--background-color2)'};
-  color: ${(p) => (p.$variant ? '#000' : 'var(--text-color)')};
-  box-shadow: 2px 2px 0px var(--background-color);
+  color: ${(p) => (p.$variant ? 'var(--text-on-accent)' : 'var(--text-color)')};
+  box-shadow: var(--retro-shadow);
 
   &:hover {
     transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0px #000;
-    filter: brightness(1.2);
+    box-shadow: var(--retro-shadow-hover);
+    filter: brightness(1.08);
   }
 
   &:active {
     transform: translate(1px, 1px);
-    box-shadow: 0px 0px 0px #000;
+    box-shadow: none;
   }
 
   &:disabled {

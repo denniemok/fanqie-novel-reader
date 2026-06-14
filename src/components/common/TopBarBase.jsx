@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import ThemeToggle from './ThemeToggle';
 import ActionBar from './ActionBar';
 
 const TopBarWrapper = styled.div`
@@ -9,14 +10,15 @@ const TopBarWrapper = styled.div`
   align-items: center;
   padding: 12px 24px;
   padding-top: calc(12px + env(safe-area-inset-top));
-  background-color: var(--background-color);
-  border-bottom: var(--retro-border-width) solid var(--border-color);
+  background-color: var(--topbar-bg);
+  backdrop-filter: blur(12px);
+  border-bottom: var(--retro-border-width) dashed var(--border-color);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: var(--topbar-shadow);
 
   @media (max-width: 480px) {
     padding: 10px 16px;
@@ -34,26 +36,30 @@ const TitleGroup = styled.div`
 `;
 
 const SiteTitle = styled(Link)`
-  font-size: 18px;
-  font-weight: 900;
-  color: var(--text-color);
+  font-family: var(--display-font-family);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--accent-color);
   text-decoration: none;
   white-space: nowrap;
-  text-transform: uppercase;
-  border: 1px solid var(--border-color);
-  padding: 6px 8px;
+  border: var(--retro-border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: 6px 12px;
   background: var(--background-color2);
   flex-shrink: 0;
+  transition: var(--transition-default);
+  box-shadow: var(--retro-shadow);
 
   &:hover {
     background: var(--accent-color);
-    color: #000;
+    color: var(--text-on-accent);
     border-color: var(--accent-color);
+    transform: rotate(-1deg);
   }
 
   @media (max-width: 374px) {
     font-size: 15px;
-    padding: 5px 6px;
+    padding: 5px 8px;
   }
 `;
 
@@ -65,11 +71,10 @@ const TitleSep = styled.span`
 `;
 
 const PageTitleLabel = styled.span`
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 500;
   color: var(--text-color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -93,6 +98,7 @@ function TopBarBase({ pageTitle, children }) {
       </TitleGroup>
       <ActionBar>
         {children}
+        <ThemeToggle />
       </ActionBar>
     </TopBarWrapper>
   );

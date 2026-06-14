@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 export const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--overlay-bg);
   z-index: 200;
   display: flex;
   align-items: center;
@@ -22,6 +22,7 @@ export const ModalOverlay = styled.div`
 export const ModalBox = styled.div`
   background: var(--background-color2);
   border: var(--retro-border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
   box-shadow: var(--retro-shadow);
   width: 100%;
   max-width: ${(p) => p.$maxWidth ?? '380px'};
@@ -31,11 +32,11 @@ export const ModalBox = styled.div`
 `;
 
 export const ModalHeader = styled.div`
-  font-size: 14px;
-  font-weight: 900;
+  font-family: var(--display-font-family);
+  font-size: 15px;
+  font-weight: 600;
   color: var(--text-color);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   padding: 12px 16px;
   background: var(--background-color);
   border-bottom: 1px solid var(--border-color);

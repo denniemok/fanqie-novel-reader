@@ -1,66 +1,168 @@
 :root {
-  /* Retro Deep Dark Theme - OLED Friendly & Night Reading */
-  --background-color: #0a0a0a; /* Almost black for comfort */
-  --background-color2: #141414;
-  --background-color-fx: rgba(255, 255, 255, 0.02);
-  
-  /* Retro Text Colors - Balanced Contrast for Readability */
-  --text-color: #b8b8b0; /* Brighter warm grey for better legibility */
-  --text-color-secondary: #757570;
-  --text-color-fx: #000000;
-  
-  /* UI Elements - Enhanced Retro Style */
-  --accent-color: #d4a574; /* Warm Amber - Vintage CRT Glow */
-  --accent-hover: #e8b988;
-  --border-color: #3a3a3a; /* Brighter for better definition */
-  --hover-background-color: #1a1a1a;
-  --hover-text-color: #aaaaaa;
-  
-  /* Retro Shadows & Borders */
-  --retro-shadow: 4px 4px 0px #050505;
-  --retro-shadow-hover: 2px 2px 0px #050505;
+  /* 少女風 × 紙本電子書 — warm paper, easy on the eyes */
+  --background-color: #f0e9e4;
+  --background-color2: #f8f3ef;
+  --background-color-fx: rgba(201, 128, 154, 0.1);
+
+  --text-color: #4a3d48;
+  --text-color-secondary: #8a7a84;
+  --text-color-fx: #4a3d48;
+  --text-on-accent: #fff8f5;
+
+  --accent-color: #c9809a;
+  --accent-hover: #d898b0;
+  --accent-soft: #e8dce2;
+  --border-color: #ddd2cc;
+  --hover-background-color: #ebe4df;
+  --hover-text-color: #3a3038;
+
+  --retro-shadow: 2px 3px 0 rgba(160, 120, 130, 0.18);
+  --retro-shadow-hover: 4px 5px 0 rgba(160, 120, 130, 0.26);
   --retro-border-width: 2px;
 
-  /* UI controls (toolbars, tabs, buttons) */
-  --ui-font-family: 'Noto Sans TC', 'Noto Sans SC', 'Microsoft JhengHei', sans-serif;
+  --border-radius: 18px;
+  --border-radius-sm: 12px;
+  --border-radius-xs: 8px;
+  --border-radius-sketch: 255px 14px 225px 14px / 14px 225px 14px 255px;
+
+  --ui-font-family: 'LXGW WenKai TC', 'Zen Maru Gothic', 'Noto Sans TC', sans-serif;
+  --display-font-family: 'LXGW WenKai TC', 'Zen Maru Gothic', cursive;
+
+  --transition-default: all 0.28s cubic-bezier(0.34, 1.4, 0.64, 1);
+  --topbar-bg: rgba(240, 233, 228, 0.96);
+  --overlay-bg: rgba(180, 150, 140, 0.28);
+  --panel-shadow: 0 8px 28px rgba(120, 90, 100, 0.14);
+  --dropdown-bg: var(--background-color2);
+  --cover-bg: #e4d8d2;
+  --topbar-shadow: 0 4px 20px rgba(160, 120, 130, 0.12);
+  --selection-bg: rgba(201, 128, 154, 0.28);
+  --card-surface: linear-gradient(
+    155deg,
+    var(--background-color2) 0%,
+    color-mix(in srgb, var(--background-color2) 90%, var(--accent-soft)) 100%
+  );
 
   /* Progress Bar */
-  --progressBar: #1a1a1a;
-  --progress: #d4a574;
-  --progressBar-text-color: rgba(184, 184, 176, 0.2);
-  --progressBar-text-full-color: rgba(184, 184, 176, 0.4);
+  --progressBar: #e8dce2;
+  --progress: #c9809a;
+  --progressBar-text-color: rgba(74, 61, 72, 0.22);
+  --progressBar-text-full-color: rgba(74, 61, 72, 0.48);
 
   /* Legacy / Others */
-  --error-background-color: rgba(10, 10, 10, 0.9);
-  --weidu: #0a0a0a;
-  --high-color: #d4a574;
-  --yidu: #b8860b;
-  --hide-yidu: rgba(184, 134, 11, 0);
+  --error-background-color: rgba(240, 233, 228, 0.95);
+  --weidu: #f0e9e4;
+  --high-color: #c9809a;
+  --yidu: #b07088;
+  --hide-yidu: rgba(176, 112, 136, 0);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background-color: #0a0a0a;
-    --background-color2: #141414;
-  }
+[data-theme="dark"] {
+  --background-color: #2a2230;
+  --background-color2: #352c3c;
+  --background-color-fx: rgba(232, 138, 170, 0.08);
+
+  --text-color: #e8d8e4;
+  --text-color-secondary: #a894a8;
+  --text-color-fx: #e8d8e4;
+  --text-on-accent: #fff8f5;
+
+  --accent-color: #e88aaa;
+  --accent-hover: #f5a8c0;
+  --accent-soft: #4a3848;
+  --border-color: #5a4860;
+  --hover-background-color: #3d3344;
+  --hover-text-color: #f0e0ea;
+
+  --retro-shadow: 3px 4px 0 rgba(0, 0, 0, 0.28);
+  --retro-shadow-hover: 5px 6px 0 rgba(0, 0, 0, 0.38);
+
+  --topbar-bg: rgba(42, 34, 48, 0.96);
+  --overlay-bg: rgba(20, 16, 24, 0.55);
+  --panel-shadow: 0 8px 28px rgba(0, 0, 0, 0.38);
+  --dropdown-bg: #352c3c;
+  --cover-bg: #3d3344;
+  --topbar-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  --selection-bg: rgba(232, 138, 170, 0.35);
+
+  --progressBar: #3d3344;
+  --progress: #e88aaa;
+  --progressBar-text-color: rgba(232, 216, 228, 0.2);
+  --progressBar-text-full-color: rgba(232, 216, 228, 0.45);
+
+  --error-background-color: rgba(42, 34, 48, 0.95);
+  --weidu: #2a2230;
+  --high-color: #e88aaa;
+  --yidu: #c97aaa;
+  --hide-yidu: rgba(201, 122, 170, 0);
+  --card-surface: linear-gradient(
+    155deg,
+    var(--background-color2) 0%,
+    color-mix(in srgb, var(--background-color2) 88%, var(--accent-soft)) 100%
+  );
+}
+
+[data-theme="dark"] body {
+  background-image:
+    radial-gradient(ellipse 70% 45% at 15% 8%, rgba(232, 138, 170, 0.1) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 35% at 88% 92%, rgba(140, 120, 150, 0.1) 0%, transparent 50%),
+    radial-gradient(circle, rgba(120, 100, 110, 0.08) 1px, transparent 1px);
 }
 
 *, *::before, *::after {
   box-sizing: border-box;
-  border-radius: 0 !important; /* Force remove all rounded corners */
 }
 
 html {
   overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gentleFloat {
+  0%, 100% {
+    transform: rotate(-1deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-0.5deg) translateY(-5px);
+  }
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(16px) rotate(1deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) rotate(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Noto Serif TC', 'Noto Serif SC', sans-serif;
+  font-family: var(--ui-font-family);
   background-color: var(--background-color);
   color: var(--text-color);
-  line-height: 1.6;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -69,6 +171,25 @@ body {
   overscroll-behavior-y: none;
   min-height: 100vh;
   min-height: 100dvh;
+  background-image:
+    radial-gradient(ellipse 70% 45% at 15% 8%, rgba(201, 128, 154, 0.1) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 35% at 88% 92%, rgba(180, 160, 175, 0.08) 0%, transparent 50%),
+    radial-gradient(circle, rgba(160, 140, 130, 0.05) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 32px 32px;
+  background-attachment: fixed;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+::selection {
+  background: var(--selection-bg);
+  color: var(--text-color);
+}
+
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
 }
 
 @supports (-webkit-touch-callout: none) {
@@ -81,7 +202,6 @@ a, span, h1, h2, h3, h4, h5, h6, p, li {
   color: inherit;
 }
 
-/* iOS: remove tap highlight, improve tap responsiveness */
 button, a {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;

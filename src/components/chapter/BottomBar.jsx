@@ -12,8 +12,8 @@ const BottomBarWrapper = styled.div`
   height: 56px;
   padding-bottom: env(safe-area-inset-bottom);
   display: flex;
-  background-color: rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(8px);
+  background-color: var(--topbar-bg);
+  backdrop-filter: blur(12px);
   justify-content: space-around;
   align-items: center;
   z-index: 1000;
@@ -34,8 +34,8 @@ const BottomBarWrapper = styled.div`
   }
 
   a:hover {
-    color: var(--text-color);
-    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--accent-color);
+    background-color: var(--hover-background-color);
   }
 `;
 

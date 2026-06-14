@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { ToastProvider } from './contexts/ToastContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { DownloadManagerProvider } from './contexts/DownloadManager';
 import Home from './pages/Home';
 import Catalog from './pages/Catalog';
@@ -11,6 +12,7 @@ import Announcements from './pages/Announcements';
 
 function App() {
   return (
+    <ThemeProvider>
     <ToastProvider>
     <DownloadManagerProvider>
     <Routes>
@@ -24,6 +26,7 @@ function App() {
     </Routes>
     </DownloadManagerProvider>
     </ToastProvider>
+    </ThemeProvider>
   );
 }
 

@@ -8,30 +8,30 @@ export const IconButton = styled.button`
   min-width: 44px;
   min-height: 44px;
   color: var(--text-color);
-  background: var(--background-color2);
-  border: 1px solid var(--border-color);
-  border-radius: 0;
+  background: var(--card-surface);
+  border: var(--retro-border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
-  transition: all 0.1s steps(2);
-  box-shadow: 2px 2px 0px var(--background-color);
+  transition: var(--transition-default);
+  box-shadow: var(--retro-shadow);
 
   @media (hover: hover) {
     &:hover:not(:disabled) {
-      background-color: var(--accent-color);
-      color: #000;
+      background: var(--accent-color);
+      color: var(--text-on-accent);
       border-color: var(--accent-color);
-      transform: translate(-1px, -1px);
-      box-shadow: 3px 3px 0px #000;
+      transform: translate(-1px, -1px) rotate(-1deg);
+      box-shadow: var(--retro-shadow-hover);
     }
   }
 
   &:active:not(:disabled) {
     transform: translate(1px, 1px);
-    box-shadow: 0px 0px 0px #000;
+    box-shadow: none;
   }
 
   &:disabled {
-    opacity: 0.3;
+    opacity: 0.35;
     cursor: not-allowed;
     box-shadow: none;
   }

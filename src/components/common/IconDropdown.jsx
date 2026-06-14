@@ -1,9 +1,33 @@
 import React, { useState, useRef, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { IconButton } from './IconButton';
 
 const Wrapper = styled.div`
   position: relative;
+`;
+
+const menuScrollStyles = css`
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 0;
+  }
+
+  @media (hover: hover) {
+    &::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-color);
+    }
+  }
 `;
 
 const Menu = styled.div`
@@ -14,13 +38,15 @@ const Menu = styled.div`
   max-width: calc(100vw - 32px);
   max-height: 280px;
   overflow-y: auto;
-  background-color: rgba(18, 18, 18, 0.98);
+  overflow-x: hidden;
+  background-color: var(--dropdown-bg);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--panel-shadow);
   z-index: 1100;
-  padding: 8px;
+  padding: 4px;
+  ${menuScrollStyles}
 `;
 
 const Option = styled.button`
@@ -32,7 +58,7 @@ const Option = styled.button`
   color: var(--text-color);
   background: none;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--border-radius-xs);
   cursor: pointer;
   transition: background 0.2s;
   font-family: ${(p) => p.$fontFamily ?? 'inherit'};
@@ -47,6 +73,7 @@ const Option = styled.button`
   ${(p) =>
     p.$active &&
     `
+    background-color: var(--accent-soft);
     color: var(--accent-color);
     font-weight: 600;
   `}
@@ -54,13 +81,6 @@ const Option = styled.button`
 
 /**
  * Reusable icon dropdown for selecting from a list of options.
- * @param {Object} props
- * @param {React.ReactNode} props.icon - Lucide icon component (e.g. <Type size={20} />)
- * @param {string} props.title - Tooltip for the trigger button
- * @param {string} props.ariaLabel - Aria label for the menu
- * @param {Array<{value: string, label: string, fontFamily?: string}>} props.options - Options { value, label, fontFamily? }
- * @param {string} props.value - Current selected value
- * @param {function(string): void} props.onChange - Called when an option is selected
  */
 function IconDropdown({ icon, title, ariaLabel, options, value, onChange, disabled = false }) {
   const [open, setOpen] = useState(false);

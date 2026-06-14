@@ -61,8 +61,16 @@ const CoverWrapper = styled.div`
     object-fit: cover;
     border-radius: 0;
     border: 1px solid var(--border-color);
-    box-shadow: 4px 4px 0px var(--background-color);
-    opacity: 0.65;
+    box-shadow: var(--retro-shadow);
+    background-color: var(--cover-bg);
+    opacity: 0.9;
+    display: block;
+    transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.25s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.02) rotate(-0.5deg);
+    box-shadow: var(--retro-shadow-hover);
   }
 
   @media (max-width: 480px) {
@@ -90,7 +98,7 @@ const CoverWrapper = styled.div`
     img {
       width: 100px;
       height: 134px;
-      box-shadow: 3px 3px 0px var(--background-color);
+      box-shadow: var(--retro-shadow);
     }
 
     @media (max-width: 374px) {

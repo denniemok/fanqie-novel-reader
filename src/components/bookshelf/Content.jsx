@@ -78,7 +78,7 @@ const Tab = styled.button`
   padding: 13px 18px;
   min-height: 44px;
   background: ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--background-color2)')};
-  color: ${(p) => (p.$active ? '#000' : 'var(--text-color-secondary)')};
+  color: ${(p) => (p.$active ? 'var(--text-on-accent)' : 'var(--text-color-secondary)')};
   border: none;
   border-right: 1px solid var(--border-color);
   font-size: 14px;
@@ -95,7 +95,7 @@ const Tab = styled.button`
 
   &:hover {
     background: ${(p) => (p.$active ? 'var(--accent-hover)' : 'var(--hover-background-color)')};
-    color: ${(p) => (p.$active ? '#000' : 'var(--text-color)')};
+    color: ${(p) => (p.$active ? 'var(--text-on-accent)' : 'var(--text-color)')};
   }
 
   @media (max-width: 374px) {
@@ -175,7 +175,7 @@ const SmallIconBtn = styled.button`
       : p.$variant === 'confirm'
         ? '#55aa55'
         : 'var(--background-color2)'};
-  color: ${(p) => (p.$variant ? '#000' : 'var(--text-color)')};
+  color: ${(p) => (p.$variant ? 'var(--text-on-accent)' : 'var(--text-color)')};
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -245,7 +245,7 @@ const SortUnit = styled.div`
   height: ${TOOLBAR_CONTROL_HEIGHT};
   box-sizing: border-box;
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 0;
   transition: border-color 0.2s ease;
 
   &:hover,
@@ -259,10 +259,10 @@ const SortTrailingBtn = styled.button`
   height: 100%;
   box-sizing: border-box;
   background: ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--background-color2)')};
-  color: ${(p) => (p.$active ? '#000' : 'var(--accent-color)')};
+  color: ${(p) => (p.$active ? 'var(--text-on-accent)' : 'var(--accent-color)')};
   border: none;
   border-left: 1px solid var(--border-color);
-  border-radius: 0 12px 12px 0;
+  border-radius: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -317,7 +317,7 @@ const ToggleBtn = styled.button`
   padding: 0 14px;
   height: 100%;
   background: ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--background-color2)')};
-  color: ${(p) => (p.$active ? '#000' : 'var(--text-color-secondary)')};
+  color: ${(p) => (p.$active ? 'var(--text-on-accent)' : 'var(--text-color-secondary)')};
   border: none;
   cursor: pointer;
   display: flex;
@@ -821,6 +821,7 @@ function Content({ conversionMode = 'tw' }) {
               attachedLabel="排序"
               hideAttachedLabelOnMobile
               embedded
+              square
               hasTrailing={sortBy !== 'manual' || canReorder}
               menuAlign="left"
               triggerMinWidth={108}
