@@ -150,7 +150,7 @@ const CoverMetaOverlayBottom = styled.div`
   position: absolute;
   left: 0;
   bottom: 0;
-  max-width: calc(100% - 36px);
+  max-width: ${(p) => (p.$hasDragHandle ? 'calc(100% - 30px)' : '100%')};
   padding: 6px;
   display: flex;
   flex-direction: column;
@@ -167,7 +167,9 @@ const CoverMetaLine = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.3;
+  width: fit-content;
   max-width: 100%;
+  box-sizing: border-box;
   padding: 3px 6px;
   background: rgba(0, 0, 0, 0.88);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -349,7 +351,9 @@ function GridCard({
   })();
 
   const coverOverlayBottom = coverMetaLines.length > 0 && (
-    <CoverMetaOverlayBottom>{coverMetaLines}</CoverMetaOverlayBottom>
+    <CoverMetaOverlayBottom $hasDragHandle={Boolean(dragHandleProps)}>
+      {coverMetaLines}
+    </CoverMetaOverlayBottom>
   );
 
   if (isLoading && !bookInfo) {

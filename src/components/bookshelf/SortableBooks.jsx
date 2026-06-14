@@ -13,8 +13,8 @@ const Grid = styled.div`
   gap: 16px;
   align-items: stretch;
 
-  @media (max-width: 480px) {
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  @media (max-width: 450px) {
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
 `;

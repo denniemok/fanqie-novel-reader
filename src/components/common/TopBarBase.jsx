@@ -17,11 +17,6 @@ const TopBarWrapper = styled.div`
   right: 0;
   z-index: 100;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
-
-  @media (max-width: 480px) {
-    padding: 8px 16px;
-    padding-top: calc(8px + env(safe-area-inset-top));
-  }
 `;
 
 const TitleGroup = styled.div`
@@ -49,11 +44,6 @@ const SiteTitle = styled(Link)`
     color: #000;
     border-color: var(--accent-color);
   }
-
-  @media (max-width: 480px) {
-    font-size: 14px;
-    padding: 5px 8px;
-  }
 `;
 
 const TitleSep = styled.span`
@@ -72,10 +62,6 @@ const PageTitleLabel = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  @media (max-width: 480px) {
-    font-size: 13px;
-  }
 `;
 
 function TopBarBase({ pageTitle, children }) {

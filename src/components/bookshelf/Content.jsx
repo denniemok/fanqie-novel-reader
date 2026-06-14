@@ -24,6 +24,7 @@ import GridCard from './GridCard';
 import SortableBooks from './SortableBooks';
 import CollectionModal from './CollectionModal';
 import ConfirmModal from '../common/ConfirmModal';
+import SelectDropdown from '../common/SelectDropdown';
 import {
   ModalText,
 } from '../common/ModalBase';
@@ -222,61 +223,30 @@ const ToolbarRight = styled.div`
   flex-wrap: wrap;
 `;
 
-const SortWrapper = styled.label`
-  display: flex;
+const SortUnit = styled.div`
+  display: inline-flex;
   align-items: stretch;
   height: ${TOOLBAR_CONTROL_HEIGHT};
   box-sizing: border-box;
   border: 1px solid var(--border-color);
-  overflow: hidden;
-  white-space: nowrap;
-`;
+  border-radius: 12px;
+  transition: border-color 0.2s ease;
 
-const SortLabel = styled.span`
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  font-size: 14px;
-  font-weight: 700;
-  font-family: var(--ui-font-family);
-  color: var(--text-color-secondary);
-  background: var(--background-color2);
-  border-right: 1px solid var(--border-color);
-`;
-
-const SortControl = styled.div`
-  display: flex;
-  align-items: stretch;
-  min-width: 0;
-  overflow: hidden;
-`;
-
-const SortSelect = styled.select`
-  padding: 0 12px;
-  height: 100%;
-  background: var(--background-color2);
-  color: var(--text-color);
-  border: none;
-  border-right: ${(p) => (p.$hasTrailingBtn ? '1px solid var(--border-color)' : 'none')};
-  font-size: 14px;
-  font-weight: 700;
-  font-family: var(--ui-font-family);
-  line-height: 1;
-  cursor: pointer;
-  outline: none;
-  max-width: 132px;
-
-  &:focus {
-    outline: none;
+  &:hover,
+  &:focus-within {
+    border-color: var(--accent-color);
   }
 `;
 
 const SortTrailingBtn = styled.button`
   padding: 0 12px;
   height: 100%;
+  box-sizing: border-box;
   background: ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--background-color2)')};
   color: ${(p) => (p.$active ? '#000' : 'var(--accent-color)')};
   border: none;
+  border-left: 1px solid var(--border-color);
+  border-radius: 0 12px 12px 0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -288,7 +258,8 @@ const SortTrailingBtn = styled.button`
   font-family: var(--ui-font-family);
   line-height: 1;
   white-space: nowrap;
-  transition: all 0.1s steps(2);
+  transition: background 0.2s ease;
+  box-sizing: border-box;
 
   svg {
     width: 16px;
@@ -350,8 +321,8 @@ const GridLayout = styled.div`
   gap: 16px;
   align-items: stretch;
 
-  @media (max-width: 480px) {
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  @media (max-width: 450px) {
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
 `;
@@ -463,8 +434,7 @@ function Content({ conversionMode = 'tw' }) {
     setBookshelfViewMode(mode);
   };
 
-  const handleSortChange = (e) => {
-    const next = e.target.value;
+  const handleSortChange = (next) => {
     setSortByState(next);
     setBookshelfSort(next);
     if (next !== 'manual') setReorderMode(false);
@@ -792,46 +762,43 @@ function Content({ conversionMode = 'tw' }) {
           )
         )}
         <ToolbarRight>
-          <SortWrapper>
-            <SortLabel>排序</SortLabel>
-            <SortControl>
-              <SortSelect
-                value={sortBy}
-                onChange={handleSortChange}
-                aria-label="書架排序方式"
-                $hasTrailingBtn={sortBy !== 'manual' ? true : canReorder}
+          <SortUnit>
+            <SelectDropdown
+              options={BOOKSHELF_SORT_OPTIONS}
+              value={sortBy}
+              onChange={handleSortChange}
+              ariaLabel="書架排序方式"
+              attachedLabel="排序"
+              embedded
+              hasTrailing={sortBy !== 'manual' || canReorder}
+              menuAlign="left"
+              triggerMinWidth={108}
+              triggerBold
+            />
+            {sortBy !== 'manual' ? (
+              <SortTrailingBtn
+                type="button"
+                onClick={handleSortDirectionToggle}
+                title={sortDirection === 'desc' ? '由高到低（點擊切換）' : '由低到高（點擊切換）'}
+                aria-label={sortDirection === 'desc' ? '降序排列' : '升序排列'}
               >
-                {BOOKSHELF_SORT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </SortSelect>
-              {sortBy !== 'manual' ? (
-                <SortTrailingBtn
-                  type="button"
-                  onClick={handleSortDirectionToggle}
-                  title={sortDirection === 'desc' ? '由高到低（點擊切換）' : '由低到高（點擊切換）'}
-                  aria-label={sortDirection === 'desc' ? '降序排列' : '升序排列'}
-                >
-                  {sortDirection === 'desc' ? <ArrowDown /> : <ArrowUp />}
-                  {sortDirection === 'desc' ? '降序' : '升序'}
-                </SortTrailingBtn>
-              ) : canReorder ? (
-                <SortTrailingBtn
-                  type="button"
-                  $active={reorderMode}
-                  onClick={() => setReorderMode((v) => !v)}
-                  title="調整排序"
-                  aria-label="調整排序"
-                  aria-pressed={reorderMode}
-                >
-                  <ArrowUpDown />
-                  調序
-                </SortTrailingBtn>
-              ) : null}
-            </SortControl>
-          </SortWrapper>
+                {sortDirection === 'desc' ? <ArrowDown /> : <ArrowUp />}
+                {sortDirection === 'desc' ? '降序' : '升序'}
+              </SortTrailingBtn>
+            ) : canReorder ? (
+              <SortTrailingBtn
+                type="button"
+                $active={reorderMode}
+                onClick={() => setReorderMode((v) => !v)}
+                title="調整排序"
+                aria-label="調整排序"
+                aria-pressed={reorderMode}
+              >
+                <ArrowUpDown />
+                調序
+              </SortTrailingBtn>
+            ) : null}
+          </SortUnit>
           <ViewToggle>
             <ToggleBtn
               $active={settingsMode}

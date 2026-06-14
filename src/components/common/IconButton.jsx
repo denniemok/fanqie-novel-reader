@@ -35,10 +35,4 @@ export const IconButton = styled.button`
     cursor: not-allowed;
     box-shadow: none;
   }
-
-  @media (max-width: 480px) {
-    min-width: 40px;
-    min-height: 40px;
-    padding: 8px;
-  }
 `;
