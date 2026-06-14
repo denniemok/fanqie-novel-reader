@@ -9,7 +9,13 @@ import { IconButton } from '../common/IconButton';
 import { buildChapterUrl } from '../../utils/navigation';
 import { getChapterTitle } from '../../utils/chapter-helpers';
 import Status from './Status';
-import { sortChaptersByNumber } from '../../utils/sorting';
+import PageBar from './PageBar';
+import {
+  CHAPTERS_PER_PAGE,
+  getPaginatedChapters,
+  getPageOptions,
+  getTotalPages,
+} from '../../utils/catalogPagination';
 
 const DisabledLinkSpan = styled.span`
   display: block;
@@ -98,21 +104,52 @@ const MenuItem = styled.li`
   }
 `;
 
-function Menu({ itemDataList, sortOrder, bookId, conversionMode = 'tw', onChapterDeleted, currentPage = 0, chaptersPerPage = 50 }) {
+function Menu({
+  itemDataList,
+  sortOrder,
+  bookId,
+  conversionMode = 'tw',
+  onChapterDeleted,
+  currentPage = 0,
+  chaptersPerPage = CHAPTERS_PER_PAGE,
+  onPagePrev,
+  onPageNext,
+  onPageSelect,
+  onSortChange,
+}) {
   const { isDownloading } = useDownloadManager();
-  const sortedItems = sortChaptersByNumber(itemDataList, sortOrder);
-  const start = currentPage * chaptersPerPage;
-  const paginatedItems = sortedItems.slice(start, start + chaptersPerPage);
+  const totalChapters = itemDataList?.length ?? 0;
+  const totalPages = getTotalPages(totalChapters, chaptersPerPage);
+  const paginatedItems = getPaginatedChapters(itemDataList, sortOrder, currentPage, chaptersPerPage);
+  const pageOptions = getPageOptions(totalChapters, sortOrder, chaptersPerPage);
+  const canGoPrev = currentPage > 0;
+  const canGoNext = currentPage < totalPages - 1;
+
+  const pageBarProps = {
+    currentPage,
+    pageOptions,
+    canGoPrev,
+    canGoNext,
+    onPagePrev,
+    onPageNext,
+    onPageSelect,
+    sortOrder,
+    onSortChange,
+  };
 
   return (
-    <MenuList>
-      {paginatedItems.map((item) => (
-        <MenuItem key={item.item_id}>
-          <MenuItemLink item={item} bookId={bookId} conversionMode={conversionMode} isDownloading={isDownloading(item.item_id)} />
-          <ChapterActions item={item} onChapterDeleted={onChapterDeleted} />
-        </MenuItem>
-      ))}
-    </MenuList>
+    <>
+      <PageBar {...pageBarProps} />
+      <MenuList>
+        {paginatedItems.map((item) => (
+          <MenuItem key={item.item_id}>
+            <MenuItemLink item={item} bookId={bookId} conversionMode={conversionMode} isDownloading={isDownloading(item.item_id)} />
+            <ChapterActions item={item} onChapterDeleted={onChapterDeleted} />
+          </MenuItem>
+        ))}
+      </MenuList>
+      <PageBar {...pageBarProps} />
+    </>
   );
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUpDown, Bookmark, ChevronLeft, ChevronRight, Download, FileText, MessageCircle, RefreshCw } from 'lucide-react';
+import { Bookmark, Download, FileText, MessageCircle, RefreshCw } from 'lucide-react';
 import TopBarBase from '../common/TopBarBase';
 import HomeButton, { HOME_BUTTON_TITLE } from '../common/HomeButton';
 import ApiDropdown, { API_DROPDOWN_TITLE } from '../common/ApiDropdown';
@@ -12,8 +12,6 @@ function TopBar({
   navigate,
   conversionMode,
   onConversionModeChange,
-  sortOrder,
-  onSortChange,
   hasUncachedChapters,
   uncachedItemIds,
   downloadingAll,
@@ -21,45 +19,11 @@ function TopBar({
   onRefresh,
   onExportTxt,
   lastReadItemId,
-  currentPage = 0,
-  totalPages = 1,
-  canGoPrev = false,
-  canGoNext = false,
-  onPagePrev = () => {},
-  onPageNext = () => {},
 }) {
   return (
     <TopBarBase>
       <HomeButton title={HOME_BUTTON_TITLE} />
       <ApiDropdown title={API_DROPDOWN_TITLE} />
-      {totalPages > 1 && (
-        <IconButton
-          type="button"
-          title={`上一頁 (${currentPage + 1}/${totalPages})`}
-          onClick={onPagePrev}
-          disabled={!canGoPrev}
-        >
-          <ChevronLeft size={20} strokeWidth={2.5} />
-        </IconButton>
-      )}
-      {totalPages > 1 && (
-        <IconButton
-          type="button"
-          title={`下一頁 (${currentPage + 1}/${totalPages})`}
-          onClick={onPageNext}
-          disabled={!canGoNext}
-        >
-          <ChevronRight size={20} strokeWidth={2.5} />
-        </IconButton>
-      )}
-      <IconButton
-        type="button"
-        title={sortOrder === 'ascending' ? '升序排列' : '降序排列'}
-        onClick={onSortChange}
-        style={sortOrder === 'descending' ? { color: 'var(--accent-color)' } : undefined}
-      >
-        <ArrowUpDown size={20} strokeWidth={2.5} />
-      </IconButton>
       <LangDropdown
         title={LANG_DROPDOWN_TITLE}
         value={conversionMode}

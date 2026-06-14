@@ -6,8 +6,10 @@ export function buildChapterUrl(itemId, bookId = null) {
   return `/chapter?${params.toString()}`;
 }
 
-export function buildCatalogUrl(bookId) {
-  return `/catalog?bookId=${bookId}`;
+export function buildCatalogUrl(bookId, page = 1) {
+  const params = new URLSearchParams({ bookId });
+  if (page > 1) params.set('page', String(page));
+  return `/catalog?${params.toString()}`;
 }
 
 export function buildCommentsUrl(bookId, page = 1) {

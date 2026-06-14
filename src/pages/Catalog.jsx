@@ -14,7 +14,8 @@ import { exportBookToTxt } from '../utils/exportBookTxt';
 import { useConversionMode } from '../hooks/useConversionMode';
 import { useBookLoader } from '../hooks/useBookLoader';
 import { useDownloadManager } from '../contexts/DownloadManager';
-const CHAPTERS_PER_PAGE = 50;
+import { CHAPTERS_PER_PAGE, getTotalPages } from '../utils/catalogPagination';
+import { buildCatalogUrl } from '../utils/navigation';
 
 const Content = styled.div`
   padding-top: calc(76px + env(safe-area-inset-top));
@@ -28,28 +29,31 @@ function Catalog() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const bookId = searchParams.get('bookId');
+  const pageParam = parseInt(searchParams.get('page') || '1', 10);
   const lastReadItemId = bookId ? getLastReadChapter(bookId) : null;
-  
+
   const { error, bookInfo, loadBook } = useBookLoader(bookId);
   const { startDownloadAll, stopDownloadAll, isDownloadingAll, completedDownloads } = useDownloadManager();
   const { showToast } = useToast();
   const [sortOrder, setSortOrderState] = useState(getSortOrder);
   const [conversionMode, setConversionMode] = useConversionMode();
   const [, setCatalogRefresh] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
   const [uncachedItemIds, setUncachedItemIds] = useState([]);
   const onChapterDeleted = (itemId) => {
     if (itemId) setUncachedItemIds((prev) => prev.filter((id) => id !== itemId));
     setCatalogRefresh((k) => k + 1);
   };
 
-  useEffect(() => {
-    setCurrentPage(0);
-  }, [bookId]);
-
   const itemDataList = bookInfo?.item_data_list ?? [];
   const totalChapters = itemDataList.length;
-  const totalPages = Math.max(1, Math.ceil(totalChapters / CHAPTERS_PER_PAGE));
+  const totalPages = getTotalPages(totalChapters, CHAPTERS_PER_PAGE);
+  const safePageParam = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
+  const currentPage = Math.min(safePageParam, totalPages) - 1;
+
+  useEffect(() => {
+    if (!bookInfo || safePageParam <= totalPages) return;
+    navigate(buildCatalogUrl(bookId, totalPages), { replace: true });
+  }, [bookInfo, bookId, safePageParam, totalPages, navigate]);
 
   useEffect(() => {
     const list = bookInfo?.item_data_list;
@@ -62,16 +66,14 @@ function Catalog() {
   }, [bookInfo, completedDownloads]);
 
   useEffect(() => {
-    if (currentPage >= totalPages) {
-      setCurrentPage(Math.max(0, totalPages - 1));
-    }
-  }, [currentPage, totalPages]);
-
-  useEffect(() => {
     if (error) showToast(error);
   }, [error, showToast]);
   const hasUncachedChapters = uncachedItemIds.length > 0;
   const downloadingAll = isDownloadingAll(bookId);
+
+  const goToPage = (pageIndex) => {
+    navigate(buildCatalogUrl(bookId, pageIndex + 1));
+  };
 
   const handleDownloadAll = () => {
     if (downloadingAll) {
@@ -85,11 +87,8 @@ function Catalog() {
     const next = sortOrder === 'ascending' ? 'descending' : 'ascending';
     setSortOrder(next);
     setSortOrderState(next);
-    setCurrentPage(0);
+    navigate(buildCatalogUrl(bookId));
   };
-
-  const canGoPrev = currentPage > 0;
-  const canGoNext = currentPage < totalPages - 1;
 
   const handleExportTxt = async () => {
     const list = bookInfo?.item_data_list ?? [];
@@ -121,8 +120,6 @@ function Catalog() {
           navigate={navigate}
           conversionMode={conversionMode}
           onConversionModeChange={setConversionMode}
-          sortOrder={sortOrder}
-          onSortChange={handleSortChange}
           hasUncachedChapters={hasUncachedChapters}
           uncachedItemIds={uncachedItemIds}
           downloadingAll={downloadingAll}
@@ -130,19 +127,25 @@ function Catalog() {
           onRefresh={() => loadBook(true)}
           onExportTxt={handleExportTxt}
           lastReadItemId={lastReadItemId}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          canGoPrev={canGoPrev}
-          canGoNext={canGoNext}
-          onPagePrev={() => setCurrentPage((p) => Math.max(0, p - 1))}
-          onPageNext={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
         />
       )}
       {bookInfo ? (
         <Content>
           <Info bookInfo={bookInfo} conversionMode={conversionMode} />
           {bookInfo.item_data_list && (
-            <Menu sortOrder={sortOrder} itemDataList={bookInfo.item_data_list} bookId={bookId} conversionMode={conversionMode} onChapterDeleted={onChapterDeleted} currentPage={currentPage} chaptersPerPage={CHAPTERS_PER_PAGE} />
+            <Menu
+              sortOrder={sortOrder}
+              itemDataList={bookInfo.item_data_list}
+              bookId={bookId}
+              conversionMode={conversionMode}
+              onChapterDeleted={onChapterDeleted}
+              currentPage={currentPage}
+              chaptersPerPage={CHAPTERS_PER_PAGE}
+              onPagePrev={() => goToPage(Math.max(0, currentPage - 1))}
+              onPageNext={() => goToPage(Math.min(totalPages - 1, currentPage + 1))}
+              onPageSelect={goToPage}
+              onSortChange={handleSortChange}
+            />
           )}
         </Content>
       ) : (
