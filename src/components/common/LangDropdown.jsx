@@ -17,4 +17,6 @@ function LangDropdown({ value, onChange, title = LANG_DROPDOWN_TITLE }) {
   );
 }
 
+LangDropdown.toolLabel = LANG_DROPDOWN_TITLE;
+
 export default LangDropdown;

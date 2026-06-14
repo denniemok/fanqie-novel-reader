@@ -22,4 +22,6 @@ function BookshelfButton({ title = BOOKSHELF_BUTTON_TITLE, disabled: disabledPro
   );
 }
 
+BookshelfButton.toolLabel = BOOKSHELF_BUTTON_TITLE;
+
 export default BookshelfButton;

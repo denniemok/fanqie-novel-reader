@@ -13,4 +13,6 @@ function HomeButton({ title = HOME_BUTTON_TITLE }) {
   );
 }
 
+HomeButton.toolLabel = HOME_BUTTON_TITLE;
+
 export default HomeButton;

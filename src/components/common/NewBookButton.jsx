@@ -22,4 +22,6 @@ function NewBookButton({ title = NEW_BOOK_BUTTON_TITLE, disabled: disabledProp }
   );
 }
 
+NewBookButton.toolLabel = NEW_BOOK_BUTTON_TITLE;
+
 export default NewBookButton;

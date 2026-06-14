@@ -15,4 +15,6 @@ function CatalogButton({ bookId, title = CATALOG_BUTTON_TITLE }) {
   );
 }
 
+CatalogButton.toolLabel = CATALOG_BUTTON_TITLE;
+
 export default CatalogButton;

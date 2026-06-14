@@ -22,4 +22,6 @@ function AnnouncementButton({ title = ANNOUNCEMENT_BUTTON_TITLE, disabled: disab
   );
 }
 
+AnnouncementButton.toolLabel = ANNOUNCEMENT_BUTTON_TITLE;
+
 export default AnnouncementButton;

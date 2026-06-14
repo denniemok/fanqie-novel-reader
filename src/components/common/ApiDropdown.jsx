@@ -20,4 +20,6 @@ function ApiDropdown({ title = API_DROPDOWN_TITLE, disabled = false }) {
   );
 }
 
+ApiDropdown.toolLabel = API_DROPDOWN_TITLE;
+
 export default ApiDropdown;

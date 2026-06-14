@@ -412,6 +412,17 @@ function Content({ conversionMode = 'tw' }) {
     setDataLoaded(true);
   }, []);
 
+  const reloadDataKeepingScroll = useCallback(async () => {
+    const scrollY = window.scrollY;
+    const [history, cols] = await Promise.all([getReadingHistory(), getCollections()]);
+    flushSync(() => {
+      setReadingHistory(history);
+      setCollections(cols);
+      setDataLoaded(true);
+    });
+    window.scrollTo(0, scrollY);
+  }, []);
+
   useEffect(() => {
     reloadData();
   }, [refreshKey, reloadData]);
@@ -515,8 +526,7 @@ function Content({ conversionMode = 'tw' }) {
       errorMessage: '移除書籍失敗，請稍後再試。',
       onConfirm: async () => {
         await removeBookFromCollection(activeTab, bookId);
-        await reloadData();
-        setRenderTick((k) => k + 1);
+        await reloadDataKeepingScroll();
       },
     });
   };
@@ -534,14 +544,13 @@ function Content({ conversionMode = 'tw' }) {
     } else {
       await addBookToCollection(collectionId, bookId);
     }
-    await reloadData();
-    setRenderTick((k) => k + 1);
+    await reloadDataKeepingScroll();
   };
 
   const handleCreateCollectionFromModal = async () => {
     if (!newCollectionName.trim()) return;
     await createCollection(newCollectionName.trim());
-    await reloadData();
+    await reloadDataKeepingScroll();
     setNewCollectionName('');
   };
 

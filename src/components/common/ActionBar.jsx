@@ -125,6 +125,15 @@ const ToolsPanelContent = styled.div`
   padding-bottom: 16px;
 `;
 
+function getToolLabel(child) {
+  if (!React.isValidElement(child)) return null;
+  const { title, 'aria-label': ariaLabel } = child.props ?? {};
+  if (typeof title === 'string' && title) return title;
+  if (typeof ariaLabel === 'string' && ariaLabel) return ariaLabel;
+  if (child.type?.toolLabel) return child.type.toolLabel;
+  return null;
+}
+
 function ActionBar({ children }) {
   const [toolsExpanded, setToolsExpanded] = useState(false);
   const isMobile = useMediaQuery('(max-width: 900px)');
@@ -153,11 +162,11 @@ function ActionBar({ children }) {
             <ToolsPanelContent>
               {React.Children.map(children, (child, index) => {
                 if (!child) return null;
-                const title = child.props?.title;
+                const label = getToolLabel(child);
                 return (
                   <ToolItem key={child.key ?? index}>
                     {child}
-                    {title && <ToolLabel>{title}</ToolLabel>}
+                    {label && <ToolLabel>{label}</ToolLabel>}
                   </ToolItem>
                 );
               })}
