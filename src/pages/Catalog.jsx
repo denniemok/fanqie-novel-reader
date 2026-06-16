@@ -9,13 +9,13 @@ import { useToast } from '../contexts/ToastContext';
 import TopBar from '../components/catalog/TopBar';
 import { TopBarOffset } from '../components/common/PageContent';
 import { getLastReadChapter, getSortOrder, setSortOrder, isChapterCached } from '../utils/storage';
-import { sortChaptersByNumber } from '../utils/sorting';
-import { exportBookToTxt } from '../utils/exportBookTxt';
+import { runBookTxtExport } from '../utils/exportBookActions';
 import { useConversionMode } from '../hooks/useConversionMode';
 import { useBookLoader } from '../hooks/useBookLoader';
 import { useDownloadManager } from '../contexts/DownloadManager';
 import { CHAPTERS_PER_PAGE, getTotalPages } from '../utils/catalogPagination';
-import { buildCatalogUrl } from '../utils/navigation';
+import { buildCatalogUrl, ROUTES } from '../utils/navigation';
+import DownloadAllConfirmModal from '../components/catalog/DownloadAllConfirmModal';
 
 function Catalog() {
   const [searchParams] = useSearchParams();
@@ -31,6 +31,7 @@ function Catalog() {
   const [conversionMode, setConversionMode] = useConversionMode();
   const [, setCatalogRefresh] = useState(0);
   const [uncachedItemIds, setUncachedItemIds] = useState([]);
+  const [downloadAllConfirmOpen, setDownloadAllConfirmOpen] = useState(false);
   const onChapterDeleted = (itemId) => {
     if (itemId) setUncachedItemIds((prev) => prev.filter((id) => id !== itemId));
     setCatalogRefresh((k) => k + 1);
@@ -78,8 +79,16 @@ function Catalog() {
   const handleDownloadAll = () => {
     if (downloadingAll) {
       stopDownloadAll();
-    } else {
-      startDownloadAll(bookId, uncachedItemIds);
+      return;
+    }
+    setDownloadAllConfirmOpen(true);
+  };
+
+  const handleStartDownloadAll = (navigateToDownloadPage) => {
+    startDownloadAll(bookId, uncachedItemIds);
+    setDownloadAllConfirmOpen(false);
+    if (navigateToDownloadPage) {
+      navigate(ROUTES.download);
     }
   };
 
@@ -90,18 +99,8 @@ function Catalog() {
     navigate(buildCatalogUrl(bookId));
   };
 
-  const handleExportTxt = async () => {
-    const list = bookInfo?.item_data_list ?? [];
-    const sorted = sortChaptersByNumber(list, sortOrder);
-    const result = await exportBookToTxt({
-      bookId,
-      bookInfo,
-      itemDataList: sorted,
-      conversionMode,
-    });
-    if (result?.exportedCount === 0) {
-      showToast('沒有已下載的章節，無法匯出正文。請先下載章節。');
-    }
+  const handleExportTxt = () => {
+    runBookTxtExport({ bookId, bookInfo, showToast });
   };
 
   if (!bookId) {
@@ -150,6 +149,14 @@ function Catalog() {
         </TopBarOffset>
       ) : (
         <Loading onAbort={() => navigate('/')} />
+      )}
+      {downloadAllConfirmOpen && (
+        <DownloadAllConfirmModal
+          chapterCount={uncachedItemIds.length}
+          onStay={() => handleStartDownloadAll(false)}
+          onGoToDownloadPage={() => handleStartDownloadAll(true)}
+          onClose={() => setDownloadAllConfirmOpen(false)}
+        />
       )}
     </PageWrapper>
   );

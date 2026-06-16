@@ -3,6 +3,7 @@ export const ROUTES = {
   bookshelf: '/bookshelf',
   newBook: '/new-book',
   announcements: '/announcements',
+  download: '/download',
 };
 
 export function buildChapterUrl(itemId, bookId = null) {

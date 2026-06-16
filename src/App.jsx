@@ -9,6 +9,7 @@ import Comments from './pages/Comments';
 import Bookshelf from './pages/Bookshelf';
 import NewBook from './pages/NewBook';
 import Announcements from './pages/Announcements';
+import Download from './pages/Download';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Route path="/bookshelf" element={<Bookshelf />} />
       <Route path="/new-book" element={<NewBook />} />
       <Route path="/announcements" element={<Announcements />} />
+      <Route path="/download" element={<Download />} />
       <Route path="/catalog" element={<Catalog />} />
       <Route path="/chapter" element={<Chapter />} />
       <Route path="/comments" element={<Comments />} />

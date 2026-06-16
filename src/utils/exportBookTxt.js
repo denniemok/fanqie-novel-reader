@@ -2,18 +2,27 @@ import { chapterCache } from './cache';
 import { maybeConvert } from './zh-convert';
 import { getChapterTitle } from './chapter-helpers';
 import { addBlankLine } from './text';
+import { sortChaptersByNumber } from './sorting';
+import { getConversionMode } from './storage';
+
+/** Shown when export runs but no chapters are cached locally. */
+export const EXPORT_NO_CACHED_CHAPTERS_MSG = '沒有已下載的章節，無法匯出正文。請先下載章節。';
 
 /**
- * Builds and downloads a book_id.txt file with book metadata and cached chapter content.
+ * Builds and downloads a book .txt file with book metadata and cached chapter content.
+ * Chapters are always exported in ascending order. Text conversion uses the stored
+ * language preference (see getConversionMode) at export time.
+ *
  * @param {Object} params
  * @param {string} params.bookId - Book ID
  * @param {Object} params.bookInfo - Book info (book_info.original_book_name, author, abstract)
  * @param {Array<{item_id: string, title: string}>} params.itemDataList - Chapter list
- * @param {'original'|'tw'|'hk'} [params.conversionMode] - Conversion mode: original, tw (Taiwan), hk (Hong Kong)
  * @returns {Promise<{ exportedCount: number }>} Number of chapters exported; 0 if none were cached
  */
-export async function exportBookToTxt({ bookId, bookInfo, itemDataList, conversionMode = 'tw' }) {
+export async function exportBookToTxt({ bookId, bookInfo, itemDataList }) {
   if (!bookId || !bookInfo || !itemDataList?.length) return { exportedCount: 0 };
+
+  const conversionMode = getConversionMode();
 
   const bookInfoData = bookInfo?.book_info || bookInfo;
   const bookName = maybeConvert(bookInfoData.original_book_name, conversionMode);
@@ -32,7 +41,8 @@ export async function exportBookToTxt({ bookId, bookInfo, itemDataList, conversi
   ];
 
   let exportedCount = 0;
-  for (const item of itemDataList) {
+  const sortedList = sortChaptersByNumber(itemDataList, 'ascending');
+  for (const item of sortedList) {
     const content = await chapterCache.get(item.item_id);
     if (content == null || typeof content !== 'string') continue;
 

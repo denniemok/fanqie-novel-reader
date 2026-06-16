@@ -5,6 +5,7 @@ function actionVariantBg(variant) {
   if (variant === 'delete') return '#e8a0a8';
   if (variant === 'refresh') return '#a0c8e8';
   if (variant === 'collection') return '#e8d0a0';
+  if (variant === 'download') return '#a8d8a8';
   return 'var(--background-color2)';
 }
 

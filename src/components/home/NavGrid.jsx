@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { BookOpen, PlusCircle, Megaphone, MessageCircleWarning, Info, Github } from 'lucide-react';
+import { BookOpen, PlusCircle, Megaphone, MessageCircleWarning, Info, Github, Download } from 'lucide-react';
 import { GITHUB_ISSUES_URL, GITHUB_README_URL, GITHUB_REPO_URL } from '../../utils/constants';
 import { ROUTES } from '../../utils/navigation';
 
 const ICON_SIZE = 40;
 
-const staggerDelays = [0.08, 0.14, 0.2, 0.26, 0.32, 0.38];
+const staggerDelays = [0.08, 0.14, 0.2, 0.26, 0.32, 0.38, 0.44];
 
 const Grid = styled.div`
   display: grid;
@@ -24,6 +24,7 @@ const Grid = styled.div`
   & > *:nth-child(4) { animation-delay: ${staggerDelays[3]}s; }
   & > *:nth-child(5) { animation-delay: ${staggerDelays[4]}s; }
   & > *:nth-child(6) { animation-delay: ${staggerDelays[5]}s; }
+  & > *:nth-child(7) { animation-delay: ${staggerDelays[6]}s; }
 
   @media (max-width: 700px) {
     grid-template-columns: repeat(3, 1fr);
@@ -179,6 +180,11 @@ function NavGrid() {
         <PlusCircle size={ICON_SIZE} strokeWidth={2} aria-hidden />
         <TileLabel>新書</TileLabel>
         <TileSubLabel>開始新閱讀</TileSubLabel>
+      </TileButton>
+      <TileButton type="button" onClick={() => navigate(ROUTES.download)}>
+        <Download size={ICON_SIZE} strokeWidth={2} aria-hidden />
+        <TileLabel>下載</TileLabel>
+        <TileSubLabel>狀態 · 使用說明</TileSubLabel>
       </TileButton>
       <TileButton type="button" onClick={() => navigate(ROUTES.announcements)}>
         <Megaphone size={ICON_SIZE} strokeWidth={2} aria-hidden />

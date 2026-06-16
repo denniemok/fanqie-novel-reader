@@ -19,6 +19,7 @@ import {
   SquareX,
   Search,
   X,
+  Download,
 } from 'lucide-react';
 import ListCard from './ListCard';
 import PageContent from '../common/PageContent';
@@ -31,9 +32,12 @@ import SelectDropdown from '../common/SelectDropdown';
 import { ModalText } from '../common/ModalBase';
 import { CardActionButton, CardSpinningIcon } from '../common/CardActionButton';
 import { useToast } from '../../contexts/ToastContext';
+import { useDownloadManager } from '../../contexts/DownloadManager';
 import { buildCatalogUrl, ROUTES } from '../../utils/navigation';
 import { formatErrorMessage } from '../../utils/errors';
 import { fetchBookDetailAndDirectory } from '../../utils/api-helpers';
+import { fetchBookDirectory } from '../../services/api';
+import { directoryCache } from '../../utils/cache';
 import { SAMPLE_READING_HISTORY_BOOK_ID } from '../../utils/constants';
 import {
   getReadingHistory,
@@ -53,6 +57,7 @@ import {
   removeBooksFromCollection,
   reorderCollectionBooks,
   reorderCollections,
+  isChapterCached,
 } from '../../utils/storage';
 import { BOOKSHELF_SORT_OPTIONS, sortBookshelfItems } from '../../utils/bookshelfSort';
 import { useBookshelfSortMeta } from '../../hooks/useBookshelfSortMeta';
@@ -436,6 +441,7 @@ const ManageActionButtons = styled.div`
 function Content({ conversionMode = 'tw' }) {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { startDownloadAll } = useDownloadManager();
 
   const [activeTab, setActiveTab] = useState(ALL_TAB);
   const [viewMode, setViewModeState] = useState(getBookshelfViewMode);
@@ -633,6 +639,40 @@ function Content({ conversionMode = 'tw' }) {
   const handleBulkAddToCollection = () => {
     if (selectedBookIds.size === 0) return;
     handleAddToCollection(Array.from(selectedBookIds));
+  };
+
+  const handleGoToDownload = async () => {
+    if (selectedBookIds.size !== 1) return;
+    const bookId = Array.from(selectedBookIds)[0];
+
+    try {
+      let directory = await directoryCache.get(bookId);
+      if (!directory?.item_data_list?.length) {
+        directory = await fetchBookDirectory(bookId);
+      }
+      const list = directory?.item_data_list ?? [];
+      if (!list.length) {
+        showToast('無法取得章節目錄');
+        return;
+      }
+
+      const uncachedItemIds = (
+        await Promise.all(
+          list.map((item) =>
+            isChapterCached(item.item_id).then((cached) => (!cached ? item.item_id : null))
+          )
+        )
+      ).filter(Boolean);
+
+      if (uncachedItemIds.length > 0) {
+        startDownloadAll(bookId, uncachedItemIds);
+      } else {
+        showToast('所有章節已下載');
+      }
+      navigate(ROUTES.download);
+    } catch (err) {
+      showToast(formatErrorMessage(err, '無法開始下載，請稍後再試。'));
+    }
   };
 
   const handleBulkRefresh = async () => {
@@ -899,7 +939,7 @@ function Content({ conversionMode = 'tw' }) {
           type="search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="搜尋書名或作者…"
+          placeholder="搜尋書名或作者"
           aria-label="搜尋書名或作者"
         />
         {searchQuery && (
@@ -1059,6 +1099,17 @@ function Content({ conversionMode = 'tw' }) {
             >
               <FolderInput />
             </ManageBarButton>
+            {selectedBookIds.size === 1 && (
+              <ManageBarButton
+                type="button"
+                $variant="download"
+                onClick={handleGoToDownload}
+                title="下載全部"
+                aria-label="下載全部"
+              >
+                <Download />
+              </ManageBarButton>
+            )}
             <ManageBarButton
               type="button"
               $variant="refresh"
