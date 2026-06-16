@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { detailCache, directoryCache } from '../utils/cache';
+import { detailCache } from '../utils/cache';
 import { extractBookshelfSortMeta } from '../utils/bookshelfSort';
 
 export function useBookshelfSortMeta(bookIds, sortBy) {
@@ -16,11 +16,8 @@ export function useBookshelfSortMeta(bookIds, sortBy) {
     (async () => {
       const entries = await Promise.all(
         bookIds.map(async (bookId) => {
-          const [detail, directory] = await Promise.all([
-            detailCache.get(bookId),
-            directoryCache.get(bookId),
-          ]);
-          return [bookId, extractBookshelfSortMeta(detail, directory)];
+          const detail = await detailCache.get(bookId);
+          return [bookId, extractBookshelfSortMeta(detail)];
         })
       );
       if (!cancelled) {
