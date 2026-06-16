@@ -17,7 +17,7 @@ import {
   Edit2,
   Settings,
 } from 'lucide-react';
-import BookCard from '../common/BookCard';
+import ListCard from './ListCard';
 import PageContent from '../common/PageContent';
 import GridCard from './GridCard';
 import SortableBooks from './SortableBooks';
@@ -679,7 +679,7 @@ function Content({ conversionMode = 'tw' }) {
             getKey={({ bookId }) => bookId}
             onReorder={handleReorder}
             renderItem={({ bookId }, sortable) => (
-              <BookCard
+              <ListCard
                 {...bookCardProps(bookId)}
                 dragHandleProps={sortable.dragHandleProps}
                 isDragging={sortable.isDragging}
@@ -694,7 +694,7 @@ function Content({ conversionMode = 'tw' }) {
       return (
         <ListLayout key={`list-${activeTab}-${renderTick}`}>
           {sortedDisplayBooks.map(({ bookId }) => (
-            <BookCard key={bookId} {...bookCardProps(bookId)} />
+            <ListCard key={bookId} {...bookCardProps(bookId)} />
           ))}
         </ListLayout>
       );

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Modal from '../common/Modal';
+import Modal from './Modal';
 import { truncateText, MAX_ABSTRACT_LENGTH, MOBILE_ABSTRACT_LENGTH } from '../../utils/text';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
@@ -316,7 +316,7 @@ const Footer = styled.div`
   width: 100%;
 `;
 
-function Info({ bookInfo, conversionMode = 'tw', variant, footer }) {
+function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer }) {
   const [showFullAbstract, setShowFullAbstract] = useState(false);
   const isMobile = useMediaQuery('(max-width: 480px)');
   
@@ -387,4 +387,4 @@ function Info({ bookInfo, conversionMode = 'tw', variant, footer }) {
   );
 }
 
-export default Info;
+export default BookInfo;

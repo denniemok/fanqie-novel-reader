@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Navigate, useNavigate } from 'react-router-dom';
 import Menu from '../components/catalog/Menu';
-import Info from '../components/book/Info';
+import BookInfo from '../components/common/BookInfo';
 import Error from '../components/common/Error';
 import Loading from '../components/common/Loading';
 import PageWrapper from '../components/common/PageWrapper';
@@ -131,7 +131,7 @@ function Catalog() {
       )}
       {bookInfo ? (
         <TopBarOffset>
-          <Info bookInfo={bookInfo} conversionMode={conversionMode} />
+          <BookInfo bookInfo={bookInfo} conversionMode={conversionMode} />
           {bookInfo.item_data_list && (
             <Menu
               sortOrder={sortOrder}

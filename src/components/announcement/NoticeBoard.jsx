@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { GITHUB_ISSUES_URL } from '../../utils/constants';
 
 const Section = styled.section`
   display: flex;
@@ -114,18 +113,9 @@ function NoticeBoard() {
     <Section>
       {ANNOUNCEMENTS.map((item) => (
         <NoticeCard key={`${item.date}-${item.message}`}>
-          <b>{item.date}</b> | {item.message}
+          <b>{item.date}</b> {item.message}
         </NoticeCard>
       ))}
-      <NoticeCard>
-        最近第三方 API 服務限流較嚴，服務偶有中斷，敬請見諒。
-        <br />
-        站長會持續關注狀況，若有問題歡迎至{' '}
-        <a href={GITHUB_ISSUES_URL} target="_blank" rel="noopener noreferrer">
-          Issues
-        </a>{' '}
-        回報。
-      </NoticeCard>
     </Section>
   );
 }

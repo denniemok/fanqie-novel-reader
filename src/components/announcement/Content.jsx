@@ -1,6 +1,6 @@
 import React from 'react';
 import PageContent from '../common/PageContent';
-import NoticeBoard from '../common/NoticeBoard';
+import NoticeBoard from './NoticeBoard';
 
 function Content() {
   return (

@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { GripVertical, Loader2, RefreshCw, Trash2, FolderInput } from 'lucide-react';
-import Info from '../book/Info';
+import BookInfo from '../common/BookInfo';
 import { useBookLoader } from '../../hooks/useBookLoader';
 import { useToast } from '../../contexts/ToastContext';
 import { shimmerStyle } from '../../utils/styled/animations';
-import { CardActionButton, CardSpinningIcon, CardLoadingOverlay } from './CardActionButton';
+import { CardActionButton, CardSpinningIcon, CardLoadingOverlay } from '../common/CardActionButton';
 
 const SkeletonCard = styled.div`
   display: flex;
@@ -165,7 +165,7 @@ const ActionButtons = styled.div`
   pointer-events: auto; /* stay clickable when Card has pointer-events: none during refresh */
 `;
 
-function BookCard({
+function ListCard({
   bookId,
   onClick,
   onRefreshClick,
@@ -256,7 +256,7 @@ function BookCard({
       </ActionButtons>
       )}
       <CardBody>
-        <Info
+        <BookInfo
           bookInfo={bookInfo}
           conversionMode={conversionMode}
           variant="compact"
@@ -266,4 +266,4 @@ function BookCard({
   );
 }
 
-export default BookCard;
+export default ListCard;
