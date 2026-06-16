@@ -97,7 +97,7 @@ function Form() {
           <input
             ref={inputRef}
             type="text"
-            placeholder="貼上番茄小說書籍 ID 或 網址"
+            placeholder="貼上書籍 ID 或網址（番茄小說 / Tomato MTL）"
             defaultValue=""
             autoFocus
           />

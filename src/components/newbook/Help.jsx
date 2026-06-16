@@ -95,27 +95,27 @@ function Help() {
     <Section>
       <HelpGrid>
         <HelpCard>
-          <h3>找到書籍</h3>
-          <p>造訪 <span>番茄小說網</span> 找到您想閱讀的小說。</p>
+          <h3>尋找書籍</h3>
+          <p>造訪 <span>番茄小說網</span> 或 <span>Tomato MTL</span> 找到想閱讀的小說。</p>
           <LinkButtonRow>
             <ExternalLinkButton href="https://fanqienovel.com" target="_blank" rel="noopener noreferrer">
               <Globe aria-hidden />
               番茄小說網
             </ExternalLinkButton>
-            <ExternalLinkButton href="https://fanqienovel.com/library" target="_blank" rel="noopener noreferrer">
+            <ExternalLinkButton href="https://tomatomtl.com" target="_blank" rel="noopener noreferrer">
               <Library aria-hidden />
-              番茄小說書庫
+              TomatoMTL
             </ExternalLinkButton>
           </LinkButtonRow>
         </HelpCard>
         <HelpCard>
-          <h3>獲取書籍 ID 或網址</h3>
-          <p>在小說詳情頁的網址中找到那一串數字或網址：</p>
+          <h3>獲取書籍 ID</h3>
+          <p>在小說詳情頁的網址中找到那一串數字：</p>
           <div className="code-box">
             https://fanqienovel.com/page/<span>123456789</span>?...
           </div>
           <div className="code-box">
-            <span>https://fanqienovel.com/page/123456789?...</span>
+            https://tomatomtl.com/book/<span>123456789</span>
           </div>
         </HelpCard>
       </HelpGrid>
