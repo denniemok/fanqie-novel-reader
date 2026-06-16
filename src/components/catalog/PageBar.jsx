@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowDownZA, ArrowUpAZ, ChevronLeft, ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 import SelectDropdown from '../common/SelectDropdown';
 
@@ -133,7 +133,7 @@ function PageBar({
       onClick={onSortChange}
       style={sortOrder === 'descending' ? { color: 'var(--accent-color)' } : undefined}
     >
-      {sortOrder === 'ascending' ? <ArrowUp size={18} /> : <ArrowDown size={18} />}
+      {sortOrder === 'ascending' ? <ArrowUpAZ size={18} /> : <ArrowDownZA size={18} />}
     </NavButton>
   );
 

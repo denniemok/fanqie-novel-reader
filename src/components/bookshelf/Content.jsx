@@ -3,9 +3,9 @@ import { flushSync } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import {
-  ArrowUpDown,
-  ArrowDown,
-  ArrowUp,
+  Hand,
+  ArrowDownZA,
+  ArrowUpAZ,
   Grid2X2,
   LayoutList,
   Plus,
@@ -246,12 +246,6 @@ const SortUnit = styled.div`
   box-sizing: border-box;
   border: 1px solid var(--border-color);
   border-radius: 0;
-  transition: border-color 0.2s ease;
-
-  &:hover,
-  &:focus-within {
-    border-color: var(--accent-color);
-  }
 `;
 
 const SortTrailingBtn = styled.button`
@@ -481,6 +475,21 @@ function Content({ conversionMode = 'tw' }) {
     const next = sortDirection === 'desc' ? 'asc' : 'desc';
     setSortDirectionState(next);
     setBookshelfSortDirection(next);
+  };
+
+  const handleReorderModeToggle = () => {
+    setReorderMode((v) => {
+      const next = !v;
+      if (next) setSettingsMode(false);
+      return next;
+    });
+  };
+
+  const handleSettingsModeToggle = () => {
+    if (!settingsMode) {
+      setReorderMode(false);
+    }
+    setSettingsMode((v) => !v);
   };
 
   const handleHistoryReorder = useCallback(async (fromIndex, toIndex) => {
@@ -835,19 +844,19 @@ function Content({ conversionMode = 'tw' }) {
                 title={sortDirection === 'desc' ? '由高到低（點擊切換）' : '由低到高（點擊切換）'}
                 aria-label={sortDirection === 'desc' ? '降序排列' : '升序排列'}
               >
-                {sortDirection === 'desc' ? <ArrowDown /> : <ArrowUp />}
+                {sortDirection === 'desc' ? <ArrowDownZA /> : <ArrowUpAZ />}
                 <BtnLabel>{sortDirection === 'desc' ? '降序' : '升序'}</BtnLabel>
               </SortTrailingBtn>
             ) : canReorder ? (
               <SortTrailingBtn
                 type="button"
                 $active={reorderMode}
-                onClick={() => setReorderMode((v) => !v)}
+                onClick={handleReorderModeToggle}
                 title="調整排序"
                 aria-label="調整排序"
                 aria-pressed={reorderMode}
               >
-                <ArrowUpDown />
+                <Hand />
                 <BtnLabel>調序</BtnLabel>
               </SortTrailingBtn>
             ) : null}
@@ -855,7 +864,7 @@ function Content({ conversionMode = 'tw' }) {
           <ViewToggle>
             <ToggleBtn
               $active={settingsMode}
-              onClick={() => setSettingsMode((v) => !v)}
+              onClick={handleSettingsModeToggle}
               title="管理書籍"
               aria-label="管理書籍"
               aria-pressed={settingsMode}
