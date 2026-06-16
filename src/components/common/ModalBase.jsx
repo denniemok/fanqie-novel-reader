@@ -1,6 +1,36 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { X } from 'lucide-react';
+
+export const modalScrollStyles = css`
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--accent-color) 45%, var(--border-color)) transparent;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 4px 0;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--accent-color) 35%, var(--border-color));
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  @media (hover: hover) {
+    &::-webkit-scrollbar-thumb:hover {
+      background: color-mix(in srgb, var(--accent-color) 65%, var(--border-color));
+      background-clip: padding-box;
+    }
+  }
+`;
 
 export const ModalOverlay = styled.div`
   position: fixed;
@@ -76,9 +106,25 @@ export const ModalBody = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 320px;
+  min-height: 0;
+
+  ${(p) => (p.$scroll !== false) && css`
+    max-height: min(360px, 52dvh);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    ${modalScrollStyles}
+  `}
+`;
+
+export const ModalScrollRegion = styled.div`
+  flex: 1;
+  min-height: 0;
+  max-height: min(320px, 48dvh);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  margin: 0 -2px;
+  padding: 2px 4px 2px 2px;
+  ${modalScrollStyles}
 `;
 
 export const ModalText = styled.p`

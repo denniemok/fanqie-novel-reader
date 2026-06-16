@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { flushSync } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -9,32 +9,35 @@ import {
   Grid2X2,
   LayoutList,
   Plus,
-  FolderPlus,
+  Folders,
   FolderInput,
   Trash2,
-  X,
-  Check,
-  Edit2,
   Settings,
+  RefreshCw,
+  Loader2,
+  SquareCheckBig,
+  SquareX,
+  Search,
+  X,
 } from 'lucide-react';
 import ListCard from './ListCard';
 import PageContent from '../common/PageContent';
 import GridCard from './GridCard';
 import SortableBooks from './SortableBooks';
 import CollectionModal from './CollectionModal';
+import CollectionManagementModal from './CollectionManagementModal';
 import ConfirmModal from '../common/ConfirmModal';
 import SelectDropdown from '../common/SelectDropdown';
-import {
-  ModalText,
-} from '../common/ModalBase';
+import { ModalText } from '../common/ModalBase';
+import { CardActionButton, CardSpinningIcon } from '../common/CardActionButton';
 import { useToast } from '../../contexts/ToastContext';
-import { maybeConvert } from '../../utils/zh-convert';
 import { buildCatalogUrl, ROUTES } from '../../utils/navigation';
 import { formatErrorMessage } from '../../utils/errors';
+import { fetchBookDetailAndDirectory } from '../../utils/api-helpers';
 import { SAMPLE_READING_HISTORY_BOOK_ID } from '../../utils/constants';
 import {
   getReadingHistory,
-  deleteBookData,
+  deleteBooksData,
   reorderReadingHistory,
   getBookshelfViewMode,
   setBookshelfViewMode,
@@ -46,18 +49,20 @@ import {
   createCollection,
   deleteCollection,
   renameCollection,
-  addBookToCollection,
-  removeBookFromCollection,
+  addBooksToCollection,
+  removeBooksFromCollection,
   reorderCollectionBooks,
+  reorderCollections,
 } from '../../utils/storage';
 import { BOOKSHELF_SORT_OPTIONS, sortBookshelfItems } from '../../utils/bookshelfSort';
 import { useBookshelfSortMeta } from '../../hooks/useBookshelfSortMeta';
+import { useBookshelfSearchMeta, bookMatchesBookshelfSearch } from '../../hooks/useBookshelfSearchMeta';
 
 const ALL_TAB = 'all';
 
 // ── Layout ──────────────────────────────────────────────────────────────────
 
-const Wrapper = styled(PageContent).attrs({ $variant: 'bookshelf', $gap: 20 })``;
+const Wrapper = styled(PageContent)``;
 
 const TabBar = styled.div`
   display: flex;
@@ -101,120 +106,109 @@ const Tab = styled.button`
   @media (max-width: 374px) {
     padding: 10px 12px;
     font-size: 13px;
-    max-width: 120px;
+    max-width: 140px;
   }
 `;
 
-const AddTabBtn = styled.button`
-  flex-shrink: 0;
-  padding: 13px 16px;
-  min-height: 44px;
-  background: var(--background-color2);
-  color: var(--text-color-secondary);
-  border: none;
-  border-right: 1px solid var(--border-color);
-  cursor: pointer;
-  display: flex;
+const TabInner = styled.span`
+  display: inline-flex;
   align-items: center;
-  transition: all 0.1s steps(2);
+  gap: 4px;
+  max-width: 100%;
+  min-width: 0;
+`;
 
-  svg {
-    width: 18px;
-    height: 18px;
-  }
+const TabName = styled.span`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+`;
 
-  &:hover {
-    background: var(--hover-background-color);
-    color: var(--accent-color);
-  }
+const TabCount = styled.span`
+  flex-shrink: 0;
+  opacity: 0.85;
 `;
 
 const TOOLBAR_CONTROL_HEIGHT = '44px';
 
-const NewTabRow = styled.div`
+const SearchBar = styled.div`
   display: flex;
-  gap: 4px;
-  align-items: stretch;
+  align-items: center;
+  gap: 10px;
   width: 100%;
-  min-width: 0;
+  height: ${TOOLBAR_CONTROL_HEIGHT};
   box-sizing: border-box;
+  border: 1px solid var(--border-color);
+  background: var(--background-color2);
+  padding: 0 12px;
+
+  svg.search-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: var(--text-color-secondary);
+  }
 `;
 
-const NewTabInput = styled.input`
+const SearchInput = styled.input`
   flex: 1;
   min-width: 0;
-  box-sizing: border-box;
-  padding: 10px 14px;
-  min-height: ${TOOLBAR_CONTROL_HEIGHT};
-  background: var(--background-color);
-  border: 1px solid var(--border-color);
+  border: none;
+  background: transparent;
   color: var(--text-color);
-  font-size: 15px;
+  font-size: 14px;
   font-family: var(--ui-font-family);
   outline: none;
 
-  &:focus {
-    border-color: var(--accent-color);
+  &::-webkit-search-cancel-button,
+  &::-webkit-search-decoration {
+    -webkit-appearance: none;
+    display: none;
+  }
+
+  &[type='search'] {
+    -webkit-appearance: none;
+    appearance: none;
   }
 
   &::placeholder {
     color: var(--text-color-secondary);
-    opacity: 0.5;
+    opacity: 0.55;
   }
 `;
 
-const SmallIconBtn = styled.button`
+const SearchClearBtn = styled.button`
   padding: 0;
-  width: ${TOOLBAR_CONTROL_HEIGHT};
-  height: ${TOOLBAR_CONTROL_HEIGHT};
-  box-sizing: border-box;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
   border: 1px solid var(--border-color);
-  background: ${(p) =>
-    p.$variant === 'delete' || p.$variant === 'cancel'
-      ? '#aa5555'
-      : p.$variant === 'confirm'
-        ? '#55aa55'
-        : 'var(--background-color2)'};
-  color: ${(p) => (p.$variant ? 'var(--text-on-accent)' : 'var(--text-color)')};
+  background: var(--background-color);
+  color: var(--text-color-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
   transition: all 0.1s steps(2);
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
   }
 
   &:hover {
-    filter: brightness(1.2);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
   }
 `;
 
 const TabActions = styled.div`
   display: flex;
   align-items: stretch;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
   flex-wrap: wrap;
   min-height: ${TOOLBAR_CONTROL_HEIGHT};
-`;
-
-const TabActionGroup = styled.div`
-  display: flex;
-  align-items: stretch;
-  gap: 4px;
-  flex-shrink: 0;
-`;
-
-const RenameRow = styled.div`
-  display: flex;
-  align-items: stretch;
-  gap: 4px;
-  flex: 1;
-  min-width: 0;
 `;
 
 const ViewToggle = styled.div`
@@ -374,19 +368,67 @@ const EmptyHint = styled.div`
   background: var(--background-color2);
 `;
 
-const RenameInput = styled.input`
-  flex: 1;
-  min-width: 0;
-  height: ${TOOLBAR_CONTROL_HEIGHT};
+const ManageActionBar = styled.div`
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  max-width: min(640px, calc(100vw - 32px));
   box-sizing: border-box;
-  padding: 0 12px;
-  background: var(--background-color);
-  border: 1px solid var(--accent-color);
-  color: var(--text-color);
+  background: var(--card-surface);
+  border: var(--retro-border-width) solid var(--border-color);
+  box-shadow: var(--retro-shadow-hover);
+  border-radius: var(--border-radius-sm);
+
+  @media (max-width: 480px) {
+    gap: 8px;
+    padding: 8px 10px;
+    max-width: calc(100vw - 24px);
+  }
+`;
+
+const ManageActionCount = styled.span`
   font-size: 14px;
   font-weight: 700;
   font-family: var(--ui-font-family);
-  outline: none;
+  color: var(--text-color);
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 3.5em;
+
+  @media (max-width: 480px) {
+    font-size: 13px;
+    min-width: 3em;
+  }
+`;
+
+const ManageBarButton = styled(CardActionButton)`
+  border-radius: 0;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  box-sizing: border-box;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+const ManageActionButtons = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: flex-end;
+  min-width: 0;
 `;
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -404,17 +446,16 @@ function Content({ conversionMode = 'tw' }) {
   const [readingHistory, setReadingHistory] = useState([]);
   const [collections, setCollections] = useState([]);
   const [dataLoaded, setDataLoaded] = useState(false);
-  const [addToCollectionBookId, setAddToCollectionBookId] = useState(null);
+  const [addToCollectionBookIds, setAddToCollectionBookIds] = useState(null);
   const [newCollectionName, setNewCollectionName] = useState('');
-  const [showNewTabInput, setShowNewTabInput] = useState(false);
-  const [newTabName, setNewTabName] = useState('');
-  const [editingTab, setEditingTab] = useState(false);
-  const [editingTabName, setEditingTabName] = useState('');
+  const [showCollectionManagement, setShowCollectionManagement] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [reorderMode, setReorderMode] = useState(false);
   const [settingsMode, setSettingsMode] = useState(false);
+  const [selectedBookIds, setSelectedBookIds] = useState(() => new Set());
+  const [refreshingBookIds, setRefreshingBookIds] = useState(() => new Set());
+  const [bookDataVersions, setBookDataVersions] = useState({});
   const [confirmDialog, setConfirmDialog] = useState(null);
-  const newTabInputRef = useRef(null);
-  const renameInputRef = useRef(null);
 
   const reloadData = useCallback(async () => {
     const [history, cols] = await Promise.all([getReadingHistory(), getCollections()]);
@@ -458,6 +499,28 @@ function Content({ conversionMode = 'tw' }) {
     [displayBooks, sortBy, sortMetaMap, sortDirection]
   );
 
+  const searchMetaRefreshKey = useMemo(
+    () => bookIds.map((id) => bookDataVersions[id] || 0).join(','),
+    [bookIds, bookDataVersions]
+  );
+  const searchMetaMap = useBookshelfSearchMeta(bookIds, searchMetaRefreshKey);
+
+  const hasSearch = Boolean(searchQuery.trim());
+  const booksForDisplay = useMemo(() => {
+    if (!hasSearch) return sortedDisplayBooks;
+    return sortedDisplayBooks.filter(({ bookId }) =>
+      bookMatchesBookshelfSearch(searchMetaMap[bookId], bookId, searchQuery, conversionMode)
+    );
+  }, [sortedDisplayBooks, searchQuery, searchMetaMap, conversionMode, hasSearch]);
+
+  const selectableBookIds = useMemo(
+    () => booksForDisplay.map(({ bookId }) => bookId),
+    [booksForDisplay]
+  );
+
+  const allBooksSelected = selectableBookIds.length > 0
+    && selectableBookIds.every((bookId) => selectedBookIds.has(bookId));
+
   const goToCatalog = useCallback((bookId) => navigate(buildCatalogUrl(bookId)), [navigate]);
 
   const handleViewModeChange = (mode) => {
@@ -488,9 +551,44 @@ function Content({ conversionMode = 'tw' }) {
   const handleSettingsModeToggle = () => {
     if (!settingsMode) {
       setReorderMode(false);
+    } else {
+      setSelectedBookIds(new Set());
     }
     setSettingsMode((v) => !v);
   };
+
+  const toggleBookSelection = useCallback((bookId) => {
+    setSelectedBookIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(bookId)) next.delete(bookId);
+      else next.add(bookId);
+      return next;
+    });
+  }, []);
+
+  const handleSelectAll = useCallback(() => {
+    setSelectedBookIds(new Set(selectableBookIds));
+  }, [selectableBookIds]);
+
+  const handleDeselectAll = useCallback(() => {
+    setSelectedBookIds(new Set());
+  }, []);
+
+  useEffect(() => {
+    if (!settingsMode) {
+      setSelectedBookIds(new Set());
+      setRefreshingBookIds(new Set());
+    }
+  }, [settingsMode]);
+
+  useEffect(() => {
+    setSelectedBookIds(new Set());
+    setSearchQuery('');
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (hasSearch) setReorderMode(false);
+  }, [hasSearch]);
 
   const handleHistoryReorder = useCallback(async (fromIndex, toIndex) => {
     const scrollY = window.scrollY;
@@ -526,59 +624,98 @@ function Content({ conversionMode = 'tw' }) {
     }
   };
 
-  const handleDeleteBook = (e, bookId, bookInfo) => {
-    e.stopPropagation();
-    const bookName = bookInfo?.book_info?.original_book_name;
-    const convertedName = maybeConvert(bookName, conversionMode) || bookId;
-    setConfirmDialog({
-      title: '刪除書籍',
-      message: (
-        <ModalText>
-          確定要刪除「<strong>{convertedName}</strong>」的所有本地資料嗎？此操作無法復原。
-        </ModalText>
-      ),
-      confirmLabel: '刪除',
-      errorMessage: '刪除書籍失敗，請稍後再試。',
-      onConfirm: async () => {
-        await deleteBookData(bookId);
-        setRefreshKey((k) => k + 1);
-      },
-    });
+  const handleAddToCollection = useCallback((bookIds) => {
+    const ids = Array.isArray(bookIds) ? bookIds : [bookIds];
+    setAddToCollectionBookIds(ids);
+    setNewCollectionName('');
+  }, []);
+
+  const handleBulkAddToCollection = () => {
+    if (selectedBookIds.size === 0) return;
+    handleAddToCollection(Array.from(selectedBookIds));
   };
 
-  const handleRemoveFromCollection = (e, bookId, bookInfo) => {
-    e.stopPropagation();
+  const handleBulkRefresh = async () => {
+    if (selectedBookIds.size === 0 || refreshingBookIds.size > 0) return;
+    const ids = Array.from(selectedBookIds);
+    setRefreshingBookIds(new Set(ids));
+
+    const results = await Promise.allSettled(
+      ids.map(async (bookId) => {
+        try {
+          await fetchBookDetailAndDirectory(bookId, { forceRefresh: true });
+          setBookDataVersions((prev) => ({
+            ...prev,
+            [bookId]: (prev[bookId] || 0) + 1,
+          }));
+        } finally {
+          setRefreshingBookIds((prev) => {
+            const next = new Set(prev);
+            next.delete(bookId);
+            return next;
+          });
+        }
+      })
+    );
+
+    const failed = results.filter((result) => result.status === 'rejected').length;
+
+    if (failed > 0) {
+      showToast(`${ids.length - failed} 本刷新成功，${failed} 本失敗`);
+    } else {
+      showToast(`已刷新 ${ids.length} 本書籍`);
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedBookIds.size === 0) return;
+    const ids = Array.from(selectedBookIds);
+    const isAllTab = activeTab === ALL_TAB;
+
+    if (isAllTab) {
+      setConfirmDialog({
+        title: '刪除書籍',
+        message: (
+          <ModalText>
+            確定要刪除已選的 <strong>{ids.length}</strong> 本書籍的所有本地資料嗎？此操作無法復原。
+          </ModalText>
+        ),
+        confirmLabel: '刪除',
+        errorMessage: '刪除書籍失敗，請稍後再試。',
+        onConfirm: async () => {
+          await deleteBooksData(ids);
+          setSelectedBookIds(new Set());
+          setRefreshKey((k) => k + 1);
+        },
+      });
+      return;
+    }
+
     if (!activeCollection) return;
-    const bookName = bookInfo?.book_info?.original_book_name;
-    const convertedName = maybeConvert(bookName, conversionMode) || bookId;
     setConfirmDialog({
       title: '移除書籍',
       message: (
         <ModalText>
-          確定要從「<strong>{activeCollection.name}</strong>」移除「<strong>{convertedName}</strong>」嗎？
+          確定要從「<strong>{activeCollection.name}</strong>」移除已選的 <strong>{ids.length}</strong> 本書籍嗎？
         </ModalText>
       ),
       confirmLabel: '移除',
       errorMessage: '移除書籍失敗，請稍後再試。',
       onConfirm: async () => {
-        await removeBookFromCollection(activeTab, bookId);
+        await removeBooksFromCollection(activeTab, ids);
+        setSelectedBookIds(new Set());
         await reloadDataKeepingScroll();
       },
     });
   };
 
-  const handleAddToCollection = useCallback((bookId) => {
-    setAddToCollectionBookId(bookId);
-    setNewCollectionName('');
-  }, []);
+  const handleToggleBooksInCollection = async (collectionId, bookIds, shouldInclude) => {
+    const ids = (Array.isArray(bookIds) ? bookIds : [bookIds]).map(String);
 
-  const handleToggleBookInCollection = async (collectionId, bookId) => {
-    const col = collections.find((c) => c.id === collectionId);
-    if (!col) return;
-    if (col.bookIds.includes(String(bookId))) {
-      await removeBookFromCollection(collectionId, bookId);
+    if (shouldInclude) {
+      await addBooksToCollection(collectionId, ids);
     } else {
-      await addBookToCollection(collectionId, bookId);
+      await removeBooksFromCollection(collectionId, ids);
     }
     await reloadDataKeepingScroll();
   };
@@ -590,56 +727,27 @@ function Content({ conversionMode = 'tw' }) {
     setNewCollectionName('');
   };
 
-  const handleCreateNewTab = async () => {
-    if (!newTabName.trim()) return;
-    const col = await createCollection(newTabName.trim());
+  const handleCreateCollectionInManagement = async (name) => {
+    await createCollection(name);
     await reloadData();
-    setNewTabName('');
-    setShowNewTabInput(false);
-    if (col) setActiveTab(col.id);
   };
 
-  const handleDeleteTab = () => {
-    if (!activeCollection) return;
-    setConfirmDialog({
-      title: '刪除收藏夾',
-      message: (
-        <ModalText>
-          確定要刪除收藏夾「<strong>{activeCollection.name}</strong>」嗎？
-        </ModalText>
-      ),
-      confirmLabel: '刪除',
-      errorMessage: '刪除收藏夾失敗，請稍後再試。',
-      onConfirm: async () => {
-        await deleteCollection(activeTab);
-        await reloadData();
-        setActiveTab(ALL_TAB);
-        setEditingTab(false);
-      },
-    });
+  const handleRenameCollectionInManagement = async (collectionId, name) => {
+    await renameCollection(collectionId, name);
+    await reloadData();
   };
 
-  const handleStartRenameTab = () => {
-    if (!activeCollection) return;
-    setEditingTabName(activeCollection.name);
-    setEditingTab(true);
-    setTimeout(() => renameInputRef.current?.focus(), 0);
+  const handleDeleteCollectionInManagement = async (collectionId) => {
+    await deleteCollection(collectionId);
+    await reloadData();
+    if (activeTab === collectionId) setActiveTab(ALL_TAB);
   };
 
-  const handleConfirmRenameTab = async () => {
-    if (activeTab !== ALL_TAB) {
-      await renameCollection(activeTab, editingTabName);
-      await reloadData();
-    }
-    setEditingTab(false);
-    setEditingTabName('');
-  };
-
-  useEffect(() => {
-    if (showNewTabInput) {
-      setTimeout(() => newTabInputRef.current?.focus(), 0);
-    }
-  }, [showNewTabInput]);
+  const handleCollectionsReorder = useCallback(async (fromIndex, toIndex) => {
+    await reorderCollections(fromIndex, toIndex);
+    const cols = await getCollections();
+    setCollections(cols);
+  }, []);
 
   useEffect(() => {
     if (activeTab !== ALL_TAB && !collections.find((c) => c.id === activeTab)) {
@@ -666,16 +774,22 @@ function Content({ conversionMode = 'tw' }) {
       );
     }
 
-    const isAllTab = activeTab === ALL_TAB;
+    if (booksForDisplay.length === 0) {
+      return <EmptyHint>沒有符合的書籍</EmptyHint>;
+    }
+
+    const selectionMode = settingsMode && !reorderMode;
 
     const bookCardProps = (bookId) => ({
       bookId,
       onClick: () => goToCatalog(bookId),
-      onDeleteClick: isAllTab ? handleDeleteBook : handleRemoveFromCollection,
-      onAddToCollection: isAllTab && !isSampleOnly ? handleAddToCollection : undefined,
       conversionMode,
       sortBy,
-      settingsMode,
+      selectionMode,
+      isSelected: selectedBookIds.has(bookId),
+      onToggleSelect: () => toggleBookSelection(bookId),
+      bulkRefreshing: refreshingBookIds.has(bookId),
+      bookDataVersion: bookDataVersions[bookId] || 0,
     });
 
     if (viewMode === 'list') {
@@ -684,7 +798,7 @@ function Content({ conversionMode = 'tw' }) {
           <SortableBooks
             key={`list-${activeTab}-${renderTick}`}
             layout="list"
-            items={sortedDisplayBooks}
+            items={booksForDisplay}
             getKey={({ bookId }) => bookId}
             onReorder={handleReorder}
             renderItem={({ bookId }, sortable) => (
@@ -702,7 +816,7 @@ function Content({ conversionMode = 'tw' }) {
 
       return (
         <ListLayout key={`list-${activeTab}-${renderTick}`}>
-          {sortedDisplayBooks.map(({ bookId }) => (
+          {booksForDisplay.map(({ bookId }) => (
             <ListCard key={bookId} {...bookCardProps(bookId)} />
           ))}
         </ListLayout>
@@ -714,7 +828,7 @@ function Content({ conversionMode = 'tw' }) {
         <SortableBooks
           key={`grid-${activeTab}-${renderTick}`}
           layout="grid"
-          items={sortedDisplayBooks}
+          items={booksForDisplay}
           getKey={({ bookId }) => bookId}
           onReorder={handleReorder}
           renderItem={({ bookId }, sortable) => (
@@ -732,95 +846,87 @@ function Content({ conversionMode = 'tw' }) {
 
     return (
       <GridLayout key={`grid-${activeTab}-${renderTick}`}>
-        {sortedDisplayBooks.map(({ bookId }) => (
+        {booksForDisplay.map(({ bookId }) => (
           <GridCard key={bookId} {...bookCardProps(bookId)} />
         ))}
       </GridLayout>
     );
   };
 
+  const manageBarVisible = settingsMode && !reorderMode;
+
   return (
-    <Wrapper key={refreshKey}>
+    <Wrapper
+      key={refreshKey}
+      $variant="bookshelf"
+      $gap={20}
+      $paddingBottom={manageBarVisible ? 88 : undefined}
+      $paddingBottomMobile={manageBarVisible ? 80 : undefined}
+    >
       {!dataLoaded ? (
         <EmptyHint>載入中…</EmptyHint>
       ) : (
         <>
-      {showNewTabInput ? (
-        <NewTabRow>
-          <NewTabInput
-            ref={newTabInputRef}
-            value={newTabName}
-            onChange={(e) => setNewTabName(e.target.value)}
-            placeholder="收藏夾名稱"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleCreateNewTab();
-              if (e.key === 'Escape') { setShowNewTabInput(false); setNewTabName(''); }
-            }}
-          />
-          <TabActionGroup>
-            <SmallIconBtn $variant="confirm" onClick={handleCreateNewTab} title="建立">
-              <Check />
-            </SmallIconBtn>
-            <SmallIconBtn onClick={() => { setShowNewTabInput(false); setNewTabName(''); }} title="取消" $variant="cancel">
-              <X />
-            </SmallIconBtn>
-          </TabActionGroup>
-        </NewTabRow>
-      ) : (
-        <TabBar>
-          <Tab $active={activeTab === ALL_TAB} onClick={() => setActiveTab(ALL_TAB)}>
-            全部
+      <TabBar>
+        <Tab
+          $active={activeTab === ALL_TAB}
+          onClick={() => setActiveTab(ALL_TAB)}
+          title={`全部 (${readingHistory.length})`}
+        >
+          <TabInner>
+            <TabName>全部</TabName>
+            <TabCount>({readingHistory.length})</TabCount>
+          </TabInner>
+        </Tab>
+        {collections.map((col) => (
+          <Tab
+            key={col.id}
+            $active={activeTab === col.id}
+            onClick={() => setActiveTab(col.id)}
+            title={`${col.name} (${col.bookIds.length})`}
+          >
+            <TabInner>
+              <TabName>{col.name}</TabName>
+              <TabCount>({col.bookIds.length})</TabCount>
+            </TabInner>
           </Tab>
-          {collections.map((col) => (
-            <Tab
-              key={col.id}
-              $active={activeTab === col.id}
-              onClick={() => setActiveTab(col.id)}
-              title={col.name}
-            >
-              {col.name}
-            </Tab>
-          ))}
-          <AddTabBtn onClick={() => setShowNewTabInput(true)} title="新增收藏夾">
-            <FolderPlus />
-          </AddTabBtn>
-        </TabBar>
-      )}
+        ))}
+      </TabBar>
+
+      <SearchBar>
+        <Search className="search-icon" aria-hidden />
+        <SearchInput
+          type="search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="搜尋書名或作者…"
+          aria-label="搜尋書名或作者"
+        />
+        {searchQuery && (
+          <SearchClearBtn
+            type="button"
+            onClick={() => setSearchQuery('')}
+            title="清除搜尋"
+            aria-label="清除搜尋"
+          >
+            <X />
+          </SearchClearBtn>
+        )}
+      </SearchBar>
 
       <TabActions>
-        {activeCollection && (
-          editingTab ? (
-            <RenameRow>
-              <RenameInput
-                ref={renameInputRef}
-                value={editingTabName}
-                onChange={(e) => setEditingTabName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleConfirmRenameTab();
-                  if (e.key === 'Escape') setEditingTab(false);
-                }}
-              />
-              <TabActionGroup>
-                <SmallIconBtn $variant="confirm" onClick={handleConfirmRenameTab} title="確認">
-                  <Check />
-                </SmallIconBtn>
-                <SmallIconBtn $variant="cancel" onClick={() => setEditingTab(false)} title="取消">
-                  <X />
-                </SmallIconBtn>
-              </TabActionGroup>
-            </RenameRow>
-          ) : (
-            <TabActionGroup>
-              <SmallIconBtn onClick={handleStartRenameTab} title="重新命名">
-                <Edit2 />
-              </SmallIconBtn>
-              <SmallIconBtn $variant="delete" onClick={handleDeleteTab} title="刪除收藏夾">
-                <Trash2 />
-              </SmallIconBtn>
-            </TabActionGroup>
-          )
-        )}
         <ToolbarRight>
+          <ViewToggle>
+            <ToggleBtn
+              type="button"
+              onClick={() => setShowCollectionManagement(true)}
+              title="管理收藏夾"
+              aria-label="管理收藏夾"
+            >
+              <Folders />
+              <BtnLabel>收藏夾</BtnLabel>
+            </ToggleBtn>
+          </ViewToggle>
           <SortUnit>
             <SelectDropdown
               options={BOOKSHELF_SORT_OPTIONS}
@@ -847,7 +953,7 @@ function Content({ conversionMode = 'tw' }) {
                 {sortDirection === 'desc' ? <ArrowDownZA /> : <ArrowUpAZ />}
                 <BtnLabel>{sortDirection === 'desc' ? '降序' : '升序'}</BtnLabel>
               </SortTrailingBtn>
-            ) : canReorder ? (
+            ) : canReorder && !hasSearch ? (
               <SortTrailingBtn
                 type="button"
                 $active={reorderMode}
@@ -908,23 +1014,99 @@ function Content({ conversionMode = 'tw' }) {
       </TabActions>
 
       {reorderMode && canReorder && (
-      <ReorderHint>拖曳書籍左上角的握把以調整順序，完成後再次點擊「調序」退出</ReorderHint>
+      <ReorderHint>
+        {viewMode === 'grid'
+          ? '拖曳書籍頂部的握把以調整順序，完成後再次點擊「調序」退出'
+          : '拖曳書籍左側的握把以調整順序，完成後再次點擊「調序」退出'}
+      </ReorderHint>
       )}
 
       {settingsMode && !reorderMode && (
-        <ReorderHint>書籍上已顯示管理按鈕，可加入收藏夾、刷新或刪除，完成後再次點擊「管理」退出</ReorderHint>
+        <ReorderHint>點擊書籍以選取，使用底部工具列進行管理，完成後再次點擊「管理」退出</ReorderHint>
       )}
 
       {renderBooks()}
 
-      {addToCollectionBookId && (
+      {manageBarVisible && (
+        <ManageActionBar>
+          <ManageActionCount>{selectedBookIds.size} 已選</ManageActionCount>
+          <ManageActionButtons>
+            <ManageBarButton
+              type="button"
+              disabled={allBooksSelected || selectableBookIds.length === 0}
+              onClick={handleSelectAll}
+              title="全選"
+              aria-label="全選"
+            >
+              <SquareCheckBig />
+            </ManageBarButton>
+            <ManageBarButton
+              type="button"
+              disabled={selectedBookIds.size === 0}
+              onClick={handleDeselectAll}
+              title="全不選"
+              aria-label="全不選"
+            >
+              <SquareX />
+            </ManageBarButton>
+            <ManageBarButton
+              type="button"
+              $variant="collection"
+              disabled={selectedBookIds.size === 0}
+              onClick={handleBulkAddToCollection}
+              title="加入收藏夾"
+              aria-label="加入收藏夾"
+            >
+              <FolderInput />
+            </ManageBarButton>
+            <ManageBarButton
+              type="button"
+              $variant="refresh"
+              disabled={selectedBookIds.size === 0 || refreshingBookIds.size > 0}
+              onClick={handleBulkRefresh}
+              title="刷新目錄與書籍資料"
+              aria-label="刷新目錄與書籍資料"
+            >
+              {refreshingBookIds.size > 0 ? (
+                <CardSpinningIcon><Loader2 size={18} /></CardSpinningIcon>
+              ) : (
+                <RefreshCw />
+              )}
+            </ManageBarButton>
+            <ManageBarButton
+              type="button"
+              $variant="delete"
+              disabled={selectedBookIds.size === 0}
+              onClick={handleBulkDelete}
+              title={activeTab === ALL_TAB ? '刪除所選書籍' : '從收藏夾移除'}
+              aria-label={activeTab === ALL_TAB ? '刪除所選書籍' : '從收藏夾移除'}
+            >
+              <Trash2 />
+            </ManageBarButton>
+          </ManageActionButtons>
+        </ManageActionBar>
+      )}
+
+      {showCollectionManagement && (
+        <CollectionManagementModal
+          collections={collections}
+          activeTab={activeTab}
+          onClose={() => setShowCollectionManagement(false)}
+          onCreateCollection={handleCreateCollectionInManagement}
+          onRenameCollection={handleRenameCollectionInManagement}
+          onDeleteCollection={handleDeleteCollectionInManagement}
+          onReorderCollections={handleCollectionsReorder}
+        />
+      )}
+
+      {addToCollectionBookIds && (
         <CollectionModal
-          bookId={addToCollectionBookId}
+          bookIds={addToCollectionBookIds}
           collections={collections}
           newCollectionName={newCollectionName}
           onNewCollectionNameChange={setNewCollectionName}
-          onClose={() => setAddToCollectionBookId(null)}
-          onToggleBook={handleToggleBookInCollection}
+          onClose={() => setAddToCollectionBookIds(null)}
+          onToggleBooks={handleToggleBooksInCollection}
           onCreateCollection={handleCreateCollectionFromModal}
         />
       )}

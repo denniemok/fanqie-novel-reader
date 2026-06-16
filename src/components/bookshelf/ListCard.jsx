@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { GripVertical, Loader2, RefreshCw, Trash2, FolderInput } from 'lucide-react';
+import { GripVertical, Loader2, Check } from 'lucide-react';
 import BookInfo from '../common/BookInfo';
 import { useBookLoader } from '../../hooks/useBookLoader';
 import { useToast } from '../../contexts/ToastContext';
 import { shimmerStyle } from '../../utils/styled/animations';
-import { CardActionButton, CardSpinningIcon, CardLoadingOverlay } from '../common/CardActionButton';
+import { CardLoadingOverlay } from '../common/CardActionButton';
 
 const SkeletonCard = styled.div`
   display: flex;
@@ -62,14 +62,14 @@ const Card = styled.div`
   gap: 0;
   border-radius: var(--border-radius-sm);
   background: var(--card-surface);
-  border: var(--retro-border-width) solid var(--border-color);
+  border: var(--retro-border-width) solid ${(p) => (p.$selected ? 'var(--accent-color)' : 'var(--border-color)')};
   cursor: pointer;
   transition: var(--transition-default);
   position: relative;
   overflow: hidden;
   pointer-events: ${(p) => (p.$disabled ? 'none' : 'auto')};
   opacity: ${(p) => (p.$disabled ? 0.7 : 1)};
-  box-shadow: var(--retro-shadow);
+  box-shadow: ${(p) => (p.$selected ? '0 0 0 2px color-mix(in srgb, var(--accent-color) 35%, transparent)' : 'var(--retro-shadow)')};
 
   &::before {
     content: '';
@@ -79,7 +79,7 @@ const Card = styled.div`
     bottom: 0;
     width: 3px;
     background: var(--accent-color);
-    opacity: 0;
+    opacity: ${(p) => (p.$selected ? 1 : 0)};
     transition: opacity 0.25s ease;
   }
 
@@ -154,31 +154,48 @@ const DragHandle = styled.div`
   }
 `;
 
-const ActionButtons = styled.div`
+const SelectionBadge = styled.div`
   position: absolute;
   top: 10px;
   right: 10px;
-  display: flex;
-  gap: 4px;
-  align-items: center;
   z-index: 11;
-  pointer-events: auto; /* stay clickable when Card has pointer-events: none during refresh */
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid ${(p) => (p.$selected ? 'var(--accent-color)' : 'var(--border-color)')};
+  background: ${(p) => (p.$selected ? 'var(--accent-color)' : 'var(--background-color2)')};
+  color: var(--text-on-accent);
+  pointer-events: none;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    opacity: ${(p) => (p.$selected ? 1 : 0)};
+  }
 `;
 
 function ListCard({
   bookId,
   onClick,
-  onRefreshClick,
-  onDeleteClick,
-  onAddToCollection,
   conversionMode,
   dragHandleProps,
   isDragging,
   canClick,
   reorderMode,
-  settingsMode = false,
+  selectionMode = false,
+  isSelected = false,
+  onToggleSelect,
+  bulkRefreshing = false,
+  bookDataVersion = 0,
 }) {
-  const { bookInfo, isLoading, refetch, isRefreshing, error } = useBookLoader(bookId, { detailOnly: true });
+  const { bookInfo, isLoading, isRefreshing: hookRefreshing, error } = useBookLoader(bookId, {
+    detailOnly: true,
+    bookDataVersion,
+  });
+  const isRefreshing = hookRefreshing || bulkRefreshing;
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -205,12 +222,22 @@ function ListCard({
 
   const handleCardClick = () => {
     if (reorderMode) return;
+    if (selectionMode) {
+      onToggleSelect?.();
+      return;
+    }
     if (canClick && !canClick()) return;
     onClick?.();
   };
 
   return (
-    <Card onClick={handleCardClick} $disabled={isRefreshing} $isDragging={isDragging} $reorderMode={reorderMode}>
+    <Card
+      onClick={handleCardClick}
+      $disabled={isRefreshing}
+      $isDragging={isDragging}
+      $reorderMode={reorderMode}
+      $selected={selectionMode && isSelected}
+    >
       {isRefreshing && (
         <CardLoadingOverlay>
           <Loader2 />
@@ -221,39 +248,10 @@ function ListCard({
           <GripVertical />
         </DragHandle>
       )}
-      {settingsMode && !reorderMode && (
-      <ActionButtons>
-        {onAddToCollection && (
-          <CardActionButton
-            type="button"
-            $variant="collection"
-            onClick={(e) => { e.stopPropagation(); onAddToCollection(bookId); }}
-            title="加入收藏夾"
-            aria-label="加入收藏夾"
-          >
-            <FolderInput />
-          </CardActionButton>
-        )}
-        <CardActionButton
-          type="button"
-          $variant="refresh"
-          disabled={isRefreshing}
-          onClick={(e) => { e.stopPropagation(); (onRefreshClick ?? refetch)(e); }}
-          title="刷新目錄與書籍資料"
-          aria-label="刷新目錄與書籍資料"
-        >
-          {isRefreshing ? <CardSpinningIcon><Loader2 size={18} /></CardSpinningIcon> : <RefreshCw />}
-        </CardActionButton>
-        <CardActionButton
-          type="button"
-          $variant="delete"
-          onClick={(e) => { e.stopPropagation(); onDeleteClick(e, bookId, bookInfo); }}
-          title="刪除此書的本地資料"
-          aria-label="刪除此書的本地資料"
-        >
-          <Trash2 />
-        </CardActionButton>
-      </ActionButtons>
+      {selectionMode && (
+        <SelectionBadge $selected={isSelected} aria-hidden>
+          <Check />
+        </SelectionBadge>
       )}
       <CardBody>
         <BookInfo
