@@ -32,7 +32,7 @@ export function useTheme() {
   const ctx = useContext(ThemeContext);
   if (!ctx) {
     return {
-      theme: 'light',
+      theme: 'dark',
       setTheme: () => {},
       toggleTheme: () => {},
     };

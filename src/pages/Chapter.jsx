@@ -10,7 +10,7 @@ import { useToast } from '../contexts/ToastContext';
 import { useConversionMode } from '../hooks/useConversionMode';
 import { useFontSize, useFontFamily, useTextBrightness, useReaderBackground } from '../hooks/useTextSettings';
 import { useChapterLoader } from '../hooks/useChapterLoader';
-import { buildCatalogUrl } from '../utils/navigation';
+import { buildCatalogUrl, ROUTES } from '../utils/navigation';
 
 function Chapter() {
   const [searchParams] = useSearchParams();
@@ -44,7 +44,7 @@ function Chapter() {
   }, [error, showToast]);
 
   if (!itemId) {
-    return bookId ? <Navigate to={buildCatalogUrl(bookId)} replace /> : <Navigate to="/" replace />;
+    return bookId ? <Navigate to={buildCatalogUrl(bookId)} replace /> : <Navigate to={ROUTES.home} replace />;
   }
 
   if (error) {

@@ -1,4 +1,4 @@
-import { ArrowDownZA, ArrowUpAZ, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowDownZA, ArrowUpAZ, ChevronLeft, ChevronRight, Settings } from 'lucide-react';
 import styled from 'styled-components';
 import SelectDropdown from '../common/SelectDropdown';
 
@@ -7,11 +7,12 @@ const Bar = styled.div`
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border-bottom: 1px dashed var(--border-color);
+  border-bottom: 1px dashed color-mix(in srgb, var(--border-color) 80%, transparent);
+  background: color-mix(in srgb, var(--background-color2) 35%, transparent);
 
   &:last-child {
     border-bottom: none;
-    border-top: 1px dashed var(--border-color);
+    border-top: 1px dashed color-mix(in srgb, var(--border-color) 80%, transparent);
   }
 `;
 
@@ -27,26 +28,56 @@ const NavButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
-  min-width: 40px;
-  min-height: 40px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  background: var(--background-color2);
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  box-sizing: border-box;
+  border-radius: 0;
+  border: var(--retro-border-width) solid color-mix(in srgb, var(--border-color) 85%, transparent);
+  background: color-mix(in srgb, var(--background-color2) 48%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: var(--text-color);
   cursor: pointer;
-  transition: all 0.2s ease;
+  box-shadow: var(--retro-shadow);
+  transition: all 0.1s steps(2);
+  flex-shrink: 0;
 
   &:hover:not(:disabled) {
-    background: var(--hover-background-color);
+    background: color-mix(in srgb, var(--catalog-glass-hover) 75%, transparent);
     border-color: var(--accent-color);
     color: var(--accent-color);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--retro-shadow-hover);
+  }
+
+  &:active:not(:disabled) {
+    transform: translate(1px, 1px);
+    box-shadow: none;
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
+
+  ${(p) =>
+    p.$active &&
+    `
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--text-on-accent);
+  `}
+
+  ${(p) =>
+    p.$active &&
+    `
+    &:hover:not(:disabled) {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+      color: var(--text-on-accent);
+    }
+  `}
 
   svg {
     width: 18px;
@@ -99,6 +130,9 @@ function PageDropdown({ pageOptions, currentPage, onPageSelect, openUpward = fal
       ariaLabel={`第 ${selected.pageNumber} 頁，${selected.rangeStart} - ${selected.rangeEnd}`}
       menuAriaLabel="章節頁面"
       openUpward={openUpward}
+      square
+      retro
+      triggerMinHeight={40}
       renderValue={(opt) => <PageOptionLabel pageNumber={opt.pageNumber} />}
       renderOption={(opt) => (
         <PageOptionLabel
@@ -123,8 +157,24 @@ function PageBar({
   sortOrder,
   onSortChange,
   menuOpensUp = false,
+  manageMode = false,
+  onManageModeToggle,
+  showManageToggle = false,
 }) {
   const showPagination = pageOptions.length > 1;
+
+  const manageButton = showManageToggle && onManageModeToggle && (
+    <NavButton
+      type="button"
+      title={manageMode ? '退出管理' : '管理章節'}
+      aria-label={manageMode ? '退出管理' : '管理章節'}
+      aria-pressed={manageMode}
+      $active={manageMode}
+      onClick={onManageModeToggle}
+    >
+      <Settings size={18} />
+    </NavButton>
+  );
 
   const sortButton = (
     <NavButton
@@ -145,6 +195,7 @@ function PageBar({
             <NavButton type="button" title="上一頁" onClick={onPagePrev} disabled={!canGoPrev}>
               <ChevronLeft size={18} />
             </NavButton>
+            {manageButton}
             <PageDropdown
               pageOptions={pageOptions}
               currentPage={currentPage}
@@ -157,7 +208,10 @@ function PageBar({
             </NavButton>
           </>
         ) : (
-          sortButton
+          <>
+            {manageButton}
+            {sortButton}
+          </>
         )}
       </PaginationGroup>
     </Bar>

@@ -15,11 +15,19 @@ export const IconButton = styled.button`
   transition: var(--transition-default);
   box-shadow: var(--retro-shadow);
 
+  ${(p) =>
+    p.$active &&
+    `
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--text-on-accent);
+  `}
+
   @media (hover: hover) {
     &:hover:not(:disabled) {
-      background: var(--accent-color);
+      background: ${(p) => (p.$active ? 'var(--accent-hover)' : 'var(--accent-color)')};
       color: var(--text-on-accent);
-      border-color: var(--accent-color);
+      border-color: ${(p) => (p.$active ? 'var(--accent-hover)' : 'var(--accent-color)')};
       transform: translate(-1px, -1px) rotate(-1deg);
       box-shadow: var(--retro-shadow-hover);
     }

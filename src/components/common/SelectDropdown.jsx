@@ -31,10 +31,12 @@ const SelectWrapper = styled.div`
   display: inline-flex;
   align-items: stretch;
   height: ${(p) => (p.$embedded ? '100%' : 'auto')};
+  ${(p) => p.$open && 'z-index: 50;'}
 
   ${(p) =>
     p.$attached &&
     !p.$embedded &&
+    !p.$retro &&
     `
     border: 1px solid var(--border-color);
     border-radius: ${p.$square ? '0' : 'var(--border-radius-sm)'};
@@ -125,6 +127,30 @@ const Trigger = styled.button`
     }
   `}
 
+  ${(p) =>
+    p.$retro &&
+    !p.$attached &&
+    css`
+      border: var(--retro-border-width) solid color-mix(in srgb, var(--border-color) 85%, transparent);
+      background: color-mix(in srgb, var(--background-color2) 48%, transparent);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: var(--retro-shadow);
+      transition: all 0.1s steps(2);
+
+      &:hover,
+      &:focus {
+        border-color: var(--accent-color);
+        transform: translate(-1px, -1px);
+        box-shadow: var(--retro-shadow-hover);
+      }
+
+      &:active {
+        transform: translate(1px, 1px);
+        box-shadow: var(--retro-shadow);
+      }
+    `}
+
   @media (max-width: 480px) {
     min-width: ${(p) => p.$minWidthMobile ?? p.$minWidth ?? 96}px;
     padding: 0 22px 0 8px;
@@ -177,9 +203,10 @@ const Menu = styled.div`
   overflow-x: hidden;
   background-color: var(--dropdown-bg);
   backdrop-filter: blur(12px);
-  border: 1px solid var(--border-color);
+  border: ${(p) => (p.$retro ? 'var(--retro-border-width)' : '1px')} solid
+    ${(p) => (p.$retro ? 'color-mix(in srgb, var(--border-color) 85%, transparent)' : 'var(--border-color)')};
   border-radius: ${(p) => (p.$square ? '0' : 'var(--border-radius-sm)')};
-  box-shadow: var(--panel-shadow);
+  box-shadow: ${(p) => (p.$retro ? 'var(--retro-shadow)' : 'var(--panel-shadow)')};
   z-index: 1100;
   padding: 4px;
   ${menuScrollStyles}
@@ -246,6 +273,7 @@ function SelectDropdown({
   hideAttachedLabelOnMobile = false,
   embedded = false,
   square = false,
+  retro = false,
   hasTrailing = false,
   triggerMinWidthMobile,
   renderOption,
@@ -274,7 +302,7 @@ function SelectDropdown({
   const triggerLabel = renderValue ? renderValue(selected) : renderLabel(selected);
 
   return (
-    <SelectWrapper ref={ref} $attached={attached} $embedded={embedded} $square={square}>
+    <SelectWrapper ref={ref} $open={open} $attached={attached} $embedded={embedded} $square={square} $retro={retro}>
       {attachedLabel && (
         <AttachedLabel $hideOnMobile={hideAttachedLabelOnMobile} $square={square}>
           {attachedLabel}
@@ -293,6 +321,7 @@ function SelectDropdown({
         $attached={grouped}
         $embedded={embedded}
         $square={square}
+        $retro={retro}
         $hasTrailing={hasTrailing}
       >
         <TriggerText>{triggerLabel}</TriggerText>
@@ -305,6 +334,7 @@ function SelectDropdown({
           $openUpward={openUpward}
           $menuAlign={menuAlign}
           $square={square}
+          $retro={retro}
         >
           {options.map((opt) => (
             <Option

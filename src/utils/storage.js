@@ -7,6 +7,7 @@ import {
   BOOKSHELF_VIEW_MODE_KEY,
   BOOKSHELF_SORT_KEY,
   BOOKSHELF_SORT_DIRECTION_KEY,
+  BOOKSHELF_ACTIVE_TAB_KEY,
   FONT_SIZE_KEY,
   FONT_SIZE_MIN,
   FONT_SIZE_MAX,
@@ -94,10 +95,6 @@ export async function deleteBooksData(bookIds) {
     bookIds: c.bookIds.filter((id) => !bidSet.has(id)),
   }));
   await saveCollections(collections);
-}
-
-export async function deleteBookData(bookId) {
-  return deleteBooksData([bookId]);
 }
 
 async function migrateReadingHistoryFromLocalStorage() {
@@ -243,6 +240,13 @@ export async function isChapterCached(itemId) {
   return raw != null;
 }
 
+export async function getUncachedItemIds(itemIds) {
+  const results = await Promise.all(
+    itemIds.map((id) => isChapterCached(id).then((cached) => ({ id, cached })))
+  );
+  return results.filter((r) => !r.cached).map((r) => r.id);
+}
+
 export async function deleteChapter(itemId) {
   if (!itemId) return false;
   await chapterCache.remove(itemId);
@@ -316,10 +320,6 @@ export async function addBooksToCollection(collectionId, bookIds) {
   return saveCollections(updated);
 }
 
-export async function addBookToCollection(collectionId, bookId) {
-  return addBooksToCollection(collectionId, [bookId]);
-}
-
 export async function removeBooksFromCollection(collectionId, bookIds) {
   const bidSet = new Set((Array.isArray(bookIds) ? bookIds : [bookIds]).map(String).filter(Boolean));
   if (!bidSet.size) return false;
@@ -329,10 +329,6 @@ export async function removeBooksFromCollection(collectionId, bookIds) {
       : c
   );
   return saveCollections(collections);
-}
-
-export async function removeBookFromCollection(collectionId, bookId) {
-  return removeBooksFromCollection(collectionId, [bookId]);
 }
 
 /** Move a book within a collection's bookIds; order is user-controlled. */
@@ -387,9 +383,23 @@ export function setBookshelfSortDirection(direction) {
   return valid ? safeSetItem(BOOKSHELF_SORT_DIRECTION_KEY, direction) : false;
 }
 
+export function getBookshelfActiveTab() {
+  const raw = safeGetItem(BOOKSHELF_ACTIVE_TAB_KEY);
+  if (!raw || raw === 'all') return 'all';
+  return raw;
+}
+
+export function setBookshelfActiveTab(tabId) {
+  if (tabId === 'all') return safeSetItem(BOOKSHELF_ACTIVE_TAB_KEY, 'all');
+  if (typeof tabId === 'string' && tabId.trim()) {
+    return safeSetItem(BOOKSHELF_ACTIVE_TAB_KEY, tabId);
+  }
+  return false;
+}
+
 /** @returns {'light'|'dark'} */
 export function getTheme() {
-  return safeGetItem(THEME_KEY) === 'dark' ? 'dark' : 'light';
+  return safeGetItem(THEME_KEY) === 'light' ? 'light' : 'dark';
 }
 
 export function setTheme(theme) {

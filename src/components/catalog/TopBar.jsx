@@ -30,7 +30,8 @@ function TopBar({
         title={downloadingAll ? '停止下載' : hasUncachedChapters ? `下載全部 (${uncachedItemIds.length} 章)` : '已全部下載'}
         onClick={onDownloadAll}
         disabled={!hasUncachedChapters && !downloadingAll}
-        style={downloadingAll ? { color: 'var(--accent-color)' } : undefined}
+        $active={downloadingAll}
+        aria-pressed={downloadingAll}
       >
         <Download size={20} strokeWidth={2.5} />
       </IconButton>

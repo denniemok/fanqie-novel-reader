@@ -30,11 +30,33 @@
 
   --transition-default: all 0.28s cubic-bezier(0.34, 1.4, 0.64, 1);
   --topbar-bg: rgba(240, 233, 228, 0.96);
+  --catalog-glass-bg: rgba(248, 243, 239, 0.12);
+  --catalog-glass-hover: rgba(235, 228, 223, 0.52);
   --overlay-bg: rgba(180, 150, 140, 0.28);
   --panel-shadow: 0 8px 28px rgba(120, 90, 100, 0.14);
   --dropdown-bg: var(--background-color2);
   --cover-bg: #e4d8d2;
   --topbar-shadow: 0 4px 20px rgba(160, 120, 130, 0.12);
+  /* TopBarBase: padding + 44px row + border-bottom */
+  --topbar-height: calc(70px + env(safe-area-inset-top));
+  /* Background image wash */
+  --bg-wash-linear: linear-gradient(
+    165deg,
+    rgba(240, 233, 228, 0.78) 0%,
+    rgba(248, 243, 239, 0.52) 45%,
+    rgba(240, 233, 228, 0.7) 100%
+  );
+  --bg-wash-vignette: radial-gradient(
+    ellipse 95% 88% at 50% 32%,
+    transparent 0%,
+    rgba(240, 233, 228, 0.18) 55%,
+    rgba(240, 233, 228, 0.48) 100%
+  );
+  --bg-wash-accent: radial-gradient(
+    ellipse 80% 55% at 50% 0%,
+    rgba(201, 128, 154, 0.12) 0%,
+    transparent 70%
+  );
   --selection-bg: rgba(201, 128, 154, 0.28);
   --card-surface: linear-gradient(
     155deg,
@@ -77,11 +99,30 @@
   --retro-shadow-hover: 5px 6px 0 rgba(0, 0, 0, 0.38);
 
   --topbar-bg: rgba(42, 34, 48, 0.96);
+  --catalog-glass-bg: rgba(53, 44, 60, 0.12);
+  --catalog-glass-hover: rgba(61, 51, 68, 0.52);
   --overlay-bg: rgba(20, 16, 24, 0.55);
   --panel-shadow: 0 8px 28px rgba(0, 0, 0, 0.38);
   --dropdown-bg: #352c3c;
   --cover-bg: #3d3344;
   --topbar-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  --bg-wash-linear: linear-gradient(
+    165deg,
+    rgba(42, 34, 48, 0.84) 0%,
+    rgba(42, 34, 48, 0.62) 45%,
+    rgba(42, 34, 48, 0.78) 100%
+  );
+  --bg-wash-vignette: radial-gradient(
+    ellipse 95% 88% at 50% 32%,
+    transparent 0%,
+    rgba(42, 34, 48, 0.22) 55%,
+    rgba(42, 34, 48, 0.55) 100%
+  );
+  --bg-wash-accent: radial-gradient(
+    ellipse 80% 55% at 50% 0%,
+    rgba(232, 138, 170, 0.1) 0%,
+    transparent 70%
+  );
   --selection-bg: rgba(232, 138, 170, 0.35);
 
   --progressBar: #3d3344;
@@ -103,13 +144,15 @@
 
 [data-theme="dark"] body {
   background-image:
+    var(--bg-wash-accent),
     radial-gradient(ellipse 70% 45% at 15% 8%, rgba(232, 138, 170, 0.1) 0%, transparent 55%),
     radial-gradient(ellipse 50% 35% at 88% 92%, rgba(140, 120, 150, 0.1) 0%, transparent 50%),
     radial-gradient(circle, rgba(120, 100, 110, 0.08) 1px, transparent 1px),
-    linear-gradient(rgba(42, 34, 48, 0.72), rgba(42, 34, 48, 0.82)),
+    var(--bg-wash-vignette),
+    var(--bg-wash-linear),
     url('/bg-dark.webp');
-  background-size: 100% 100%, 100% 100%, 32px 32px, cover, cover;
-  background-position: center, center, center, center, center;
+  background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, cover, cover, cover;
+  background-position: center, center, center, center, center, center, center;
 }
 
 *, *::before, *::after {
@@ -168,13 +211,15 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   background-image:
+    var(--bg-wash-accent),
     radial-gradient(ellipse 70% 45% at 15% 8%, rgba(201, 128, 154, 0.1) 0%, transparent 55%),
     radial-gradient(ellipse 50% 35% at 88% 92%, rgba(180, 160, 175, 0.08) 0%, transparent 50%),
     radial-gradient(circle, rgba(160, 140, 130, 0.05) 1px, transparent 1px),
-    linear-gradient(rgba(240, 233, 228, 0.5), rgba(240, 233, 228, 0.62)),
+    var(--bg-wash-vignette),
+    var(--bg-wash-linear),
     url('/bg-light.webp');
-  background-size: 100% 100%, 100% 100%, 32px 32px, cover, cover;
-  background-position: center, center, center, center, center;
+  background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, cover, cover, cover;
+  background-position: center, center, center, center, center, center, center;
   background-attachment: fixed;
   transition: background-color 0.4s ease, color 0.4s ease;
 }
@@ -204,4 +249,10 @@ a, span, h1, h2, h3, h4, h5, h6, p, li {
 button, a {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+}
+
+@media (max-width: 480px) {
+  :root {
+    --topbar-height: calc(66px + env(safe-area-inset-top));
+  }
 }

@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { flushSync } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import {
   Hand,
   ArrowDownZA,
@@ -35,9 +35,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { useDownloadManager } from '../../contexts/DownloadManager';
 import { buildCatalogUrl, ROUTES } from '../../utils/navigation';
 import { formatErrorMessage } from '../../utils/errors';
-import { fetchBookDetailAndDirectory } from '../../utils/api-helpers';
-import { fetchBookDirectory } from '../../services/api';
-import { directoryCache } from '../../utils/cache';
+import { fetchBookDetailAndDirectory, getCachedOrFetchDirectory } from '../../utils/api-helpers';
 import { SAMPLE_READING_HISTORY_BOOK_ID } from '../../utils/constants';
 import {
   getReadingHistory,
@@ -49,6 +47,8 @@ import {
   setBookshelfSort,
   getBookshelfSortDirection,
   setBookshelfSortDirection,
+  getBookshelfActiveTab,
+  setBookshelfActiveTab,
   getCollections,
   createCollection,
   deleteCollection,
@@ -57,13 +57,27 @@ import {
   removeBooksFromCollection,
   reorderCollectionBooks,
   reorderCollections,
-  isChapterCached,
+  getUncachedItemIds,
 } from '../../utils/storage';
 import { BOOKSHELF_SORT_OPTIONS, sortBookshelfItems } from '../../utils/bookshelfSort';
 import { useBookshelfSortMeta } from '../../hooks/useBookshelfSortMeta';
 import { useBookshelfSearchMeta, bookMatchesBookshelfSearch } from '../../hooks/useBookshelfSearchMeta';
 
 const ALL_TAB = 'all';
+
+const toolbarRetroUnit = css`
+  border: var(--retro-border-width) solid color-mix(in srgb, var(--border-color) 85%, transparent);
+  box-shadow: var(--retro-shadow);
+  transition: all 0.1s steps(2);
+
+  @media (hover: hover) {
+    &:hover {
+      border-color: var(--accent-color);
+      transform: translate(-1px, -1px);
+      box-shadow: var(--retro-shadow-hover);
+    }
+  }
+`;
 
 // ── Layout ──────────────────────────────────────────────────────────────────
 
@@ -73,10 +87,10 @@ const TabBar = styled.div`
   display: flex;
   align-items: stretch;
   gap: 0;
-  border: 1px solid var(--border-color);
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  ${toolbarRetroUnit}
 
   &::-webkit-scrollbar {
     display: none;
@@ -143,9 +157,17 @@ const SearchBar = styled.div`
   width: 100%;
   height: ${TOOLBAR_CONTROL_HEIGHT};
   box-sizing: border-box;
-  border: 1px solid var(--border-color);
-  background: var(--background-color2);
   padding: 0 12px;
+  background: color-mix(in srgb, var(--background-color2) 48%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  ${toolbarRetroUnit}
+
+  &:focus-within {
+    border-color: var(--accent-color);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--retro-shadow-hover);
+  }
 
   svg.search-icon {
     width: 18px;
@@ -187,13 +209,15 @@ const SearchClearBtn = styled.button`
   width: 28px;
   height: 28px;
   flex-shrink: 0;
-  border: 1px solid var(--border-color);
-  background: var(--background-color);
+  border: var(--retro-border-width) solid color-mix(in srgb, var(--border-color) 85%, transparent);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--background-color2) 48%, transparent);
   color: var(--text-color-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: var(--retro-shadow);
   transition: all 0.1s steps(2);
 
   svg {
@@ -204,6 +228,13 @@ const SearchClearBtn = styled.button`
   &:hover {
     border-color: var(--accent-color);
     color: var(--accent-color);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--retro-shadow-hover);
+  }
+
+  &:active {
+    transform: translate(1px, 1px);
+    box-shadow: var(--retro-shadow);
   }
 `;
 
@@ -216,14 +247,22 @@ const TabActions = styled.div`
   min-height: ${TOOLBAR_CONTROL_HEIGHT};
 `;
 
+const BookshelfToolbar = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  z-index: 30;
+`;
+
 const ViewToggle = styled.div`
   display: flex;
   align-items: stretch;
   gap: 0;
   height: ${TOOLBAR_CONTROL_HEIGHT};
   box-sizing: border-box;
-  border: 1px solid var(--border-color);
   overflow: hidden;
+  ${toolbarRetroUnit}
 `;
 
 const ToolbarRight = styled.div`
@@ -243,8 +282,8 @@ const SortUnit = styled.div`
   align-items: stretch;
   height: ${TOOLBAR_CONTROL_HEIGHT};
   box-sizing: border-box;
-  border: 1px solid var(--border-color);
   border-radius: 0;
+  ${toolbarRetroUnit}
 `;
 
 const SortTrailingBtn = styled.button`
@@ -443,7 +482,7 @@ function Content({ conversionMode = 'tw' }) {
   const { showToast } = useToast();
   const { startDownloadAll } = useDownloadManager();
 
-  const [activeTab, setActiveTab] = useState(ALL_TAB);
+  const [activeTab, setActiveTab] = useState(getBookshelfActiveTab);
   const [viewMode, setViewModeState] = useState(getBookshelfViewMode);
   const [sortBy, setSortByState] = useState(getBookshelfSort);
   const [sortDirection, setSortDirectionState] = useState(getBookshelfSortDirection);
@@ -646,23 +685,14 @@ function Content({ conversionMode = 'tw' }) {
     const bookId = Array.from(selectedBookIds)[0];
 
     try {
-      let directory = await directoryCache.get(bookId);
-      if (!directory?.item_data_list?.length) {
-        directory = await fetchBookDirectory(bookId);
-      }
+      const directory = await getCachedOrFetchDirectory(bookId);
       const list = directory?.item_data_list ?? [];
       if (!list.length) {
         showToast('無法取得章節目錄');
         return;
       }
 
-      const uncachedItemIds = (
-        await Promise.all(
-          list.map((item) =>
-            isChapterCached(item.item_id).then((cached) => (!cached ? item.item_id : null))
-          )
-        )
-      ).filter(Boolean);
+      const uncachedItemIds = await getUncachedItemIds(list.map((item) => item.item_id));
 
       if (uncachedItemIds.length > 0) {
         startDownloadAll(bookId, uncachedItemIds);
@@ -790,10 +820,15 @@ function Content({ conversionMode = 'tw' }) {
   }, []);
 
   useEffect(() => {
+    if (!dataLoaded) return;
     if (activeTab !== ALL_TAB && !collections.find((c) => c.id === activeTab)) {
       setActiveTab(ALL_TAB);
     }
-  }, [activeTab, collections]);
+  }, [activeTab, collections, dataLoaded]);
+
+  useEffect(() => {
+    setBookshelfActiveTab(activeTab);
+  }, [activeTab]);
 
   const canReorder = sortBy === 'manual' && (activeTab !== ALL_TAB || !isSampleOnly);
 
@@ -907,6 +942,7 @@ function Content({ conversionMode = 'tw' }) {
         <EmptyHint>載入中…</EmptyHint>
       ) : (
         <>
+      <BookshelfToolbar>
       <TabBar>
         <Tab
           $active={activeTab === ALL_TAB}
@@ -977,6 +1013,7 @@ function Content({ conversionMode = 'tw' }) {
               hideAttachedLabelOnMobile
               embedded
               square
+              retro
               hasTrailing={sortBy !== 'manual' || canReorder}
               menuAlign="left"
               triggerMinWidth={108}
@@ -1052,6 +1089,7 @@ function Content({ conversionMode = 'tw' }) {
           </ViewToggle>
         </ToolbarRight>
       </TabActions>
+      </BookshelfToolbar>
 
       {reorderMode && canReorder && (
       <ReorderHint>

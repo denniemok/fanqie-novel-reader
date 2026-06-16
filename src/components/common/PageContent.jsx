@@ -1,11 +1,7 @@
 import styled from 'styled-components';
 
 export const TopBarOffset = styled.div`
-  padding-top: calc(76px + env(safe-area-inset-top));
-
-  @media (max-width: 480px) {
-    padding-top: calc(68px + env(safe-area-inset-top));
-  }
+  padding-top: var(--topbar-height);
 `;
 
 const PageContent = styled.div`

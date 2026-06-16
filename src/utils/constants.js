@@ -8,6 +8,7 @@ export const COLLECTIONS_KEY = 'fanqie-collections';
 export const BOOKSHELF_VIEW_MODE_KEY = 'fanqie-viewMode';
 export const BOOKSHELF_SORT_KEY = 'fanqie-bookshelfSort';
 export const BOOKSHELF_SORT_DIRECTION_KEY = 'fanqie-bookshelfSortDir';
+export const BOOKSHELF_ACTIVE_TAB_KEY = 'fanqie-bookshelfActiveTab';
 export const API_BASE_KEY = 'apiBase';
 export const SORT_ORDER_KEY = 'sortOrder';
 export const FONT_SIZE_KEY = 'fontSize';

@@ -8,7 +8,7 @@ import PageWrapper from '../components/common/PageWrapper';
 import { useToast } from '../contexts/ToastContext';
 import TopBar from '../components/catalog/TopBar';
 import { TopBarOffset } from '../components/common/PageContent';
-import { getLastReadChapter, getSortOrder, setSortOrder, isChapterCached } from '../utils/storage';
+import { getLastReadChapter, getSortOrder, setSortOrder, getUncachedItemIds } from '../utils/storage';
 import { runBookTxtExport } from '../utils/exportBookActions';
 import { useConversionMode } from '../hooks/useConversionMode';
 import { useBookLoader } from '../hooks/useBookLoader';
@@ -62,8 +62,7 @@ function Catalog() {
       setUncachedItemIds((prev) => (prev.length ? [] : prev));
       return;
     }
-    Promise.all(list.map((item) => isChapterCached(item.item_id).then((cached) => ({ itemId: item.item_id, cached }))))
-      .then((results) => setUncachedItemIds(results.filter((r) => !r.cached).map((r) => r.itemId)));
+    getUncachedItemIds(list.map((item) => item.item_id)).then(setUncachedItemIds);
   }, [bookInfo, completedDownloads]);
 
   useEffect(() => {
@@ -104,11 +103,11 @@ function Catalog() {
   };
 
   if (!bookId) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={ROUTES.home} replace />;
   }
 
   if (error) {
-    return <Error message={error} href="/" />;
+    return <Error message={error} href={ROUTES.home} />;
   }
 
   return (
@@ -148,7 +147,7 @@ function Catalog() {
           )}
         </TopBarOffset>
       ) : (
-        <Loading onAbort={() => navigate('/')} />
+        <Loading onAbort={() => navigate(ROUTES.home)} />
       )}
       {downloadAllConfirmOpen && (
         <DownloadAllConfirmModal

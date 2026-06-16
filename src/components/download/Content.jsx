@@ -1,13 +1,13 @@
 import React from 'react';
 import PageContent from '../common/PageContent';
-import DownloadStatus from './DownloadStatus';
-import DownloadGuide from './DownloadGuide';
+import Progress from './Progress';
+import Guide from './Guide';
 
 function Content() {
   return (
     <PageContent $paddingBottom={48} $paddingBottomMobile={32}>
-      <DownloadStatus />
-      <DownloadGuide />
+      <Progress />
+      <Guide />
     </PageContent>
   );
 }

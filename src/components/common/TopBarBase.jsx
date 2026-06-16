@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import ThemeToggle from './ThemeToggle';
 import ActionBar from './ActionBar';
+import { ROUTES } from '../../utils/navigation';
 
 const TopBarWrapper = styled.div`
   display: flex;
@@ -32,7 +33,6 @@ const TitleGroup = styled.div`
   gap: 6px;
   min-width: 0;
   flex: 1;
-  overflow: hidden;
 `;
 
 const SiteTitle = styled(Link)`
@@ -78,6 +78,8 @@ const PageTitleLabel = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1 1 auto;
 
   @media (max-width: 374px) {
     font-size: 13px;
@@ -88,7 +90,7 @@ function TopBarBase({ pageTitle, children }) {
   return (
     <TopBarWrapper>
       <TitleGroup>
-        <SiteTitle to="/">番茄繁體閱讀</SiteTitle>
+        <SiteTitle to={ROUTES.home}>番茄繁體閱讀</SiteTitle>
         {pageTitle && (
           <>
             <TitleSep>›</TitleSep>

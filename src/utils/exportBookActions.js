@@ -1,5 +1,6 @@
-import { detailCache, directoryCache } from './cache';
-import { fetchBookDetail, fetchBookDirectory } from '../services/api';
+import { detailCache } from './cache';
+import { fetchBookDetail } from '../services/api';
+import { getCachedOrFetchDirectory } from './api-helpers';
 import { exportBookToTxt, EXPORT_NO_CACHED_CHAPTERS_MSG } from './exportBookTxt';
 import { formatErrorMessage } from './errors';
 
@@ -8,10 +9,7 @@ async function resolveExportBookData(bookId, bookInfo) {
     return { bookInfo, itemDataList: bookInfo.item_data_list };
   }
 
-  let directory = await directoryCache.get(bookId);
-  if (!directory?.item_data_list?.length) {
-    directory = await fetchBookDirectory(bookId);
-  }
+  const directory = await getCachedOrFetchDirectory(bookId);
   let detail = await detailCache.get(bookId);
   if (!detail) {
     detail = await fetchBookDetail(bookId);

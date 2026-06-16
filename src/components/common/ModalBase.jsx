@@ -222,6 +222,14 @@ export const ModalDangerButton = styled.button`
   }
 `;
 
+export const ModalSecondaryButton = styled.button`
+  ${modalButtonStyles}
+  background: var(--background-color2);
+  color: var(--text-color);
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0px #000;
+`;
+
 export function Modal({ onClose, children, maxWidth }) {
   return (
     <ModalOverlay onClick={onClose}>

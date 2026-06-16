@@ -5,7 +5,7 @@ const PageWrapper = styled.div`
   ${minViewportHeight}
   overflow-x: hidden;
   width: 100%;
-  background-color: ${(p) => p.$backgroundColor ?? 'var(--background-color)'};
+  background-color: ${(p) => p.$backgroundColor ?? 'transparent'};
   ${(p) => p.$withBottomPadding && 'padding-bottom: env(safe-area-inset-bottom);'}
 `;
 

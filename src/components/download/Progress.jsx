@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Loader2, Download as DownloadIcon } from 'lucide-react';
@@ -10,6 +10,7 @@ import { buildCatalogUrl } from '../../utils/navigation';
 import { runBookTxtExport } from '../../utils/exportBookActions';
 import { CardSpinningIcon } from '../common/CardActionButton';
 import { GrayButton } from '../common/GrayButton';
+import { SectionTitle } from './styles';
 
 const Section = styled.section`
   display: flex;
@@ -17,15 +18,6 @@ const Section = styled.section`
   gap: 14px;
   width: 100%;
   margin-bottom: 28px;
-`;
-
-const SectionTitle = styled.h2`
-  margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-  font-family: var(--display-font-family);
-  letter-spacing: 0.06em;
-  color: var(--text-color);
 `;
 
 const StatusCard = styled.div`
@@ -161,7 +153,7 @@ const ActionRow = styled.div`
   flex-wrap: wrap;
 `;
 
-function DownloadStatus() {
+function Progress() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const {
@@ -318,4 +310,4 @@ function DownloadStatus() {
   );
 }
 
-export default DownloadStatus;
+export default Progress;

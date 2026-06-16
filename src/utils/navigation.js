@@ -4,6 +4,9 @@ export const ROUTES = {
   newBook: '/new-book',
   announcements: '/announcements',
   download: '/download',
+  catalog: '/catalog',
+  chapter: '/chapter',
+  comments: '/comments',
 };
 
 export function buildChapterUrl(itemId, bookId = null) {

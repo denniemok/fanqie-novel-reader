@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, Navigate, useNavigate } from 'react-router-dom';
 import { fetchComments } from '../services/api';
 import { useBookLoader } from '../hooks/useBookLoader';
-import { buildCatalogUrl } from '../utils/navigation';
+import { buildCatalogUrl, ROUTES } from '../utils/navigation';
 import { formatErrorMessage } from '../utils/errors';
 import { useToast } from '../contexts/ToastContext';
 import Error from '../components/common/Error';
@@ -86,7 +86,7 @@ function Comments() {
   const handleRefresh = () => setRefreshKey((k) => k + 1);
 
   if (!bookId) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={ROUTES.home} replace />;
   }
 
   if (error) {
