@@ -52,7 +52,7 @@ function Chapter() {
   }
 
   return (
-    <PageWrapper $withBottomPadding={false} $backgroundColor={readerBackground}>
+    <PageWrapper $withBottomPadding={false} $backgroundColor={loading ? undefined : readerBackground}>
       {loading ? (
         <Loading onAbort={() => navigate(bookId ? buildCatalogUrl(bookId) : '/')} />
       ) : (
