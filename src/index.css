@@ -227,6 +227,17 @@ button, a {
   touch-action: manipulation;
 }
 
+/* Tall narrow portrait (phones + tablets): anchor bg image to the left */
+@media (orientation: portrait) {
+  body {
+    background-position: center, center, center, center, center, center, left center;
+  }
+
+  [data-theme="dark"] body {
+    background-position: center, center, center, center, center, center, left center;
+  }
+}
+
 @media (max-width: 480px) {
   :root {
     --topbar-height: calc(66px + env(safe-area-inset-top));
