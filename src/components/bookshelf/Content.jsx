@@ -68,6 +68,7 @@ function Content({ conversionMode = 'tw' }) {
   const [selectedBookIds, setSelectedBookIds] = useState(() => new Set());
   const [refreshingBookIds, setRefreshingBookIds] = useState(() => new Set());
   const [bookDataVersions, setBookDataVersions] = useState({});
+  const [bookRefreshErrors, setBookRefreshErrors] = useState({});
   const [confirmDialog, setConfirmDialog] = useState(null);
 
   const reloadData = useCallback(async () => {
@@ -169,6 +170,16 @@ function Content({ conversionMode = 'tw' }) {
     }
     setSettingsMode((v) => !v);
   };
+
+  const clearBookRefreshErrors = useCallback((bookIds) => {
+    setBookRefreshErrors((prev) => {
+      const ids = (Array.isArray(bookIds) ? bookIds : [bookIds]).map(String);
+      if (ids.length === 0) return prev;
+      const next = { ...prev };
+      ids.forEach((bookId) => delete next[bookId]);
+      return next;
+    });
+  }, []);
 
   const toggleBookSelection = useCallback((bookId) => {
     setSelectedBookIds((prev) => {
@@ -277,15 +288,23 @@ function Content({ conversionMode = 'tw' }) {
     if (selectedBookIds.size === 0 || refreshingBookIds.size > 0) return;
     const ids = Array.from(selectedBookIds);
     setRefreshingBookIds(new Set(ids));
+    setBookRefreshErrors((prev) => {
+      const next = { ...prev };
+      ids.forEach((bookId) => delete next[bookId]);
+      return next;
+    });
 
-    const results = await Promise.allSettled(
+    const outcomes = await Promise.all(
       ids.map(async (bookId) => {
         try {
-          await fetchBookDetailAndDirectory(bookId, { forceRefresh: true });
+          const { partialLoadMessage } = await fetchBookDetailAndDirectory(bookId, { forceRefresh: true });
           setBookDataVersions((prev) => ({
             ...prev,
             [bookId]: (prev[bookId] || 0) + 1,
           }));
+          return { bookId, ok: !partialLoadMessage, partialLoadMessage, error: null };
+        } catch (err) {
+          return { bookId, ok: false, partialLoadMessage: null, error: err };
         } finally {
           setRefreshingBookIds((prev) => {
             const next = new Set(prev);
@@ -296,12 +315,30 @@ function Content({ conversionMode = 'tw' }) {
       })
     );
 
-    const failed = results.filter((result) => result.status === 'rejected').length;
+    setBookRefreshErrors((prev) => {
+      const next = { ...prev };
+      outcomes.forEach(({ bookId, ok, partialLoadMessage, error }) => {
+        if (!ok) {
+          next[bookId] = partialLoadMessage || formatErrorMessage(error, '刷新失敗，請稍後再試。');
+        }
+      });
+      return next;
+    });
 
-    if (failed > 0) {
-      showToast(`${ids.length - failed} 本刷新成功，${failed} 本失敗`);
-    } else {
+    const succeeded = outcomes.filter((o) => o.ok).length;
+    const failed = outcomes.length - succeeded;
+
+    if (failed === 0) {
       showToast(`已刷新 ${ids.length} 本書籍`);
+      return;
+    }
+
+    if (ids.length === 1) return;
+
+    if (succeeded === 0) {
+      showToast(`全部 ${failed} 本刷新失敗`);
+    } else {
+      showToast(`${succeeded} 本刷新成功，${failed} 本失敗`);
     }
   };
 
@@ -322,6 +359,7 @@ function Content({ conversionMode = 'tw' }) {
         errorMessage: '刪除書籍失敗，請稍後再試。',
         onConfirm: async () => {
           await deleteBooksData(ids);
+          clearBookRefreshErrors(ids);
           setSelectedBookIds(new Set());
           setRefreshKey((k) => k + 1);
         },
@@ -341,6 +379,7 @@ function Content({ conversionMode = 'tw' }) {
       errorMessage: '移除書籍失敗，請稍後再試。',
       onConfirm: async () => {
         await removeBooksFromCollection(activeTab, ids);
+        clearBookRefreshErrors(ids);
         setSelectedBookIds(new Set());
         await reloadDataKeepingScroll();
       },
@@ -466,6 +505,7 @@ function Content({ conversionMode = 'tw' }) {
             sortBy={sortBy}
             selectedBookIds={selectedBookIds}
             refreshingBookIds={refreshingBookIds}
+            bookRefreshErrors={bookRefreshErrors}
             bookDataVersions={bookDataVersions}
             renderTick={renderTick}
             onBookClick={goToCatalog}

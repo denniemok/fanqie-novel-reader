@@ -6,6 +6,7 @@ import { useBookLoader } from '../../hooks/useBookLoader';
 import { useErrorToast } from '../../hooks/useErrorToast';
 import { shimmerStyle } from '../../utils/styled/animations';
 import { CardLoadingOverlay } from '../common/CardActionButton';
+import BookRefreshError from './BookRefreshError';
 
 const SkeletonCard = styled.div`
   display: flex;
@@ -56,6 +57,7 @@ const SkeletonLine = styled.div`
 
 const Card = styled.div`
   display: flex;
+  flex-direction: column;
   width: 100%;
   box-sizing: border-box;
   align-items: stretch;
@@ -103,6 +105,13 @@ const Card = styled.div`
     outline: 2px dashed var(--accent-color);
     outline-offset: -2px;
   `}
+`;
+
+const CardMainRow = styled.div`
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  min-width: 0;
 `;
 
 const CardBody = styled.div`
@@ -189,6 +198,7 @@ function ListCard({
   isSelected = false,
   onToggleSelect,
   bulkRefreshing = false,
+  refreshError,
   bookDataVersion = 0,
 }) {
   const { bookInfo, isLoading, isRefreshing: hookRefreshing, error } = useBookLoader(bookId, {
@@ -239,23 +249,26 @@ function ListCard({
           <Loader2 />
         </CardLoadingOverlay>
       )}
-      {dragHandleProps && (
-        <DragHandle {...dragHandleProps} aria-label="拖曳排序">
-          <GripVertical />
-        </DragHandle>
-      )}
-      {selectionMode && (
-        <SelectionBadge $selected={isSelected} aria-hidden>
-          <Check />
-        </SelectionBadge>
-      )}
-      <CardBody>
-        <BookInfo
-          bookInfo={bookInfo}
-          conversionMode={conversionMode}
-          variant="compact"
-        />
-      </CardBody>
+      <CardMainRow>
+        {dragHandleProps && (
+          <DragHandle {...dragHandleProps} aria-label="拖曳排序">
+            <GripVertical />
+          </DragHandle>
+        )}
+        {selectionMode && (
+          <SelectionBadge $selected={isSelected} aria-hidden>
+            <Check />
+          </SelectionBadge>
+        )}
+        <CardBody>
+          <BookInfo
+            bookInfo={bookInfo}
+            conversionMode={conversionMode}
+            variant="compact"
+          />
+        </CardBody>
+      </CardMainRow>
+      <BookRefreshError message={refreshError} />
     </Card>
   );
 }

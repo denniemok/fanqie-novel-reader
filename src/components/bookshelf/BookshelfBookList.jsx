@@ -17,6 +17,7 @@ function BookshelfBookList({
   sortBy,
   selectedBookIds,
   refreshingBookIds,
+  bookRefreshErrors,
   bookDataVersions,
   renderTick,
   onBookClick,
@@ -48,6 +49,7 @@ function BookshelfBookList({
     isSelected: selectedBookIds.has(bookId),
     onToggleSelect: () => onToggleBookSelection(bookId),
     bulkRefreshing: refreshingBookIds.has(bookId),
+    refreshError: bookRefreshErrors[bookId],
     bookDataVersion: bookDataVersions[bookId] || 0,
   });
 

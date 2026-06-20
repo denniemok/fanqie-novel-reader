@@ -6,6 +6,7 @@ import { useErrorToast } from '../../hooks/useErrorToast';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import { shimmerStyle } from '../../utils/styled/animations';
 import { CardLoadingOverlay } from '../common/CardActionButton';
+import BookRefreshError from './BookRefreshError';
 
 const SkeletonCard = styled.div`
   display: flex;
@@ -252,6 +253,7 @@ function GridCard({
   isSelected = false,
   onToggleSelect,
   bulkRefreshing = false,
+  refreshError,
   bookDataVersion = 0,
 }) {
   const { bookInfo, isLoading, isRefreshing: hookRefreshing, error } = useBookLoader(bookId, {
@@ -367,6 +369,7 @@ function GridCard({
         <Title>{convertedName || bookId}</Title>
         <Author $empty={!convertedAuthor}>{convertedAuthor || '\u00A0'}</Author>
       </Info>
+      <BookRefreshError message={refreshError} />
     </Card>
   );
 }
