@@ -13,6 +13,9 @@ export function formatErrorMessage(error, defaultMessage) {
   if (msg.includes('Invalid book ID') || msg.includes('book not found')) {
     return '書籍 ID 無效或找不到該書籍，請檢查後重試。';
   }
+  if (msg.includes('Failed to decode')) {
+    return '回傳資料無效，請稍後再試。';
+  }
   if (
     msg.includes('Failed to fetch') ||
     msg.includes('Invalid response from server') ||
@@ -23,7 +26,7 @@ export function formatErrorMessage(error, defaultMessage) {
     return '請求失敗，請稍後再試。';
   }
   if (name === 'SyntaxError' || msg.includes('Unexpected token')) {
-    return '伺服器回傳格式錯誤，請稍後再試。';
+    return '回傳格式錯誤，請稍後再試。';
   }
   return defaultMessage;
 }

@@ -302,8 +302,15 @@ function Content({ conversionMode = 'tw' }) {
             ...prev,
             [bookId]: (prev[bookId] || 0) + 1,
           }));
+          if (partialLoadMessage) {
+            setBookRefreshErrors((prev) => ({ ...prev, [bookId]: partialLoadMessage }));
+          }
           return { bookId, ok: !partialLoadMessage, partialLoadMessage, error: null };
         } catch (err) {
+          setBookRefreshErrors((prev) => ({
+            ...prev,
+            [bookId]: formatErrorMessage(err, '刷新失敗，請稍後再試。'),
+          }));
           return { bookId, ok: false, partialLoadMessage: null, error: err };
         } finally {
           setRefreshingBookIds((prev) => {
@@ -315,16 +322,6 @@ function Content({ conversionMode = 'tw' }) {
       })
     );
 
-    setBookRefreshErrors((prev) => {
-      const next = { ...prev };
-      outcomes.forEach(({ bookId, ok, partialLoadMessage, error }) => {
-        if (!ok) {
-          next[bookId] = partialLoadMessage || formatErrorMessage(error, '刷新失敗，請稍後再試。');
-        }
-      });
-      return next;
-    });
-
     const succeeded = outcomes.filter((o) => o.ok).length;
     const failed = outcomes.length - succeeded;
 
@@ -332,8 +329,6 @@ function Content({ conversionMode = 'tw' }) {
       showToast(`已刷新 ${ids.length} 本書籍`);
       return;
     }
-
-    if (ids.length === 1) return;
 
     if (succeeded === 0) {
       showToast(`全部 ${failed} 本刷新失敗`);

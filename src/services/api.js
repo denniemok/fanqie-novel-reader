@@ -133,14 +133,18 @@ export async function fetchBookDetail(bookId, { forceRefresh = false, signal } =
   const url = getFetchUrl('detail', { book_id: bookId });
   const json = await fetchAndValidate(url, { signal });
 
-  const payload = json?.data;
+  const payload = json?.data ?? json;
+  if (!payload || (Array.isArray(payload) && payload.length === 0)) {
+    throw new Error('Failed to decode book detail data');
+  }
+
   let d = {};
   if (Array.isArray(payload)) {
     d =
       payload.find((b) => b != null && String(b.book_id) === String(bookId)) ??
       payload[0] ??
       {};
-  } else if (payload && typeof payload === 'object') {
+  } else if (typeof payload === 'object') {
     d = payload;
   }
 
@@ -158,7 +162,11 @@ export async function fetchBookDetail(bookId, { forceRefresh = false, signal } =
     last_publish_time: d.last_publish_time || null,
     creation_status: d.creation_status || null,
   };
-  
+
+  if (!result.original_book_name) {
+    throw new Error('Failed to decode book detail data');
+  }
+
   await detailCache.set(bookId, result);
   return result;
 }
@@ -185,7 +193,11 @@ export async function fetchBookDirectory(bookId, { forceRefresh = false, signal 
     title: item.title,
     version: item.version,
   }));
-  
+
+  if (itemDataList.length > 0 && itemDataList.every((item) => item.item_id == null)) {
+    throw new Error('Failed to decode directory data');
+  }
+
   const inner = { item_data_list: itemDataList };
   await directoryCache.set(bookId, inner);
   await setLastReadChapter(bookId, null);
@@ -204,8 +216,11 @@ export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {
   const url = getFetchUrl('content', { item_id: itemId });
   const json = await fetchAndValidate(url, { signal });
 
-  const content = json?.content ?? '';
-  const filteredContent = cleanText(content);
+  const rawContent = json?.content;
+  if (rawContent == null) {
+    throw new Error('Failed to decode chapter content');
+  }
+  const filteredContent = cleanText(String(rawContent));
   await chapterCache.set(itemId, filteredContent);
   
   return { content: filteredContent };
@@ -214,5 +229,9 @@ export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {
 export async function fetchComments(bookId, { count = 20, offset = 1, signal } = {}) {
   const url = getFetchUrl('comment', { book_id: bookId, count, offset });
   const json = await fetchAndValidate(url, { signal });
-  return json ?? { data: { comment: [], comment_cnt: 0, context: '', has_more: false } };
+  const inner = json?.data ?? json;
+  if (!inner || !Array.isArray(inner.comment)) {
+    throw new Error('Failed to decode comment data');
+  }
+  return { data: inner };
 }
