@@ -44,8 +44,9 @@ export const ZH_CONVERSION_OPTIONS = [
 /** API sources: { value: opaque ID (used with proxy), label: display name } — real URLs live in proxy only */
 export const API_OPTIONS = [
   { value: 'basic-1', label: '基本服務 1' },
-  { value: 'basic-2', label: '基本服務 2' },
-  { value: 'basic-3', label: '基本服務 3' },
+  { value: 'basic-2', label: '基本服務 2 (暫不可用)' },
+  { value: 'basic-3', label: '基本服務 3 (暫不可用)' },
+  { value: 'basic-4', label: '基本服務 4 (暫不可用)' },
 ];
 
 /** Chinese fonts for reader: { value: CSS font-family, label: display name } */

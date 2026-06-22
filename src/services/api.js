@@ -117,7 +117,9 @@ async function fetchAndValidate(url, options = {}) {
   }
   const successOk = json.success !== undefined && json.success === true;
   const codeOk = json.code !== undefined && json.code === 0;
-  if (!successOk && !codeOk) throw new Error('Failed to fetch data');
+  const oldCodeOk = json.code !== undefined && json.code === 200;
+  if (!successOk && !codeOk && !oldCodeOk) throw new Error('Failed to fetch data');
+  if (oldCodeOk) return json.data;
   if (successOk) return json.data;
   return json;
 }

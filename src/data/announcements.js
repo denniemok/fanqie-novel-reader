@@ -1,8 +1,12 @@
 export const ANNOUNCEMENTS = [
   {
+    date: '2026-06-22',
+    message: 'Basic-1 API 服務現已恢復可用。',
+    urgent: true,
+  },
+  {
     date: '2026-06-20',
     message: '目前所有 API 服務暫時無法使用，站長正在設法修復中。造成不便，敬請見諒。',
-    urgent: true,
   },
   {
     date: '2026-06-20',
