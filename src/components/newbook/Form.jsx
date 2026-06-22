@@ -13,6 +13,7 @@ const InputGroup = styled.div`
   box-sizing: border-box;
   background-color: var(--background-color2);
   border: var(--retro-border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
   width: 100%;
   box-shadow: var(--retro-shadow);
 `;
@@ -30,16 +31,17 @@ const FormEl = styled.form`
     flex: 1;
     padding: 14px 20px;
     background-color: var(--background-color);
-    border: 1px solid var(--border-color);
+    border: var(--retro-border-width) solid var(--border-color);
+    border-radius: var(--border-radius-sm);
     color: var(--text-color);
     font-size: 16px;
-    transition: all 0.1s steps(2);
+    transition: var(--transition-default);
     font-family: inherit;
 
     &:focus {
       outline: none;
       border-color: var(--accent-color);
-      box-shadow: 0 0 0 2px rgba(143, 163, 143, 0.2);
+      box-shadow: 0 0 0 3px var(--accent-soft);
     }
 
     &::placeholder {
@@ -49,33 +51,34 @@ const FormEl = styled.form`
   }
 
   button {
-    padding: 8px 28px;
+    padding: 10px 28px;
     background-color: var(--accent-color);
-    color: #000;
-    border: 2px solid #000;
+    color: var(--text-on-accent);
+    border: var(--retro-border-width) solid var(--accent-color);
+    border-radius: var(--border-radius-sketch);
     font-size: 16px;
-    font-weight: 900;
+    font-weight: 600;
+    font-family: var(--display-font-family);
     cursor: pointer;
-    transition: all 0.1s steps(2);
+    transition: var(--transition-default);
     white-space: nowrap;
-    text-transform: uppercase;
-    box-shadow: 4px 4px 0px #000;
-    font-family: inherit;
+    box-shadow: var(--retro-shadow);
+    letter-spacing: 0.06em;
 
     &:hover {
       background-color: var(--accent-hover);
-      transform: translate(-2px, -2px);
-      box-shadow: 6px 6px 0px #000;
+      transform: translate(-2px, -2px) rotate(-0.5deg);
+      box-shadow: var(--retro-shadow-hover);
     }
 
     &:active {
       transform: translate(1px, 1px);
-      box-shadow: 0px 0px 0px #000;
+      box-shadow: none;
     }
   }
 `;
 
-function Form() {
+function Form({ embedded = false, autoFocus = false }) {
   const navigate = useNavigate();
   const inputRef = useRef(null);
 
@@ -87,22 +90,22 @@ function Form() {
     navigate(buildCatalogUrl(bookId));
   };
 
-  return (
-    <Section>
-      <InputGroup>
-        <FormEl onSubmit={handleSubmit}>
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="貼上番茄小說書籍 ID 或 網址"
-            defaultValue=""
-            autoFocus
-          />
-          <button type="submit">開始閱讀</button>
-        </FormEl>
-      </InputGroup>
-    </Section>
+  const content = (
+    <InputGroup>
+      <FormEl onSubmit={handleSubmit}>
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder="貼上書籍 ID 或網址（番茄小說 / Tomato MTL）"
+          defaultValue=""
+          autoFocus={autoFocus}
+        />
+        <button type="submit">開始閱讀</button>
+      </FormEl>
+    </InputGroup>
   );
+
+  return embedded ? content : <Section>{content}</Section>;
 }
 
 export default Form;

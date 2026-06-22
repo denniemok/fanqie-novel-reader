@@ -7,6 +7,7 @@ import {
   BOOKSHELF_VIEW_MODE_KEY,
   BOOKSHELF_SORT_KEY,
   BOOKSHELF_SORT_DIRECTION_KEY,
+  BOOKSHELF_ACTIVE_TAB_KEY,
   FONT_SIZE_KEY,
   FONT_SIZE_MIN,
   FONT_SIZE_MAX,
@@ -20,6 +21,7 @@ import {
   TEXT_BRIGHTNESS_DEFAULT,
   READER_BACKGROUND_KEY,
   READER_BACKGROUND_OPTIONS,
+  THEME_KEY,
 } from './constants';
 import { directoryCache, chapterCache, detailCache, getStoreItem, setStoreItem } from './cache';
 
@@ -69,19 +71,28 @@ export function safeRemoveItem(key) {
   }
 }
 
-export async function deleteBookData(bookId) {
-  if (!bookId) return;
-  const directory = await directoryCache.get(bookId);
-  const itemIds = directory?.item_data_list?.map((item) => item.item_id) ?? [];
-  await directoryCache.remove(bookId);
-  await detailCache.remove(bookId);
-  await Promise.all(itemIds.map((itemId) => chapterCache.remove(itemId)));
-  const bid = String(bookId);
-  const history = (await getReadingHistory()).filter((e) => e.bookId !== bid);
+export async function deleteBooksData(bookIds) {
+  const bids = [...new Set((Array.isArray(bookIds) ? bookIds : [bookIds]).map(String).filter(Boolean))];
+  if (!bids.length) return;
+
+  const itemIdsToRemove = [];
+  await Promise.all(
+    bids.map(async (bookId) => {
+      const directory = await directoryCache.get(bookId);
+      const itemIds = directory?.item_data_list?.map((item) => item.item_id) ?? [];
+      itemIdsToRemove.push(...itemIds);
+      await directoryCache.remove(bookId);
+      await detailCache.remove(bookId);
+    })
+  );
+  await Promise.all(itemIdsToRemove.map((itemId) => chapterCache.remove(itemId)));
+
+  const bidSet = new Set(bids);
+  const history = (await getReadingHistory()).filter((e) => !bidSet.has(e.bookId));
   await saveReadingHistory(history);
   const collections = (await getCollections()).map((c) => ({
     ...c,
-    bookIds: c.bookIds.filter((id) => id !== bid),
+    bookIds: c.bookIds.filter((id) => !bidSet.has(id)),
   }));
   await saveCollections(collections);
 }
@@ -229,6 +240,13 @@ export async function isChapterCached(itemId) {
   return raw != null;
 }
 
+export async function getUncachedItemIds(itemIds) {
+  const results = await Promise.all(
+    itemIds.map((id) => isChapterCached(id).then((cached) => ({ id, cached })))
+  );
+  return results.filter((r) => !r.cached).map((r) => r.id);
+}
+
 export async function deleteChapter(itemId) {
   if (!itemId) return false;
   await chapterCache.remove(itemId);
@@ -262,6 +280,23 @@ export async function deleteCollection(collectionId) {
   return saveCollections(collections);
 }
 
+export async function reorderCollections(fromIndex, toIndex) {
+  const collections = await getCollections();
+  if (
+    fromIndex < 0
+    || fromIndex >= collections.length
+    || toIndex < 0
+    || toIndex >= collections.length
+  ) {
+    return false;
+  }
+  if (fromIndex === toIndex) return true;
+  const next = [...collections];
+  const [item] = next.splice(fromIndex, 1);
+  next.splice(toIndex, 0, item);
+  return saveCollections(next);
+}
+
 export async function renameCollection(collectionId, name) {
   if (!name?.trim()) return false;
   const collections = (await getCollections()).map((c) =>
@@ -270,20 +305,28 @@ export async function renameCollection(collectionId, name) {
   return saveCollections(collections);
 }
 
-export async function addBookToCollection(collectionId, bookId) {
-  const bid = String(bookId);
-  const collections = (await getCollections()).map((c) => {
+export async function addBooksToCollection(collectionId, bookIds) {
+  const bids = [...new Set((Array.isArray(bookIds) ? bookIds : [bookIds]).map(String).filter(Boolean))];
+  if (!bids.length) return false;
+  const collections = await getCollections();
+  const updated = collections.map((c) => {
     if (c.id !== collectionId) return c;
-    if (c.bookIds.includes(bid)) return c;
-    return { ...c, bookIds: [...c.bookIds, bid] };
+    const next = [...c.bookIds];
+    for (const bid of bids) {
+      if (!next.includes(bid)) next.push(bid);
+    }
+    return { ...c, bookIds: next };
   });
-  return saveCollections(collections);
+  return saveCollections(updated);
 }
 
-export async function removeBookFromCollection(collectionId, bookId) {
-  const bid = String(bookId);
+export async function removeBooksFromCollection(collectionId, bookIds) {
+  const bidSet = new Set((Array.isArray(bookIds) ? bookIds : [bookIds]).map(String).filter(Boolean));
+  if (!bidSet.size) return false;
   const collections = (await getCollections()).map((c) =>
-    c.id === collectionId ? { ...c, bookIds: c.bookIds.filter((id) => id !== bid) } : c
+    c.id === collectionId
+      ? { ...c, bookIds: c.bookIds.filter((id) => !bidSet.has(id)) }
+      : c
   );
   return saveCollections(collections);
 }
@@ -338,5 +381,29 @@ export function getBookshelfSortDirection() {
 export function setBookshelfSortDirection(direction) {
   const valid = direction === 'asc' || direction === 'desc';
   return valid ? safeSetItem(BOOKSHELF_SORT_DIRECTION_KEY, direction) : false;
+}
+
+export function getBookshelfActiveTab() {
+  const raw = safeGetItem(BOOKSHELF_ACTIVE_TAB_KEY);
+  if (!raw || raw === 'all') return 'all';
+  return raw;
+}
+
+export function setBookshelfActiveTab(tabId) {
+  if (tabId === 'all') return safeSetItem(BOOKSHELF_ACTIVE_TAB_KEY, 'all');
+  if (typeof tabId === 'string' && tabId.trim()) {
+    return safeSetItem(BOOKSHELF_ACTIVE_TAB_KEY, tabId);
+  }
+  return false;
+}
+
+/** @returns {'light'|'dark'} */
+export function getTheme() {
+  return safeGetItem(THEME_KEY) === 'light' ? 'light' : 'dark';
+}
+
+export function setTheme(theme) {
+  if (theme !== 'light' && theme !== 'dark') return false;
+  return safeSetItem(THEME_KEY, theme);
 }
 

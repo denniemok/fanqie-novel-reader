@@ -28,6 +28,17 @@ const DisabledLinkSpan = styled.span`
   text-overflow: ellipsis;
 `;
 
+const CatalogPanel = styled.section`
+  margin: 12px 6px 12px;
+  border-radius: var(--border-radius-sm);
+  border: var(--retro-border-width) solid color-mix(in srgb, var(--border-color) 75%, transparent);
+  box-shadow: var(--retro-shadow);
+  background: var(--catalog-glass-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  overflow: hidden;
+`;
+
 const MenuList = styled.ul`
   list-style-type: none;
   margin: 0;
@@ -45,7 +56,7 @@ const MenuItem = styled.li`
   transition: all 0.1s steps(2);
 
   &:hover {
-    background-color: var(--hover-background-color);
+    background-color: var(--catalog-glass-hover);
   }
 
   a {
@@ -118,6 +129,7 @@ function Menu({
   onSortChange,
 }) {
   const { isDownloading } = useDownloadManager();
+  const [manageMode, setManageMode] = useState(false);
   const totalChapters = itemDataList?.length ?? 0;
   const totalPages = getTotalPages(totalChapters, chaptersPerPage);
   const paginatedItems = getPaginatedChapters(itemDataList, sortOrder, currentPage, chaptersPerPage);
@@ -135,21 +147,23 @@ function Menu({
     onPageSelect,
     sortOrder,
     onSortChange,
+    manageMode,
+    onManageModeToggle: () => setManageMode((on) => !on),
   };
 
   return (
-    <>
-      <PageBar {...pageBarProps} />
+    <CatalogPanel>
+      <PageBar {...pageBarProps} showManageToggle />
       <MenuList>
         {paginatedItems.map((item) => (
           <MenuItem key={item.item_id}>
             <MenuItemLink item={item} bookId={bookId} conversionMode={conversionMode} isDownloading={isDownloading(item.item_id)} />
-            <ChapterActions item={item} onChapterDeleted={onChapterDeleted} />
+            <ChapterActions item={item} manageMode={manageMode} onChapterDeleted={onChapterDeleted} />
           </MenuItem>
         ))}
       </MenuList>
       <PageBar {...pageBarProps} menuOpensUp />
-    </>
+    </CatalogPanel>
   );
 }
 
@@ -167,7 +181,7 @@ function MenuItemLink({ item, bookId, conversionMode, isDownloading }) {
   return <Link to={buildChapterUrl(item.item_id, bookId)}>{convertedTitle}</Link>;
 }
 
-function ChapterActions({ item, onChapterDeleted }) {
+function ChapterActions({ item, manageMode, onChapterDeleted }) {
   const { addToQueue, isDownloading, completedDownloads } = useDownloadManager();
   const itemId = item.item_id;
   const [deleted, setDeleted] = useState(false);
@@ -221,18 +235,22 @@ function ChapterActions({ item, onChapterDeleted }) {
       <span title={getStatusTitle()} style={{ display: 'flex', color: 'var(--text-color-secondary)' }}>
         <Status isDownloading={downloading} isCached={cached} />
       </span>
-      <IconButton
-        type="button"
-        title={getActionTitle()}
-        onClick={handleClick}
-        disabled={downloading}
-      >
-        {getActionIcon()}
-      </IconButton>
-      {cached && (
-        <IconButton type="button" title="刪除章節" onClick={handleDelete}>
-          <Trash2 size={18} />
-        </IconButton>
+      {manageMode && (
+        <>
+          <IconButton
+            type="button"
+            title={getActionTitle()}
+            onClick={handleClick}
+            disabled={downloading}
+          >
+            {getActionIcon()}
+          </IconButton>
+          {cached && (
+            <IconButton type="button" title="刪除章節" onClick={handleDelete}>
+              <Trash2 size={18} />
+            </IconButton>
+          )}
+        </>
       )}
     </div>
   );

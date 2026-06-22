@@ -1,11 +1,12 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { X } from 'lucide-react';
+import { modalScrollbarStyles } from '../../utils/styled/scrollbars';
 
 export const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--overlay-bg);
   z-index: 200;
   display: flex;
   align-items: center;
@@ -22,6 +23,7 @@ export const ModalOverlay = styled.div`
 export const ModalBox = styled.div`
   background: var(--background-color2);
   border: var(--retro-border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
   box-shadow: var(--retro-shadow);
   width: 100%;
   max-width: ${(p) => p.$maxWidth ?? '380px'};
@@ -31,11 +33,11 @@ export const ModalBox = styled.div`
 `;
 
 export const ModalHeader = styled.div`
-  font-size: 14px;
-  font-weight: 900;
+  font-family: var(--display-font-family);
+  font-size: 15px;
+  font-weight: 600;
   color: var(--text-color);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   padding: 12px 16px;
   background: var(--background-color);
   border-bottom: 1px solid var(--border-color);
@@ -75,9 +77,25 @@ export const ModalBody = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 320px;
+  min-height: 0;
+
+  ${(p) => (p.$scroll !== false) && css`
+    max-height: min(360px, 52dvh);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    ${modalScrollbarStyles}
+  `}
+`;
+
+export const ModalScrollRegion = styled.div`
+  flex: 1;
+  min-height: 0;
+  max-height: min(320px, 48dvh);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  margin: 0 -2px;
+  padding: 2px 4px 2px 2px;
+  ${modalScrollbarStyles}
 `;
 
 export const ModalText = styled.p`
@@ -100,16 +118,17 @@ export const ModalFooter = styled.div`
   padding: 12px 16px;
   border-top: 1px solid var(--border-color);
   justify-content: flex-end;
+
+  ${(p) =>
+    p.$stretch &&
+    css`
+      min-width: 0;
+      align-items: stretch;
+    `}
 `;
 
-export const ModalFooterRow = styled.div`
-  display: flex;
-  gap: 8px;
-  padding: 12px 16px;
-  border-top: 1px solid var(--border-color);
-  min-width: 0;
-  align-items: stretch;
-`;
+/** @deprecated Use ModalFooter with $stretch instead. */
+export const ModalFooterRow = styled(ModalFooter).attrs({ $stretch: true })``;
 
 export const ModalInput = styled.input`
   flex: 1;
@@ -173,6 +192,14 @@ export const ModalDangerButton = styled.button`
   &:hover {
     filter: brightness(1.1);
   }
+`;
+
+export const ModalSecondaryButton = styled.button`
+  ${modalButtonStyles}
+  background: var(--background-color2);
+  color: var(--text-color);
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0px #000;
 `;
 
 export function Modal({ onClose, children, maxWidth }) {

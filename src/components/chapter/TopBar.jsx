@@ -6,6 +6,7 @@ import ActionBar from '../common/ActionBar';
 import HomeButton from '../common/HomeButton';
 import BookshelfButton from '../common/BookshelfButton';
 import CatalogButton from '../common/CatalogButton';
+import ThemeToggle from '../common/ThemeToggle';
 import ApiDropdown from '../common/ApiDropdown';
 import LangDropdown from '../common/LangDropdown';
 import { IconButton } from '../common/IconButton';
@@ -19,8 +20,8 @@ const TopBarWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
-  background-color: rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(8px);
+  background-color: var(--topbar-bg);
+  backdrop-filter: blur(12px);
   position: fixed;
   top: 0;
   left: 0;
@@ -86,10 +87,10 @@ const ProgressBox = styled.div`
 `;
 
 const ProgressBarContainer = styled.div`
-  height: 3px;
+  height: 4px;
   flex: 1;
-  border-radius: 0;
-  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+  background-color: var(--accent-soft);
   overflow: hidden;
 `;
 
@@ -208,6 +209,7 @@ function TopBar({ chapterData, bookInfo, bookId, itemId, fontSize, onFontSizeCha
               </IconButton>
             )}
             <CatalogButton bookId={catalogBookId} />
+            <ThemeToggle />
           </ActionBar>
       </InfoRow>
       {progress != null && (

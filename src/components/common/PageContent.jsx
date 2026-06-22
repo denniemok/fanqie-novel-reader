@@ -1,11 +1,7 @@
 import styled from 'styled-components';
 
 export const TopBarOffset = styled.div`
-  padding-top: calc(76px + env(safe-area-inset-top));
-
-  @media (max-width: 480px) {
-    padding-top: calc(68px + env(safe-area-inset-top));
-  }
+  padding-top: var(--topbar-height);
 `;
 
 const PageContent = styled.div`
@@ -16,6 +12,8 @@ const PageContent = styled.div`
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
+  animation: fadeInUp 0.45s cubic-bezier(0.34, 1.4, 0.64, 1) backwards;
+  animation-delay: 0.06s;
   ${({ $variant }) => $variant === 'home' && 'align-items: center;'}
   padding-top: ${({ $variant }) => {
     if ($variant === 'home') return '0';

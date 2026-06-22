@@ -14,18 +14,15 @@ const SORT_FIELD = {
 };
 
 /** @param {object|null} detail */
-/** @param {object|null} directory */
-export function extractBookshelfSortMeta(detail, directory) {
+export function extractBookshelfSortMeta(detail) {
   const d = detail || {};
   const scoreRaw = d.score;
   const score = scoreRaw && scoreRaw !== '0' ? parseFloat(scoreRaw) : null;
   const updateTime = d.last_publish_time ? parseInt(d.last_publish_time, 10) : null;
   const words = d.word_number && d.word_number !== '0' ? parseInt(d.word_number, 10) : null;
-  const fromDir = directory?.item_data_list?.length;
-  const fromDetail = d.content_chapter_number && d.content_chapter_number !== '0'
+  const chapters = d.content_chapter_number && d.content_chapter_number !== '0'
     ? parseInt(d.content_chapter_number, 10)
     : null;
-  const chapters = fromDir || fromDetail || null;
   return {
     score: Number.isFinite(score) ? score : null,
     updateTime: Number.isFinite(updateTime) ? updateTime : null,

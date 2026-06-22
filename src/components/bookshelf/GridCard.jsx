@@ -1,30 +1,12 @@
-import React, { useEffect } from 'react';
-import styled, { keyframes, css } from 'styled-components';
-import { GripVertical, Loader2, RefreshCw, Trash2, FolderInput } from 'lucide-react';
+import React from 'react';
+import styled from 'styled-components';
+import { GripHorizontal, Loader2, Check } from 'lucide-react';
 import { useBookLoader } from '../../hooks/useBookLoader';
-import { useToast } from '../../contexts/ToastContext';
+import { useErrorToast } from '../../hooks/useErrorToast';
 import { useConvertedText } from '../../hooks/useConvertedText';
-
-const shimmer = keyframes`
-  0% { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-`;
-
-const shimmerStyle = css`
-  background: linear-gradient(
-    90deg,
-    var(--background-color2) 25%,
-    var(--border-color) 50%,
-    var(--background-color2) 75%
-  );
-  background-size: 800px 100%;
-  animation: ${shimmer} 1.4s ease-in-out infinite;
-`;
-
-const spin = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-`;
+import { shimmerStyle } from '../../utils/styled/animations';
+import { CardLoadingOverlay } from '../common/CardActionButton';
+import BookRefreshError from './BookRefreshError';
 
 const SkeletonCard = styled.div`
   display: flex;
@@ -33,6 +15,7 @@ const SkeletonCard = styled.div`
   box-sizing: border-box;
   background-color: var(--background-color2);
   border: var(--retro-border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm);
   overflow: hidden;
   box-shadow: var(--retro-shadow);
 `;
@@ -61,26 +44,41 @@ const Card = styled.div`
   flex-direction: column;
   height: 100%;
   box-sizing: border-box;
-  background-color: var(--background-color2);
-  border: var(--retro-border-width) solid var(--border-color);
+  background: var(--card-surface);
+  border: var(--retro-border-width) solid ${(p) => (p.$selected ? 'var(--accent-color)' : 'var(--border-color)')};
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--retro-shadow);
-  transition: all 0.1s steps(2);
+  box-shadow: ${(p) => (p.$selected ? '0 0 0 2px color-mix(in srgb, var(--accent-color) 35%, transparent)' : 'var(--retro-shadow)')};
+  transition: var(--transition-default);
   opacity: ${(p) => (p.$disabled ? 0.7 : 1)};
   pointer-events: ${(p) => (p.$disabled ? 'none' : 'auto')};
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, var(--accent-soft) 0%, transparent 55%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
 
   &:hover {
     border-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--border-color)' : 'var(--accent-color)')};
     background-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--background-color2)' : 'var(--hover-background-color)')};
     transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(-2px, -2px)')};
-    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : '6px 6px 0px var(--background-color)')};
+    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : 'var(--retro-shadow-hover)')};
+
+    &::after {
+      opacity: ${(p) => (p.$reorderMode || p.$isDragging ? 0 : 0.5)};
+    }
   }
 
   &:active {
     transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(1px, 1px)')};
-    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : '0px 0px 0px var(--background-color)')};
+    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : 'none')};
   }
 
   ${(p) => p.$isDragging && `
@@ -89,30 +87,24 @@ const Card = styled.div`
   `}
 `;
 
-const DragHandle = styled.div`
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  z-index: 12;
+const DragHandleTop = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
-  min-width: 36px;
-  min-height: 36px;
+  flex-shrink: 0;
+  height: 28px;
   background: var(--background-color2);
-  border: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
   color: var(--text-color-secondary);
   touch-action: none;
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
-  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4);
 
   &:active {
     cursor: grabbing;
     color: var(--accent-color);
-    border-color: var(--accent-color);
+    background: var(--background-color);
   }
 
   svg {
@@ -124,35 +116,41 @@ const DragHandle = styled.div`
 const CoverWrapper = styled.div`
   position: relative;
   width: 100%;
+  overflow: hidden;
+
+  &:hover img {
+    transform: scale(1.03);
+  }
 `;
 
 const CoverImg = styled.img`
   width: 100%;
   aspect-ratio: 3 / 4;
   object-fit: cover;
-  opacity: 0.65;
+  background-color: var(--cover-bg);
+  opacity: 0.9;
   border-bottom: 1px solid var(--border-color);
   display: block;
+  transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
 `;
 
 const CoverPlaceholder = styled.div`
   width: 100%;
   aspect-ratio: 3 / 4;
-  background-color: var(--background-color);
+  background-color: var(--cover-bg);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 11px;
   color: var(--text-color-secondary);
-  opacity: 0.5;
 `;
 
 const CoverMetaOverlayBottom = styled.div`
   position: absolute;
   left: 0;
   bottom: 0;
-  max-width: ${(p) => (p.$hasDragHandle ? 'calc(100% - 30px)' : '100%')};
+  max-width: 100%;
   padding: 6px;
   display: flex;
   flex-direction: column;
@@ -164,7 +162,7 @@ const CoverMetaOverlayBottom = styled.div`
 const CoverMetaLine = styled.div`
   font-size: 10px;
   font-weight: 700;
-  color: #f0f0f0;
+  color: var(--text-on-accent);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -173,8 +171,8 @@ const CoverMetaLine = styled.div`
   max-width: 100%;
   box-sizing: border-box;
   padding: 3px 6px;
-  background: rgba(0, 0, 0, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(201, 128, 154, 0.85);
+  border: 1px solid rgba(255, 248, 245, 0.4);
 `;
 
 const Info = styled.div`
@@ -192,7 +190,8 @@ const Info = styled.div`
 
 const Title = styled.div`
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 600;
+  font-family: var(--display-font-family);
   color: var(--text-color);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -217,106 +216,52 @@ const Author = styled.div`
   min-height: 11px;
 `;
 
-const ActionsOverlay = styled.div`
+const SelectionBadge = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 8px;
+  right: 8px;
   z-index: 11;
-  display: flex;
-  justify-content: flex-end;
-  gap: 4px;
-  padding: 6px;
-  pointer-events: auto;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.35) 70%, transparent 100%);
-`;
-
-const ActionBtn = styled.button`
-  padding: 8px;
-  min-width: 36px;
-  min-height: 36px;
-  border-radius: 0;
-  border: 1px solid var(--border-color);
-  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.1s steps(2);
-  background-color: ${(p) =>
-    p.$variant === 'delete'
-      ? '#aa5555'
-      : p.$variant === 'refresh'
-        ? '#5588aa'
-        : p.$variant === 'collection'
-          ? '#aa8833'
-          : 'var(--background-color2)'};
-  color: #000;
-  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
-
-  &:hover {
-    filter: brightness(1.15);
-    transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.6);
-  }
-
-  &:active {
-    transform: translate(1px, 1px);
-    box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.5);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+  border: 2px solid ${(p) => (p.$selected ? 'var(--accent-color)' : 'var(--border-color)')};
+  background: ${(p) => (p.$selected ? 'var(--accent-color)' : 'rgba(240, 233, 228, 0.92)')};
+  color: var(--text-on-accent);
+  pointer-events: none;
+  box-shadow: var(--retro-shadow);
 
   svg {
-    width: 16px;
-    height: 16px;
-  }
-`;
-
-const SpinningIcon = styled.span`
-  display: flex;
-  animation: ${spin} 0.8s linear infinite;
-`;
-
-const LoadingOverlay = styled.div`
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.7);
-  z-index: 10;
-
-  svg {
-    width: 28px;
-    height: 28px;
-    color: var(--accent-color);
-    animation: ${spin} 0.8s linear infinite;
+    width: 12px;
+    height: 12px;
+    opacity: ${(p) => (p.$selected ? 1 : 0)};
   }
 `;
 
 function GridCard({
   bookId,
   onClick,
-  onDeleteClick,
-  onAddToCollection,
   conversionMode,
   sortBy = 'manual',
   dragHandleProps,
   isDragging,
   canClick,
   reorderMode,
-  settingsMode = false,
+  selectionMode = false,
+  isSelected = false,
+  onToggleSelect,
+  bulkRefreshing = false,
+  refreshError,
+  bookDataVersion = 0,
 }) {
-  const { bookInfo, isLoading, refetch, isRefreshing, error } = useBookLoader(bookId, { detailOnly: true });
-  const { showToast } = useToast();
-
-  useEffect(() => {
-    if (error) showToast(error);
-  }, [error, showToast]);
+  const { bookInfo, isLoading, isRefreshing: hookRefreshing, error } = useBookLoader(bookId, {
+    detailOnly: true,
+    bookDataVersion,
+  });
+  const isRefreshing = hookRefreshing || bulkRefreshing;
+  useErrorToast(error);
 
   const bookInfoData = bookInfo?.book_info || bookInfo || {};
   const {
@@ -355,7 +300,7 @@ function GridCard({
   })();
 
   const coverOverlayBottom = coverMetaLines.length > 0 && (
-    <CoverMetaOverlayBottom $hasDragHandle={Boolean(dragHandleProps)}>
+    <CoverMetaOverlayBottom>
       {coverMetaLines}
     </CoverMetaOverlayBottom>
   );
@@ -378,16 +323,32 @@ function GridCard({
 
   const handleCardClick = () => {
     if (reorderMode) return;
+    if (selectionMode) {
+      onToggleSelect?.();
+      return;
+    }
     if (canClick && !canClick()) return;
     onClick?.();
   };
 
   return (
-    <Card onClick={handleCardClick} $disabled={isRefreshing} $isDragging={isDragging} $reorderMode={reorderMode}>
+    <Card
+      onClick={handleCardClick}
+      $disabled={isRefreshing}
+      $isDragging={isDragging}
+      $reorderMode={reorderMode}
+      $selected={selectionMode && isSelected}
+    >
       {isRefreshing && (
-        <LoadingOverlay>
+        <CardLoadingOverlay $iconSize={28}>
           <Loader2 />
-        </LoadingOverlay>
+        </CardLoadingOverlay>
+      )}
+
+      {dragHandleProps && (
+        <DragHandleTop {...dragHandleProps} aria-label="拖曳排序">
+          <GripHorizontal />
+        </DragHandleTop>
       )}
 
       <CoverWrapper>
@@ -397,44 +358,10 @@ function GridCard({
           <CoverPlaceholder>無封面</CoverPlaceholder>
         )}
         {coverOverlayBottom}
-        {settingsMode && !reorderMode && (
-          <ActionsOverlay>
-            {onAddToCollection && (
-              <ActionBtn
-                type="button"
-                $variant="collection"
-                onClick={(e) => { e.stopPropagation(); onAddToCollection(bookId); }}
-                title="加入收藏夾"
-                aria-label="加入收藏夾"
-              >
-                <FolderInput />
-              </ActionBtn>
-            )}
-            <ActionBtn
-              type="button"
-              $variant="refresh"
-              disabled={isRefreshing}
-              onClick={(e) => { e.stopPropagation(); refetch(e); }}
-              title="刷新"
-              aria-label="刷新"
-            >
-              {isRefreshing ? <SpinningIcon><Loader2 size={16} /></SpinningIcon> : <RefreshCw />}
-            </ActionBtn>
-            <ActionBtn
-              type="button"
-              $variant="delete"
-              onClick={(e) => { e.stopPropagation(); onDeleteClick(e, bookId, bookInfo); }}
-              title="刪除"
-              aria-label="刪除"
-            >
-              <Trash2 />
-            </ActionBtn>
-          </ActionsOverlay>
-        )}
-        {dragHandleProps && (
-          <DragHandle {...dragHandleProps} aria-label="拖曳排序">
-            <GripVertical />
-          </DragHandle>
+        {selectionMode && (
+          <SelectionBadge $selected={isSelected} aria-hidden>
+            <Check />
+          </SelectionBadge>
         )}
       </CoverWrapper>
 
@@ -442,6 +369,7 @@ function GridCard({
         <Title>{convertedName || bookId}</Title>
         <Author $empty={!convertedAuthor}>{convertedAuthor || '\u00A0'}</Author>
       </Info>
+      <BookRefreshError message={refreshError} />
     </Card>
   );
 }

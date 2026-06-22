@@ -1,16 +1,30 @@
 import { useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { BookOpen, PlusCircle, Megaphone, MessageCircleWarning, Info, Github } from 'lucide-react';
+import { BookOpen, PlusCircle, Megaphone, MessageCircleWarning, Info, Github, Download } from 'lucide-react';
 import { GITHUB_ISSUES_URL, GITHUB_README_URL, GITHUB_REPO_URL } from '../../utils/constants';
 import { ROUTES } from '../../utils/navigation';
 
 const ICON_SIZE = 40;
 
+const staggerDelays = [0.08, 0.14, 0.2, 0.26, 0.32, 0.38, 0.44];
+
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 12px;
   width: 100%;
+
+  & > * {
+    animation: fadeInUp 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) backwards;
+  }
+
+  & > *:nth-child(1) { animation-delay: ${staggerDelays[0]}s; }
+  & > *:nth-child(2) { animation-delay: ${staggerDelays[1]}s; }
+  & > *:nth-child(3) { animation-delay: ${staggerDelays[2]}s; }
+  & > *:nth-child(4) { animation-delay: ${staggerDelays[3]}s; }
+  & > *:nth-child(5) { animation-delay: ${staggerDelays[4]}s; }
+  & > *:nth-child(6) { animation-delay: ${staggerDelays[5]}s; }
+  & > *:nth-child(7) { animation-delay: ${staggerDelays[6]}s; }
 
   @media (max-width: 700px) {
     grid-template-columns: repeat(3, 1fr);
@@ -28,13 +42,14 @@ const tileStyles = css`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   padding: 22px 12px;
   aspect-ratio: 1 / 1;
-  background-color: var(--background-color2);
+  background: var(--card-surface);
   border: var(--retro-border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
   cursor: pointer;
-  transition: all 0.1s steps(2);
+  transition: var(--transition-default);
   box-shadow: var(--retro-shadow);
   width: 100%;
   min-width: 0;
@@ -43,34 +58,69 @@ const tileStyles = css`
   text-decoration: none;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, var(--accent-soft) 0%, transparent 65%);
+    opacity: 0.45;
+    pointer-events: none;
+  }
 
   & > svg {
     width: ${ICON_SIZE}px;
     height: ${ICON_SIZE}px;
     color: var(--accent-color);
     flex-shrink: 0;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1), color 0.2s ease;
+    position: relative;
+    z-index: 1;
   }
 
-  @media (min-width: 600px) {
+  & > span {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    min-width: 0;
+  }
+
+  @media (max-width: 700px) {
+    aspect-ratio: auto;
+    min-height: 112px;
+    padding: 14px 10px;
+    gap: 6px;
+
+    & > svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  @media (min-width: 701px) {
     padding: 20px 10px;
   }
 
   @media (hover: hover) {
     &:hover {
-      transform: translate(-2px, -2px);
+      transform: translate(-3px, -3px) rotate(-1deg);
       border-color: var(--accent-color);
-      background-color: var(--hover-background-color);
-      box-shadow: 6px 6px 0px var(--background-color);
+      box-shadow: var(--retro-shadow-hover);
 
       & > svg {
         color: var(--accent-hover);
+        transform: scale(1.08) rotate(-3deg);
       }
     }
   }
 
   &:active {
-    transform: translate(1px, 1px);
-    box-shadow: 0px 0px 0px var(--background-color);
+    transform: translate(1px, 1px) rotate(0deg);
+    box-shadow: none;
   }
 `;
 
@@ -79,32 +129,41 @@ const TileButton = styled.button`${tileStyles}`;
 const TileLink = styled.a`${tileStyles}`;
 
 const TileLabel = styled.span`
-  font-size: 18px;
-  font-weight: 900;
+  font-size: 17px;
+  font-weight: 600;
+  font-family: var(--display-font-family);
   color: var(--text-color);
-  text-transform: uppercase;
   letter-spacing: 0.06em;
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.25;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  @media (max-width: 700px) {
+    font-size: 15px;
+    letter-spacing: 0.04em;
+  }
 `;
 
 const TileSubLabel = styled.span`
   font-size: 12px;
   color: var(--text-color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  opacity: 0.75;
+  letter-spacing: 0.02em;
   text-align: center;
-  line-height: 1.3;
+  line-height: 1.35;
   width: 100%;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+
+  @media (max-width: 700px) {
+    font-size: 11px;
+    line-height: 1.3;
+    -webkit-line-clamp: 1;
+  }
 `;
 
 function NavGrid() {
@@ -121,6 +180,11 @@ function NavGrid() {
         <PlusCircle size={ICON_SIZE} strokeWidth={2} aria-hidden />
         <TileLabel>新書</TileLabel>
         <TileSubLabel>開始新閱讀</TileSubLabel>
+      </TileButton>
+      <TileButton type="button" onClick={() => navigate(ROUTES.download)}>
+        <Download size={ICON_SIZE} strokeWidth={2} aria-hidden />
+        <TileLabel>下載</TileLabel>
+        <TileSubLabel>狀態 · 使用說明</TileSubLabel>
       </TileButton>
       <TileButton type="button" onClick={() => navigate(ROUTES.announcements)}>
         <Megaphone size={ICON_SIZE} strokeWidth={2} aria-hidden />

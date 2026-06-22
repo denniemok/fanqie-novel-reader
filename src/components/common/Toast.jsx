@@ -11,17 +11,18 @@ const ToastWrapper = styled.div`
   justify-content: space-between;
   gap: 12px;
   padding: 12px 20px;
-  background-color: var(--background-color2);
+  background: var(--card-surface);
   border: var(--retro-border-width) solid var(--accent-color);
-  border-radius: 0;
+  border-radius: var(--border-radius-sm);
   color: var(--accent-color);
   font-size: 14px;
-  box-shadow: 6px 6px 0px var(--background-color);
+  box-shadow: var(--retro-shadow-hover);
   z-index: 9999;
   max-width: min(320px, calc(100vw - 48px));
-  font-family: inherit;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-family: var(--ui-font-family);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  animation: toastIn 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) backwards;
 `;
 
 const CloseButton = styled.button`

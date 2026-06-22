@@ -1,6 +1,14 @@
 import { fetchBookDirectory, fetchBookDetail } from '../services/api';
 import { directoryCache, detailCache } from './cache';
 
+export async function getCachedOrFetchDirectory(bookId) {
+  let directory = await directoryCache.get(bookId);
+  if (!directory?.item_data_list?.length) {
+    directory = await fetchBookDirectory(bookId);
+  }
+  return directory;
+}
+
 export async function fetchBookDetailAndDirectory(bookId, { forceRefresh = false, catalogOnly = false, signal } = {}) {
   const refreshDirectory = forceRefresh;
   const refreshDetail = forceRefresh && !catalogOnly;

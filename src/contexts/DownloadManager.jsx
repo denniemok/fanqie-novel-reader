@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useCallback, useReducer, useRef, useEffect } from 'react';
+import React, { createContext, useContext, useCallback, useReducer, useRef, useEffect, useState } from 'react';
 import { fetchItem } from '../services/api';
 import { MAX_CONCURRENT_DOWNLOADS, BATCH_COOLDOWN_MS, RETRY_DELAY_MS } from '../utils/constants';
-import { isChapterCached } from '../utils/storage';
+import { getUncachedItemIds } from '../utils/storage';
 import { formatErrorMessage } from '../utils/errors';
 import { useToast } from './ToastContext';
 
@@ -42,17 +42,22 @@ function reducer(state, action) {
 }
 
 export function DownloadManagerProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, { 
+  const [state, dispatch] = useReducer(reducer, {
     downloading: new Set(),
     downloadAllBookId: null,
     downloadAllItemIds: [],
     completedDownloads: new Set(),
   });
   const queueRef = useRef([]);
+  const [queueLength, setQueueLength] = useState(0);
   const activeCountRef = useRef(0);
   const batchCooldownRef = useRef(null);
   const abortControllersRef = useRef(new Map());
   const { showToast } = useToast();
+
+  const syncQueueLength = useCallback(() => {
+    setQueueLength(queueRef.current.length);
+  }, []);
 
   const processQueue = useCallback(() => {
     const queue = queueRef.current;
@@ -90,7 +95,8 @@ export function DownloadManagerProvider({ children }) {
           processQueue();
         });
     }
-  }, [state.downloading, showToast]);
+    syncQueueLength();
+  }, [state.downloading, showToast, syncQueueLength]);
 
   const addToQueue = useCallback((itemId, forceRefresh = false) => {
     if (!itemId) return;
@@ -102,8 +108,9 @@ export function DownloadManagerProvider({ children }) {
       return;
     }
     queue.push({ itemId, forceRefresh });
+    syncQueueLength();
     processQueue();
-  }, [state.downloading, processQueue]);
+  }, [state.downloading, processQueue, syncQueueLength]);
 
   const isDownloading = useCallback(
     (itemId) => state.downloading.has(itemId),
@@ -119,6 +126,7 @@ export function DownloadManagerProvider({ children }) {
 
   const stopDownloadAll = useCallback(() => {
     queueRef.current = [];
+    setQueueLength(0);
     if (batchCooldownRef.current) {
       clearTimeout(batchCooldownRef.current);
       batchCooldownRef.current = null;
@@ -143,10 +151,9 @@ export function DownloadManagerProvider({ children }) {
       return;
     }
 
-    Promise.all(state.downloadAllItemIds.map((id) => isChapterCached(id).then((cached) => ({ id, cached }))))
-      .then((results) => {
+    getUncachedItemIds(state.downloadAllItemIds)
+      .then((uncachedItems) => {
         if (cancelled) return;
-        const uncachedItems = results.filter((r) => !r.cached).map((r) => r.id);
         if (uncachedItems.length === 0) {
           dispatch({ type: 'STOP_DOWNLOAD_ALL' });
           return;
@@ -177,6 +184,9 @@ export function DownloadManagerProvider({ children }) {
   const value = {
     downloading: state.downloading,
     completedDownloads: state.completedDownloads,
+    downloadAllBookId: state.downloadAllBookId,
+    downloadAllItemIds: state.downloadAllItemIds,
+    queueLength,
     addToQueue,
     isDownloading,
     startDownloadAll,

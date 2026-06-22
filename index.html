@@ -8,12 +8,21 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="theme-color" content="#ff9800" />
+    <meta name="theme-color" content="#2a2230" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <title>番茄繁體閱讀</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+TC:wght@400;600&family=Noto+Sans+SC:wght@400;600&family=LXGW+WenKai+TC:wght@400;700&family=LXGW+WenKai:wght@400;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+TC:wght@400;600&family=Noto+Sans+SC:wght@400;600&family=LXGW+WenKai+TC:wght@400;700&family=LXGW+WenKai:wght@400;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet" />
+    <script>
+      try {
+        if (localStorage.getItem('fanqie-theme') !== 'light') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute('content', '#2a2230');
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

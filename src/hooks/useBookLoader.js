@@ -13,7 +13,7 @@ function handleBookError(err, setError) {
   );
 }
 
-export function useBookLoader(bookId, { detailOnly = false } = {}) {
+export function useBookLoader(bookId, { detailOnly = false, bookDataVersion = 0 } = {}) {
   const { showToast } = useToast();
   const [error, setError] = useState(null);
   const [bookInfo, setBookInfo] = useState(null);
@@ -91,6 +91,21 @@ export function useBookLoader(bookId, { detailOnly = false } = {}) {
       });
     return () => controller.abort();
   }, [detailOnly, bookId]);
+
+  useEffect(() => {
+    if (!detailOnly || !bookId || bookDataVersion === 0) return undefined;
+
+    const controller = new AbortController();
+    fetchBookDetail(bookId, { signal: controller.signal })
+      .then((detail) => {
+        const merged = { book_info: detail, item_data_list: [] };
+        setBookInfo(normalizeBookInfo(merged, bookId));
+      })
+      .catch((err) => {
+        if (err.name !== 'AbortError') handleBookError(err, setError);
+      });
+    return () => controller.abort();
+  }, [bookDataVersion, detailOnly, bookId]);
 
   return { error, bookInfo, isLoading, loadBook, refetch, isRefreshing };
 }

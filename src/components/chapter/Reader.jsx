@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { maybeConvert } from '../../utils/zh-convert';
 import { READER_BACKGROUND_OPTIONS, FONT_SIZE_DEFAULT, TEXT_BRIGHTNESS_DEFAULT } from '../../utils/constants';
+import { minViewportHeight } from '../../utils/styled/viewport';
 
 const ReaderWrapper = styled.div`
   margin: 0 auto;
@@ -10,12 +11,7 @@ const ReaderWrapper = styled.div`
   padding-bottom: calc(100px + env(safe-area-inset-bottom));
   max-width: 800px;
   background-color: ${(p) => p.$readerBackground ?? 'var(--background-color)'};
-  min-height: 100vh;
-  min-height: 100dvh;
-
-  @supports (-webkit-touch-callout: none) {
-    min-height: -webkit-fill-available;
-  }
+  ${minViewportHeight}
 
   @media (max-width: 480px) {
     padding: 24px 16px 100px 16px;

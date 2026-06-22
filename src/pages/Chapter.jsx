@@ -6,11 +6,11 @@ import Reader from '../components/chapter/Reader';
 import Error from '../components/common/Error';
 import Loading from '../components/common/Loading';
 import PageWrapper from '../components/common/PageWrapper';
-import { useToast } from '../contexts/ToastContext';
 import { useConversionMode } from '../hooks/useConversionMode';
 import { useFontSize, useFontFamily, useTextBrightness, useReaderBackground } from '../hooks/useTextSettings';
 import { useChapterLoader } from '../hooks/useChapterLoader';
-import { buildCatalogUrl } from '../utils/navigation';
+import { buildCatalogUrl, ROUTES } from '../utils/navigation';
+import { useErrorToast } from '../hooks/useErrorToast';
 
 function Chapter() {
   const [searchParams] = useSearchParams();
@@ -19,7 +19,6 @@ function Chapter() {
   const bookId = searchParams.get('bookId');
   
   const { error, chapterData, bookInfo, loading, loadChapter } = useChapterLoader(itemId, bookId);
-  const { showToast } = useToast();
   const [fontSize, handleFontSizeChange] = useFontSize();
   const [fontFamily, handleFontFamilyChange] = useFontFamily();
   const [textBrightness, handleTextBrightnessChange] = useTextBrightness();
@@ -39,12 +38,10 @@ function Chapter() {
     window.scrollTo(0, 0);
   }, [itemId]);
 
-  useEffect(() => {
-    if (error) showToast(error);
-  }, [error, showToast]);
+  useErrorToast(error);
 
   if (!itemId) {
-    return bookId ? <Navigate to={buildCatalogUrl(bookId)} replace /> : <Navigate to="/" replace />;
+    return bookId ? <Navigate to={buildCatalogUrl(bookId)} replace /> : <Navigate to={ROUTES.home} replace />;
   }
 
   if (error) {
@@ -52,7 +49,7 @@ function Chapter() {
   }
 
   return (
-    <PageWrapper $withBottomPadding={false} $backgroundColor={readerBackground}>
+    <PageWrapper $withBottomPadding={false} $backgroundColor={loading ? undefined : readerBackground}>
       {loading ? (
         <Loading onAbort={() => navigate(bookId ? buildCatalogUrl(bookId) : '/')} />
       ) : (

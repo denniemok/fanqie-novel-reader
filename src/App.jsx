@@ -1,6 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
 import { ToastProvider } from './contexts/ToastContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { DownloadManagerProvider } from './contexts/DownloadManager';
+import { ROUTES } from './utils/navigation';
 import Home from './pages/Home';
 import Catalog from './pages/Catalog';
 import Chapter from './pages/Chapter';
@@ -8,22 +10,26 @@ import Comments from './pages/Comments';
 import Bookshelf from './pages/Bookshelf';
 import NewBook from './pages/NewBook';
 import Announcements from './pages/Announcements';
+import Download from './pages/Download';
 
 function App() {
   return (
-    <ToastProvider>
-    <DownloadManagerProvider>
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/bookshelf" element={<Bookshelf />} />
-      <Route path="/new-book" element={<NewBook />} />
-      <Route path="/announcements" element={<Announcements />} />
-      <Route path="/catalog" element={<Catalog />} />
-      <Route path="/chapter" element={<Chapter />} />
-      <Route path="/comments" element={<Comments />} />
-    </Routes>
-    </DownloadManagerProvider>
-    </ToastProvider>
+    <ThemeProvider>
+      <ToastProvider>
+        <DownloadManagerProvider>
+          <Routes>
+            <Route path={ROUTES.home} element={<Home />} />
+            <Route path={ROUTES.bookshelf} element={<Bookshelf />} />
+            <Route path={ROUTES.newBook} element={<NewBook />} />
+            <Route path={ROUTES.announcements} element={<Announcements />} />
+            <Route path={ROUTES.download} element={<Download />} />
+            <Route path={ROUTES.catalog} element={<Catalog />} />
+            <Route path={ROUTES.chapter} element={<Chapter />} />
+            <Route path={ROUTES.comments} element={<Comments />} />
+          </Routes>
+        </DownloadManagerProvider>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }
 

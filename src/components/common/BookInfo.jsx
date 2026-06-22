@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Modal from '../common/Modal';
+import Modal from './Modal';
 import { truncateText, MAX_ABSTRACT_LENGTH, MOBILE_ABSTRACT_LENGTH } from '../../utils/text';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
@@ -61,8 +61,16 @@ const CoverWrapper = styled.div`
     object-fit: cover;
     border-radius: 0;
     border: 1px solid var(--border-color);
-    box-shadow: 4px 4px 0px var(--background-color);
-    opacity: 0.65;
+    box-shadow: var(--retro-shadow);
+    background-color: var(--cover-bg);
+    opacity: 0.9;
+    display: block;
+    transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.25s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.02) rotate(-0.5deg);
+    box-shadow: var(--retro-shadow-hover);
   }
 
   @media (max-width: 480px) {
@@ -90,7 +98,7 @@ const CoverWrapper = styled.div`
     img {
       width: 100px;
       height: 134px;
-      box-shadow: 3px 3px 0px var(--background-color);
+      box-shadow: var(--retro-shadow);
     }
 
     @media (max-width: 374px) {
@@ -308,7 +316,7 @@ const Footer = styled.div`
   width: 100%;
 `;
 
-function Info({ bookInfo, conversionMode = 'tw', variant, footer }) {
+function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer }) {
   const [showFullAbstract, setShowFullAbstract] = useState(false);
   const isMobile = useMediaQuery('(max-width: 480px)');
   
@@ -379,4 +387,4 @@ function Info({ bookInfo, conversionMode = 'tw', variant, footer }) {
   );
 }
 
-export default Info;
+export default BookInfo;

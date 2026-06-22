@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 import { TopBarOffset } from '../common/PageContent';
-import Info from '../book/Info';
+import BookInfo from '../common/BookInfo';
 import { maybeConvert } from '../../utils/zh-convert';
 
 const Section = styled.div`
@@ -146,7 +146,7 @@ function Content({
   return (
     <TopBarOffset>
       {bookInfo && (
-        <Info bookInfo={bookInfo} conversionMode={conversionMode} />
+        <BookInfo bookInfo={bookInfo} conversionMode={conversionMode} />
       )}
       <Section>
         <SectionTitle>

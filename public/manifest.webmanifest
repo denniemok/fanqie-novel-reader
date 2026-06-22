@@ -1,7 +1,7 @@
 {
   "name": "番茄繁體閱讀",
   "short_name": "FanqieTC",
-  "theme_color": "#ff9800",
+  "theme_color": "#f0e9e4",
   "background_color": "#121212",
   "display": "standalone",
   "start_url": "/",
