@@ -9,7 +9,7 @@ function NewBook() {
   return (
     <NavPageLayout>
       <NavTopBar pageTitle="新書" conversionMode={conversionMode} onConversionModeChange={setConversionMode} />
-      <Content />
+      <Content conversionMode={conversionMode} />
     </NavPageLayout>
   );
 }

@@ -78,7 +78,7 @@ const FormEl = styled.form`
   }
 `;
 
-function Form() {
+function Form({ embedded = false, autoFocus = false }) {
   const navigate = useNavigate();
   const inputRef = useRef(null);
 
@@ -90,22 +90,22 @@ function Form() {
     navigate(buildCatalogUrl(bookId));
   };
 
-  return (
-    <Section>
-      <InputGroup>
-        <FormEl onSubmit={handleSubmit}>
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="貼上書籍 ID 或網址（番茄小說 / Tomato MTL）"
-            defaultValue=""
-            autoFocus
-          />
-          <button type="submit">開始閱讀</button>
-        </FormEl>
-      </InputGroup>
-    </Section>
+  const content = (
+    <InputGroup>
+      <FormEl onSubmit={handleSubmit}>
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder="貼上書籍 ID 或網址（番茄小說 / Tomato MTL）"
+          defaultValue=""
+          autoFocus={autoFocus}
+        />
+        <button type="submit">開始閱讀</button>
+      </FormEl>
+    </InputGroup>
   );
+
+  return embedded ? content : <Section>{content}</Section>;
 }
 
 export default Form;

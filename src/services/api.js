@@ -124,6 +124,65 @@ async function fetchAndValidate(url, options = {}) {
   return json;
 }
 
+function getTopBooksUrl() {
+  const proxyBase = getProxyBase();
+  const base = proxyBase ? proxyBase.replace(/\/$/, '') : '';
+  return `${base}/top-books`;
+}
+
+function getRecommendBooksUrl(type) {
+  const proxyBase = getProxyBase();
+  const base = proxyBase ? proxyBase.replace(/\/$/, '') : '';
+  return `${base}/recommend-books?type=${type}`;
+}
+
+function normalizeDiscoverBook(raw) {
+  return {
+    book_id: String(raw.book_id ?? raw.bookId ?? ''),
+    book_name: raw.book_name ?? raw.bookName ?? null,
+    author: raw.author ?? null,
+    category: raw.category ?? null,
+    thumb_url: raw.thumb_url ?? raw.thumbUri ?? null,
+  };
+}
+
+function validateDiscoverBooks(books) {
+  return books.filter((book) => book.book_id && book.book_name);
+}
+
+export async function fetchTopBookList({ signal } = {}) {
+  await waitForRateLimit();
+  const res = await fetchWithTimeout(getTopBooksUrl(), { signal });
+  if (!res.ok) throw new Error('Failed to fetch data');
+  let json;
+  try {
+    json = await res.json();
+  } catch {
+    throw new Error('Invalid response from server');
+  }
+  if (!Array.isArray(json.book_list)) {
+    throw new Error('Failed to decode top book list');
+  }
+  return validateDiscoverBooks(json.book_list.map(normalizeDiscoverBook));
+}
+
+export async function fetchRecommendedBookList(type, { signal } = {}) {
+  await waitForRateLimit();
+  const res = await fetchWithTimeout(getRecommendBooksUrl(type), { signal });
+  if (!res.ok) throw new Error('Failed to fetch data');
+  let json;
+  try {
+    json = await res.json();
+  } catch {
+    throw new Error('Invalid response from server');
+  }
+  const list = json?.data?.list;
+  if (!Array.isArray(list)) {
+    throw new Error('Failed to decode recommend book list');
+  }
+  return validateDiscoverBooks(list.map(normalizeDiscoverBook));
+}
+
 export async function fetchBookDetail(bookId, { forceRefresh = false, signal } = {}) {
   if (!forceRefresh) {
     const cached = await detailCache.get(bookId);
