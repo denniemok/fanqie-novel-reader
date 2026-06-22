@@ -143,12 +143,12 @@ export async function setLastReadChapter(bookId, itemId) {
         lastReadAt: now,
       };
     } else {
-      history.push({ bookId: bid, itemId: itemIdStr, lastReadAt: now });
+      history.unshift({ bookId: bid, itemId: itemIdStr, lastReadAt: now });
     }
     return saveReadingHistory(history.slice(0, READING_HISTORY_MAX));
   }
   if (existing) return true;
-  history.push({ bookId: bid, itemId: null, lastReadAt: now });
+  history.unshift({ bookId: bid, itemId: null, lastReadAt: now });
   return saveReadingHistory(history.slice(0, READING_HISTORY_MAX));
 }
 
