@@ -1,7 +1,15 @@
 export const ANNOUNCEMENTS = [
   {
     date: '2026-06-25',
-    message: '所有 API 服務現已全面恢復可用，可於設定中自由切換各組服務。',
+    message: (
+      <>
+        所有 API 服務現已全面恢復可用，可於設定中自由切換各組服務。另外，我們已推出香港大富翁線上遊戲，歡迎前往{' '}
+        <a href="https://hkopoly.com" target="_blank" rel="noopener noreferrer">
+          hkopoly.com
+        </a>{' '}
+        試玩。
+      </>
+    ),
     urgent: true,
   },
   {

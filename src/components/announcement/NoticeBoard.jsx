@@ -42,8 +42,8 @@ const NoticeCard = styled.div`
 function NoticeBoard() {
   return (
     <Section>
-      {ANNOUNCEMENTS.map((item) => (
-        <NoticeCard key={`${item.date}-${item.message}`}>
+      {ANNOUNCEMENTS.map((item, index) => (
+        <NoticeCard key={`${item.date}-${index}`}>
           <b>{item.date}</b> {item.message}
         </NoticeCard>
       ))}
