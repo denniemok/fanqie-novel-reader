@@ -44,15 +44,14 @@ export const ZH_CONVERSION_OPTIONS = [
 
 /** API sources: { value: opaque ID (used with proxy), label: display name } — real URLs live in proxy only */
 export const API_OPTIONS = [
-  { value: 'basic-1', label: '基本服務' },
-  { value: 'hk-1', label: 'hk-1 (暫不可用)' },
-  { value: 'hk-2', label: 'hk-2 (暫不可用)' },
+  { value: 'hk-1', label: 'hk-1' },
+  { value: 'hk-2', label: 'hk-2' },
   { value: 'hk-3', label: 'hk-3' },
   { value: 'cn-1', label: 'cn-1' },
   { value: 'cn-2', label: 'cn-2' },
-  { value: 'india-1', label: 'india-1 (暫不可用)' },
+  { value: 'india-1', label: 'india-1' },
   { value: 'cn-old-1', label: 'cn-old-1' },
-  { value: 'master-1', label: 'master-1 (暫不可用)' },
+  { value: 'master-1', label: 'master-1 ' },
 ];
 
 /** Chinese fonts for reader: { value: CSS font-family, label: display name } */
