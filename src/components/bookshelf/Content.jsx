@@ -38,6 +38,7 @@ import {
   getUncachedItemIds,
 } from '../../utils/storage';
 import { sortBookshelfItems } from '../../utils/bookshelfSort';
+import { maybeConvert } from '../../utils/zh-convert';
 import { useBookshelfSortMeta } from '../../hooks/useBookshelfSortMeta';
 import { useBookshelfSearchMeta, bookMatchesBookshelfSearch } from '../../hooks/useBookshelfSearchMeta';
 import { ALL_TAB } from './constants';
@@ -253,6 +254,83 @@ function Content({ conversionMode = 'tw' }) {
     setAddToCollectionBookIds(ids);
     setNewCollectionName('');
   }, []);
+
+  const handleBookRefresh = useCallback(async (_e, bookId) => {
+    if (refreshingBookIds.has(bookId)) return;
+    setRefreshingBookIds((prev) => new Set(prev).add(bookId));
+    setBookRefreshErrors((prev) => {
+      const next = { ...prev };
+      delete next[bookId];
+      return next;
+    });
+
+    try {
+      const { partialLoadMessage } = await fetchBookDetailAndDirectory(bookId, { forceRefresh: true });
+      setBookDataVersions((prev) => ({
+        ...prev,
+        [bookId]: (prev[bookId] || 0) + 1,
+      }));
+      if (partialLoadMessage) {
+        setBookRefreshErrors((prev) => ({ ...prev, [bookId]: partialLoadMessage }));
+      }
+    } catch (err) {
+      setBookRefreshErrors((prev) => ({
+        ...prev,
+        [bookId]: formatErrorMessage(err, '刷新失敗，請稍後再試。'),
+      }));
+    } finally {
+      setRefreshingBookIds((prev) => {
+        const next = new Set(prev);
+        next.delete(bookId);
+        return next;
+      });
+    }
+  }, [refreshingBookIds]);
+
+  const handleDeleteBook = useCallback((e, bookId, bookInfo) => {
+    e.stopPropagation();
+    const bookName = bookInfo?.book_info?.original_book_name;
+    const convertedName = maybeConvert(bookName, conversionMode) || bookId;
+    setConfirmDialog({
+      title: '刪除書籍',
+      message: (
+        <ModalText>
+          確定要刪除 <strong>{convertedName}</strong> 的所有本地資料嗎？此操作無法復原。
+        </ModalText>
+      ),
+      confirmLabel: '刪除',
+      errorMessage: '刪除書籍失敗，請稍後再試。',
+      onConfirm: async () => {
+        await deleteBooksData([bookId]);
+        clearBookRefreshErrors(bookId);
+        setRefreshKey((k) => k + 1);
+      },
+    });
+  }, [conversionMode, clearBookRefreshErrors]);
+
+  const handleRemoveFromCollection = useCallback((e, bookId, bookInfo) => {
+    e.stopPropagation();
+    if (!activeCollection) return;
+    const bookName = bookInfo?.book_info?.original_book_name;
+    const convertedName = maybeConvert(bookName, conversionMode) || bookId;
+    setConfirmDialog({
+      title: '移除書籍',
+      message: (
+        <ModalText>
+          確定要從「<strong>{activeCollection.name}</strong>」移除 <strong>{convertedName}</strong> 嗎？
+        </ModalText>
+      ),
+      confirmLabel: '移除',
+      errorMessage: '移除書籍失敗，請稍後再試。',
+      onConfirm: async () => {
+        await removeBooksFromCollection(activeTab, [bookId]);
+        clearBookRefreshErrors(bookId);
+        await reloadDataKeepingScroll();
+      },
+    });
+  }, [activeCollection, activeTab, conversionMode, clearBookRefreshErrors, reloadDataKeepingScroll]);
+
+  const handleBookDelete = activeTab === ALL_TAB ? handleDeleteBook : handleRemoveFromCollection;
 
   const handleBulkAddToCollection = () => {
     if (selectedBookIds.size === 0) return;
@@ -506,6 +584,10 @@ function Content({ conversionMode = 'tw' }) {
             onBookClick={goToCatalog}
             onToggleBookSelection={toggleBookSelection}
             onReorder={handleReorder}
+            onBookRefresh={handleBookRefresh}
+            onBookDelete={handleBookDelete}
+            onBookAddToCollection={handleAddToCollection}
+            isSampleOnly={isSampleOnly}
           />
 
           {manageBarVisible && (

@@ -23,6 +23,10 @@ function BookshelfBookList({
   onBookClick,
   onToggleBookSelection,
   onReorder,
+  onBookRefresh,
+  onBookDelete,
+  onBookAddToCollection,
+  isSampleOnly,
 }) {
   if (sortedDisplayBooks.length === 0) {
     return (
@@ -39,6 +43,8 @@ function BookshelfBookList({
   }
 
   const selectionMode = settingsMode && !reorderMode;
+  const showListActions = !selectionMode && !reorderMode;
+  const isAllTab = activeTab === ALL_TAB;
 
   const bookCardProps = (bookId) => ({
     bookId,
@@ -53,6 +59,14 @@ function BookshelfBookList({
     bookDataVersion: bookDataVersions[bookId] || 0,
   });
 
+  const listCardProps = (bookId) => ({
+    ...bookCardProps(bookId),
+    showActions: showListActions,
+    onRefreshClick: onBookRefresh,
+    onDeleteClick: onBookDelete,
+    onAddToCollection: isAllTab && !isSampleOnly ? onBookAddToCollection : undefined,
+  });
+
   if (viewMode === 'list') {
     if (canReorder && reorderMode) {
       return (
@@ -64,7 +78,7 @@ function BookshelfBookList({
           onReorder={onReorder}
           renderItem={({ bookId }, sortable) => (
             <ListCard
-              {...bookCardProps(bookId)}
+              {...listCardProps(bookId)}
               dragHandleProps={sortable.dragHandleProps}
               isDragging={sortable.isDragging}
               canClick={sortable.canClick}
@@ -78,7 +92,7 @@ function BookshelfBookList({
     return (
       <ListLayout key={`list-${activeTab}-${renderTick}`}>
         {booksForDisplay.map(({ bookId }) => (
-          <ListCard key={bookId} {...bookCardProps(bookId)} />
+          <ListCard key={bookId} {...listCardProps(bookId)} />
         ))}
       </ListLayout>
     );

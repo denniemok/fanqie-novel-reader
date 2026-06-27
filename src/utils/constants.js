@@ -11,6 +11,7 @@ export const BOOKSHELF_SORT_DIRECTION_KEY = 'fanqie-bookshelfSortDir';
 export const BOOKSHELF_ACTIVE_TAB_KEY = 'fanqie-bookshelfActiveTab';
 export const API_BASE_KEY = 'apiBase';
 export const SORT_ORDER_KEY = 'sortOrder';
+export const CATALOG_MANAGE_MODE_KEY = 'fanqie-catalogManageMode';
 export const FONT_SIZE_KEY = 'fontSize';
 export const FONT_FAMILY_KEY = 'fontFamily';
 export const TEXT_BRIGHTNESS_KEY = 'textBrightness';

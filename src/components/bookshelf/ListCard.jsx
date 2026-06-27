@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import { GripVertical, Loader2, Check } from 'lucide-react';
+import { GripVertical, Loader2, Check, RefreshCw, Trash2, FolderInput } from 'lucide-react';
 import BookInfo from '../common/BookInfo';
 import { useBookLoader } from '../../hooks/useBookLoader';
 import { useErrorToast } from '../../hooks/useErrorToast';
 import { shimmerStyle } from '../../utils/styled/animations';
-import { CardLoadingOverlay } from '../common/CardActionButton';
+import { CardActionButton, CardSpinningIcon, CardLoadingOverlay } from '../common/CardActionButton';
 import BookRefreshError from './BookRefreshError';
 
 const SkeletonCard = styled.div`
@@ -163,6 +163,17 @@ const DragHandle = styled.div`
   }
 `;
 
+const ActionButtons = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  z-index: 11;
+  pointer-events: auto;
+`;
+
 const SelectionBadge = styled.div`
   position: absolute;
   top: 10px;
@@ -189,6 +200,9 @@ const SelectionBadge = styled.div`
 function ListCard({
   bookId,
   onClick,
+  onRefreshClick,
+  onDeleteClick,
+  onAddToCollection,
   conversionMode,
   dragHandleProps,
   isDragging,
@@ -200,8 +214,9 @@ function ListCard({
   bulkRefreshing = false,
   refreshError,
   bookDataVersion = 0,
+  showActions = false,
 }) {
-  const { bookInfo, isLoading, isRefreshing: hookRefreshing, error } = useBookLoader(bookId, {
+  const { bookInfo, isLoading, refetch, isRefreshing: hookRefreshing, error } = useBookLoader(bookId, {
     detailOnly: true,
     bookDataVersion,
   });
@@ -259,6 +274,40 @@ function ListCard({
           <SelectionBadge $selected={isSelected} aria-hidden>
             <Check />
           </SelectionBadge>
+        )}
+        {showActions && !selectionMode && !reorderMode && (
+          <ActionButtons>
+            {onAddToCollection && (
+              <CardActionButton
+                type="button"
+                $variant="collection"
+                onClick={(e) => { e.stopPropagation(); onAddToCollection(bookId); }}
+                title="加入收藏夾"
+                aria-label="加入收藏夾"
+              >
+                <FolderInput />
+              </CardActionButton>
+            )}
+            <CardActionButton
+              type="button"
+              $variant="refresh"
+              disabled={isRefreshing}
+              onClick={(e) => { e.stopPropagation(); (onRefreshClick ?? refetch)(e, bookId); }}
+              title="刷新目錄與書籍資料"
+              aria-label="刷新目錄與書籍資料"
+            >
+              {isRefreshing ? <CardSpinningIcon><Loader2 size={18} /></CardSpinningIcon> : <RefreshCw />}
+            </CardActionButton>
+            <CardActionButton
+              type="button"
+              $variant="delete"
+              onClick={(e) => { e.stopPropagation(); onDeleteClick?.(e, bookId, bookInfo); }}
+              title={onAddToCollection ? '刪除此書的本地資料' : '從收藏夾移除'}
+              aria-label={onAddToCollection ? '刪除此書的本地資料' : '從收藏夾移除'}
+            >
+              <Trash2 />
+            </CardActionButton>
+          </ActionButtons>
         )}
         <CardBody>
           <BookInfo

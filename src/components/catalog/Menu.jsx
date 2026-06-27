@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Download, RefreshCw, Minus, Trash2 } from 'lucide-react';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import { useDownloadManager } from '../../contexts/DownloadManager';
-import { isChapterCached, deleteChapter } from '../../utils/storage';
+import { isChapterCached, deleteChapter, getCatalogManageMode, setCatalogManageMode } from '../../utils/storage';
 import { IconButton } from '../common/IconButton';
 import { buildChapterUrl } from '../../utils/navigation';
 import { getChapterTitle } from '../../utils/chapter-helpers';
@@ -129,7 +129,7 @@ function Menu({
   onSortChange,
 }) {
   const { isDownloading } = useDownloadManager();
-  const [manageMode, setManageMode] = useState(false);
+  const [manageMode, setManageMode] = useState(getCatalogManageMode);
   const totalChapters = itemDataList?.length ?? 0;
   const totalPages = getTotalPages(totalChapters, chaptersPerPage);
   const paginatedItems = getPaginatedChapters(itemDataList, sortOrder, currentPage, chaptersPerPage);
@@ -148,7 +148,13 @@ function Menu({
     sortOrder,
     onSortChange,
     manageMode,
-    onManageModeToggle: () => setManageMode((on) => !on),
+    onManageModeToggle: () => {
+      setManageMode((on) => {
+        const next = !on;
+        setCatalogManageMode(next);
+        return next;
+      });
+    },
   };
 
   return (

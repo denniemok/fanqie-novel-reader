@@ -1,5 +1,6 @@
 import {
   SORT_ORDER_KEY,
+  CATALOG_MANAGE_MODE_KEY,
   READING_HISTORY_KEY,
   READING_HISTORY_LEGACY_KEY,
   READING_HISTORY_MAX,
@@ -232,6 +233,17 @@ export function getSortOrder() {
 export function setSortOrder(order) {
   const valid = order === 'ascending' || order === 'descending';
   return valid ? safeSetItem(SORT_ORDER_KEY, order) : false;
+}
+
+/** @returns {boolean} Default: true */
+export function getCatalogManageMode() {
+  const raw = safeGetItem(CATALOG_MANAGE_MODE_KEY);
+  if (raw === 'false') return false;
+  return true;
+}
+
+export function setCatalogManageMode(enabled) {
+  return safeSetItem(CATALOG_MANAGE_MODE_KEY, enabled ? 'true' : 'false');
 }
 
 export async function isChapterCached(itemId) {
