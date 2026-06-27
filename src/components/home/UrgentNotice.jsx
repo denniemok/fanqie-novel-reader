@@ -3,8 +3,8 @@ import { URGENT_NOTICE } from '../../data/announcements';
 
 const Notice = styled.div`
   width: 100%;
-  max-width: 560px;
   margin-bottom: 20px;
+  box-sizing: border-box;
   padding: 14px 16px;
   background: color-mix(in srgb, var(--accent-color) 12%, var(--background-color2));
   border: var(--retro-border-width) solid var(--accent-color);

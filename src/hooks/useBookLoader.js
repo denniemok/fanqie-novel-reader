@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useToast } from '../contexts/ToastContext';
 import { fetchBookDetailAndDirectory } from '../utils/api-helpers';
 import { fetchBookDetail } from '../services/api';
-import { normalizeBookInfo } from '../utils/bookInfo';
+import { normalizeBookInfo, normalizeDetailOnly } from '../utils/bookInfo';
 import { formatErrorMessage } from '../utils/errors';
 
 function handleBookError(err, setError) {
@@ -11,6 +11,11 @@ function handleBookError(err, setError) {
   setError(
     formatErrorMessage(err, '獲取書籍資訊失敗，請檢查 bookId 是否正確，或者稍後再試。')
   );
+}
+
+function applyDirectoryLoadResult({ merged, partialLoadMessage }, bookId, setBookInfo, showToast) {
+  setBookInfo(normalizeBookInfo(merged, bookId));
+  if (partialLoadMessage) showToast(partialLoadMessage);
 }
 
 export function useBookLoader(bookId, { detailOnly = false, bookDataVersion = 0 } = {}) {
@@ -30,10 +35,7 @@ export function useBookLoader(bookId, { detailOnly = false, bookDataVersion = 0 
     }
 
     fetchBookDetailAndDirectory(bookId, { forceRefresh, signal })
-      .then(({ merged, partialLoadMessage }) => {
-        setBookInfo(normalizeBookInfo(merged, bookId));
-        if (partialLoadMessage) showToast(partialLoadMessage);
-      })
+      .then((result) => applyDirectoryLoadResult(result, bookId, setBookInfo, showToast))
       .catch((err) => handleBookError(err, setError));
   }, [bookId, detailOnly, showToast]);
 
@@ -52,9 +54,8 @@ export function useBookLoader(bookId, { detailOnly = false, bookDataVersion = 0 
     setIsRefreshing(true);
     setError(null);
     fetchBookDetailAndDirectory(bookId, { forceRefresh: true, signal: controller.signal })
-      .then(({ merged, partialLoadMessage }) => {
-        setBookInfo(normalizeBookInfo(merged, bookId));
-        if (partialLoadMessage) showToast(partialLoadMessage);
+      .then((result) => {
+        applyDirectoryLoadResult(result, bookId, setBookInfo, showToast);
         if (refetchAbortRef.current === controller) refetchAbortRef.current = null;
         setIsRefreshing(false);
       })
@@ -81,8 +82,7 @@ export function useBookLoader(bookId, { detailOnly = false, bookDataVersion = 0 
     const controller = new AbortController();
     fetchBookDetail(bookId, { signal: controller.signal })
       .then((detail) => {
-        const merged = { book_info: detail, item_data_list: [] };
-        setBookInfo(normalizeBookInfo(merged, bookId));
+        setBookInfo(normalizeDetailOnly(detail, bookId));
         setIsLoading(false);
       })
       .catch((err) => {
@@ -97,10 +97,7 @@ export function useBookLoader(bookId, { detailOnly = false, bookDataVersion = 0 
 
     const controller = new AbortController();
     fetchBookDetail(bookId, { signal: controller.signal })
-      .then((detail) => {
-        const merged = { book_info: detail, item_data_list: [] };
-        setBookInfo(normalizeBookInfo(merged, bookId));
-      })
+      .then((detail) => setBookInfo(normalizeDetailOnly(detail, bookId)))
       .catch((err) => {
         if (err.name !== 'AbortError') handleBookError(err, setError);
       });

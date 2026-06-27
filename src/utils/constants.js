@@ -42,7 +42,7 @@ export const ZH_CONVERSION_OPTIONS = [
   { value: 'hk', label: '香港繁體' },
 ];
 
-/** API sources: { value: opaque ID (used with proxy), label: display name } — real URLs live in proxy only */
+/** API sources: { value: opaque ID (used with proxy), label: display name } - real URLs live in proxy only */
 export const API_OPTIONS = [
   { value: 'hk-1', label: 'hk-1' },
   { value: 'hk-2', label: 'hk-2' },

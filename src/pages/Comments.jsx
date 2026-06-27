@@ -30,7 +30,6 @@ function Comments() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const offset = (page - 1) * COMMENTS_PER_PAGE + 1;
-  const innerData = data?.data ?? {};
   const error = bookError || commentsError;
 
   useEffect(() => {
@@ -53,10 +52,10 @@ function Comments() {
     return () => controller.abort();
   }, [bookId, offset, refreshKey]);
 
-  const comments = innerData.comment ?? [];
-  const commentCnt = innerData.comment_cnt ?? 0;
-  const context = innerData.context ?? '';
-  const hasMore = innerData.has_more ?? false;
+  const comments = data?.comment ?? [];
+  const commentCnt = data?.comment_cnt ?? 0;
+  const context = data?.context ?? '';
+  const hasMore = data?.has_more ?? false;
   const canGoNext = hasMore;
   const canGoPrev = page > 1;
 

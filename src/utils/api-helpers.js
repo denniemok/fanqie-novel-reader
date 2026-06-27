@@ -9,6 +9,15 @@ export async function getCachedOrFetchDirectory(bookId) {
   return directory;
 }
 
+async function resolveSettledWithCache(settled, cache, bookId, label, emptyFallback) {
+  if (settled.status === 'fulfilled') {
+    return { value: settled.value, hadCache: false };
+  }
+  console.error(`${label}:`, bookId, settled.reason);
+  const cached = await cache.get(bookId);
+  return { value: cached ?? emptyFallback, hadCache: cached != null };
+}
+
 export async function fetchBookDetailAndDirectory(bookId, { forceRefresh = false, catalogOnly = false, signal } = {}) {
   const refreshDirectory = forceRefresh;
   const refreshDetail = forceRefresh && !catalogOnly;
@@ -17,27 +26,21 @@ export async function fetchBookDetailAndDirectory(bookId, { forceRefresh = false
     fetchBookDetail(bookId, { forceRefresh: refreshDetail, signal }),
   ]);
 
-  let bookData;
-  let hadDirectoryCache = false;
-  if (dirSettled.status === 'fulfilled') {
-    bookData = dirSettled.value;
-  } else {
-    console.error('獲取書籍目錄失敗:', bookId, dirSettled.reason);
-    const cached = await directoryCache.get(bookId);
-    hadDirectoryCache = cached != null;
-    bookData = cached ?? { item_data_list: [] };
-  }
+  const { value: bookData, hadCache: hadDirectoryCache } = await resolveSettledWithCache(
+    dirSettled,
+    directoryCache,
+    bookId,
+    '獲取書籍目錄失敗',
+    { item_data_list: [] },
+  );
 
-  let detail = {};
-  let hadDetailCache = false;
-  if (detailSettled.status === 'fulfilled') {
-    detail = detailSettled.value;
-  } else {
-    console.error('獲取書籍詳情失敗:', bookId, detailSettled.reason);
-    const cached = await detailCache.get(bookId);
-    hadDetailCache = cached != null;
-    detail = cached ?? {};
-  }
+  const { value: detail, hadCache: hadDetailCache } = await resolveSettledWithCache(
+    detailSettled,
+    detailCache,
+    bookId,
+    '獲取書籍詳情失敗',
+    {},
+  );
 
   if (
     dirSettled.status === 'rejected' &&

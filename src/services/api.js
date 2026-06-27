@@ -2,13 +2,10 @@ import { API_BASE_KEY, API_OPTIONS, REQUEST_TIMEOUT_MS, RATE_LIMIT_RPM } from '.
 import { httpErrorFromResponse } from '../utils/errors';
 import { safeGetItem, safeSetItem, setLastReadChapter } from '../utils/storage';
 import { directoryCache, chapterCache, detailCache } from '../utils/cache';
-import { cleanText, cleanAbstract } from '../utils/text';
 
-/** Proxy URLs for round-robin. Set VITE_PROXY_URLS (comma-separated) in .env. */
-const PROXY_URLS = (import.meta.env.VITE_PROXY_URLS ?? '')
-  .split(',')
-  .map((s) => s.trim())
-  .filter(Boolean);
+/** Backend base URL. Set VITE_BACKEND_URL in .env (empty = same-origin via Vite dev proxy). */
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL ?? '').trim().replace(/\/$/, '');
+const API_TOKEN = import.meta.env.VITE_API_TOKEN ?? '';
 const DEFAULT_API_BASE = API_OPTIONS[0].value;
 
 export function getApiBase() {
@@ -20,30 +17,28 @@ export function setApiBase(apiId) {
   safeSetItem(API_BASE_KEY, apiId);
 }
 
-let proxyRoundRobinIndex = 0;
+function getApiUrl(path) {
+  return `${BACKEND_URL}${path}`;
+}
 
-function getProxyBase() {
-  if (PROXY_URLS.length > 0) {
-    const base = PROXY_URLS[proxyRoundRobinIndex % PROXY_URLS.length];
-    proxyRoundRobinIndex += 1;
-    return base;
-  }
-  return ''; // same-origin
+function withApiAuthHeaders(options = {}) {
+  if (!API_TOKEN) return options;
+  return {
+    ...options,
+    headers: {
+      ...options.headers,
+      'X-API-Token': API_TOKEN,
+    },
+  };
 }
 
 function buildProxyUrl(action, params) {
   const api = getApiBase();
-  const proxyBase = getProxyBase();
-  const base = proxyBase ? proxyBase.replace(/\/$/, '') : '';
   const q = new URLSearchParams({ api, action });
   Object.entries(params || {}).forEach(([k, v]) => {
     if (v != null && v !== '') q.set(k, String(v));
   });
-  return `${base}/proxy?${q.toString()}`;
-}
-
-function getFetchUrl(action, params) {
-  return buildProxyUrl(action, params);
+  return getApiUrl(`/proxy?${q.toString()}`);
 }
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -106,82 +101,40 @@ async function fetchWithTimeout(fetchUrl, options = {}, timeoutMs = REQUEST_TIME
   }
 }
 
-async function fetchAndValidate(url, options = {}) {
+async function fetchJson(url, options = {}) {
   await waitForRateLimit();
-  const res = await fetchWithTimeout(url, options);
+  const res = await fetchWithTimeout(url, withApiAuthHeaders(options));
   if (!res.ok) throw await httpErrorFromResponse(res);
   let json;
   try {
     json = await res.json();
-  } catch (parseErr) {
+  } catch {
     throw new Error('Invalid response from server');
   }
-  const successOk = json.success !== undefined && json.success === true;
-  const codeOk = json.code !== undefined && json.code === 0;
-  const oldCodeOk = json.code !== undefined && json.code === 200;
-  // if (!successOk && !codeOk && !oldCodeOk) throw new Error('Failed to fetch data');
-  if (oldCodeOk) return json.data;
-  if (successOk) return json.data;
-  return json.data; // return json
+  if (json?.data === undefined) {
+    throw new Error('Invalid response from server');
+  }
+  return json.data;
 }
 
-function getTopBooksUrl() {
-  const proxyBase = getProxyBase();
-  const base = proxyBase ? proxyBase.replace(/\/$/, '') : '';
-  return `${base}/top-books`;
+async function fetchDiscoverBookList(path, { signal } = {}) {
+  const data = await fetchJson(getApiUrl(path), { signal });
+  return data.books ?? [];
 }
 
-function getRecommendBooksUrl(type) {
-  const proxyBase = getProxyBase();
-  const base = proxyBase ? proxyBase.replace(/\/$/, '') : '';
-  return `${base}/recommend-books?type=${type}`;
-}
-
-function normalizeDiscoverBook(raw) {
+function withFetchOptions({ forceRefresh = false, signal } = {}) {
   return {
-    book_id: String(raw.book_id ?? raw.bookId ?? ''),
-    book_name: raw.book_name ?? raw.bookName ?? null,
-    author: raw.author ?? null,
-    category: raw.category ?? null,
-    thumb_url: raw.thumb_url ?? raw.thumbUri ?? null,
+    ...(forceRefresh && { cache: 'no-store' }),
+    ...(signal && { signal }),
   };
 }
 
-function validateDiscoverBooks(books) {
-  return books.filter((book) => book.book_id && book.book_name);
-}
-
 export async function fetchTopBookList({ signal } = {}) {
-  await waitForRateLimit();
-  const res = await fetchWithTimeout(getTopBooksUrl(), { signal });
-  if (!res.ok) throw await httpErrorFromResponse(res);
-  let json;
-  try {
-    json = await res.json();
-  } catch {
-    throw new Error('Invalid response from server');
-  }
-  if (!Array.isArray(json.book_list)) {
-    throw new Error('Failed to decode top book list');
-  }
-  return validateDiscoverBooks(json.book_list.map(normalizeDiscoverBook));
+  return fetchDiscoverBookList('/top-books', { signal });
 }
 
 export async function fetchRecommendedBookList(type, { signal } = {}) {
-  await waitForRateLimit();
-  const res = await fetchWithTimeout(getRecommendBooksUrl(type), { signal });
-  if (!res.ok) throw await httpErrorFromResponse(res);
-  let json;
-  try {
-    json = await res.json();
-  } catch {
-    throw new Error('Invalid response from server');
-  }
-  const list = json?.data?.list;
-  if (!Array.isArray(list)) {
-    throw new Error('Failed to decode recommend book list');
-  }
-  return validateDiscoverBooks(list.map(normalizeDiscoverBook));
+  return fetchDiscoverBookList(`/recommend-books?type=${type}`, { signal });
 }
 
 export async function fetchBookDetail(bookId, { forceRefresh = false, signal } = {}) {
@@ -190,43 +143,8 @@ export async function fetchBookDetail(bookId, { forceRefresh = false, signal } =
     if (cached) return cached;
   }
 
-  const url = getFetchUrl('detail', { book_id: bookId });
-  const json = await fetchAndValidate(url, { signal });
-
-  const payload = json?.data ?? json;
-  if (!payload || (Array.isArray(payload) && payload.length === 0)) {
-    throw new Error('Failed to decode book detail data');
-  }
-
-  let d = {};
-  if (Array.isArray(payload)) {
-    d =
-      payload.find((b) => b != null && String(b.book_id) === String(bookId)) ??
-      payload[0] ??
-      {};
-  } else if (typeof payload === 'object') {
-    d = payload;
-  }
-
-  const result = {
-    abstract: cleanAbstract(d.abstract || d.book_abstract_v2) || null,
-    author: d.author || null,
-    audio_thumb_uri: d.audio_thumb_uri || d.thumb_url || d.bookshelf_thumb_url || null,
-    original_book_name: d.original_book_name || d.book_name || null,
-    score: d.score || null,
-    tags: d.tags || null,
-    category: d.category || null,
-    sub_info: d.sub_info || null,
-    content_chapter_number: d.content_chapter_number || null,
-    word_number: d.word_number || null,
-    last_publish_time: d.last_publish_time || null,
-    creation_status: d.creation_status || null,
-  };
-
-  if (!result.original_book_name) {
-    throw new Error('Failed to decode book detail data');
-  }
-
+  const url = buildProxyUrl('detail', { book_id: bookId });
+  const result = await fetchJson(url, { signal });
   await detailCache.set(bookId, result);
   return result;
 }
@@ -240,30 +158,11 @@ export async function fetchBookDirectory(bookId, { forceRefresh = false, signal 
     }
   }
 
-  const url = getFetchUrl('directory', { book_id: bookId });
-  const options = { ...(forceRefresh && { cache: 'no-store' }), ...(signal && { signal }) };
-  const json = await fetchAndValidate(url, options);
-
-  const { lists, item_data_list } = json || {};
-  const rawLists = lists ?? item_data_list;
-  if (!rawLists || rawLists.length === 0) {
-    throw new Error('Invalid book ID or book not found');
-  }
-  const itemDataList = rawLists.map((item) => ({
-    item_id: item.item_id,
-    title: item.title,
-    version: item.version,
-  }));
-
-  if (itemDataList.length > 0 && itemDataList.every((item) => item.item_id == null)) {
-    throw new Error('Failed to decode directory data');
-  }
-
-  const inner = { item_data_list: itemDataList };
-  await directoryCache.set(bookId, inner);
+  const url = buildProxyUrl('directory', { book_id: bookId });
+  const data = await fetchJson(url, withFetchOptions({ forceRefresh, signal }));
+  await directoryCache.set(bookId, data);
   await setLastReadChapter(bookId, null);
-  
-  return inner;
+  return data;
 }
 
 export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {
@@ -274,25 +173,14 @@ export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {
     }
   }
 
-  const url = getFetchUrl('content', { item_id: itemId });
-  const json = await fetchAndValidate(url, { signal });
-
-  const rawContent = json?.content;
-  if (rawContent == null) {
-    throw new Error('Failed to decode chapter content');
-  }
-  const filteredContent = cleanText(String(rawContent));
-  await chapterCache.set(itemId, filteredContent);
-  
-  return { content: filteredContent };
+  const url = buildProxyUrl('content', { item_id: itemId });
+  const data = await fetchJson(url, { signal });
+  const content = data.content ?? '';
+  await chapterCache.set(itemId, content);
+  return { content };
 }
 
 export async function fetchComments(bookId, { count = 20, offset = 1, signal } = {}) {
-  const url = getFetchUrl('comment', { book_id: bookId, count, offset });
-  const json = await fetchAndValidate(url, { signal });
-  const inner = json?.data ?? json;
-  if (!inner || !Array.isArray(inner.comment)) {
-    throw new Error('Failed to decode comment data');
-  }
-  return { data: inner };
+  const url = buildProxyUrl('comment', { book_id: bookId, count, offset });
+  return fetchJson(url, { signal });
 }

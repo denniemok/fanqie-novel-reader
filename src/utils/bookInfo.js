@@ -52,3 +52,8 @@ export function normalizeBookInfo(raw, bookId) {
     chapter_count: (n === 0 || n === '0' || n == null) ? null : n,
   };
 }
+
+/** Normalize detail-only payloads (e.g. comments page) without a directory. */
+export function normalizeDetailOnly(detail, bookId) {
+  return normalizeBookInfo({ book_info: detail, item_data_list: [] }, bookId);
+}
