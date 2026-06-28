@@ -166,15 +166,24 @@ const DragHandle = styled.div`
 
 const actionBarStyles = css`
   display: flex;
-  flex-wrap: nowrap;
-  gap: 4px;
   align-items: center;
   justify-content: flex-end;
   z-index: 11;
   pointer-events: auto;
+  overflow: visible;
+`;
+
+const ActionBarScroll = styled.div`
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  align-items: center;
+  justify-content: flex-end;
+  max-width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  padding: 4px 5px 6px 4px;
 
   &::-webkit-scrollbar {
     display: none;
@@ -192,7 +201,7 @@ const ActionButtonsOverlay = styled.div`
 const ActionFooter = styled.div`
   ${actionBarStyles}
   flex-shrink: 0;
-  padding: 8px 12px 10px;
+  padding: 6px 10px 6px;
   border-top: 1px solid var(--border-color);
   background: var(--background-color);
 `;
@@ -378,7 +387,9 @@ function ListCard({
         )}
         {showItemActions && !isMobile && (
           <ActionButtonsOverlay {...actionBarHandlers}>
-            <ListCardActions {...actionProps} />
+            <ActionBarScroll>
+              <ListCardActions {...actionProps} />
+            </ActionBarScroll>
           </ActionButtonsOverlay>
         )}
         <CardBody>
@@ -391,7 +402,9 @@ function ListCard({
       </CardMainRow>
       {showItemActions && isMobile && (
         <ActionFooter {...actionBarHandlers}>
-          <ListCardActions {...actionProps} />
+          <ActionBarScroll>
+            <ListCardActions {...actionProps} />
+          </ActionBarScroll>
         </ActionFooter>
       )}
       <BookRefreshError message={refreshError} />
