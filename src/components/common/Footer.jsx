@@ -6,7 +6,7 @@ const FooterWrapper = styled.footer`
   flex-shrink: 0;
   box-sizing: border-box;
   text-align: center;
-  margin-top: 40px;
+  margin-top: 70px;
   padding: 32px 24px calc(32px + env(safe-area-inset-bottom));
   color: var(--text-color-secondary);
   font-size: 13px;

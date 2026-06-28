@@ -158,6 +158,7 @@ export const TabActions = styled.div`
   gap: 12px;
   flex-wrap: wrap;
   min-height: ${TOOLBAR_CONTROL_HEIGHT};
+  width: 100%;
 `;
 
 export const ToolbarRoot = styled.div`
@@ -182,8 +183,10 @@ export const ToolbarRight = styled.div`
   display: flex;
   align-items: stretch;
   gap: 8px;
-  margin-left: auto;
   flex-wrap: wrap;
+  justify-content: flex-end;
+  flex: 1 1 100%;
+  max-width: 100%;
 
   @media (max-width: 374px) {
     gap: 4px;

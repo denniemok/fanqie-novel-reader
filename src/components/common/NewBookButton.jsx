@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { BookPlus } from 'lucide-react';
+import { CirclePlus } from 'lucide-react';
 import { IconButton } from './IconButton';
 import { ROUTES } from '../../utils/navigation';
 
@@ -17,7 +17,7 @@ function NewBookButton({ title = NEW_BOOK_BUTTON_TITLE, disabled: disabledProp }
       disabled={disabled}
       onClick={() => navigate(ROUTES.newBook)}
     >
-      <BookPlus size={20} strokeWidth={2.5} />
+      <CirclePlus size={20} strokeWidth={2.5} />
     </IconButton>
   );
 }

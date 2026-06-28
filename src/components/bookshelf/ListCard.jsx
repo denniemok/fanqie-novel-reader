@@ -1,9 +1,10 @@
 import React from 'react';
-import styled from 'styled-components';
-import { GripVertical, Loader2, Check, RefreshCw, Trash2, FolderInput } from 'lucide-react';
+import styled, { css } from 'styled-components';
+import { GripVertical, Loader2, Check, RefreshCw, Trash2, FolderInput, Download } from 'lucide-react';
 import BookInfo from '../common/BookInfo';
 import { useBookLoader } from '../../hooks/useBookLoader';
 import { useErrorToast } from '../../hooks/useErrorToast';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { shimmerStyle } from '../../utils/styled/animations';
 import { CardActionButton, CardSpinningIcon, CardLoadingOverlay } from '../common/CardActionButton';
 import BookRefreshError from './BookRefreshError';
@@ -163,15 +164,37 @@ const DragHandle = styled.div`
   }
 `;
 
-const ActionButtons = styled.div`
+const actionBarStyles = css`
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  align-items: center;
+  justify-content: flex-end;
+  z-index: 11;
+  pointer-events: auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const ActionButtonsOverlay = styled.div`
+  ${actionBarStyles}
   position: absolute;
   top: 10px;
   right: 10px;
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  z-index: 11;
-  pointer-events: auto;
+  max-width: calc(100% - 20px);
+`;
+
+const ActionFooter = styled.div`
+  ${actionBarStyles}
+  flex-shrink: 0;
+  padding: 8px 12px 10px;
+  border-top: 1px solid var(--border-color);
+  background: var(--background-color);
 `;
 
 const SelectionBadge = styled.div`
@@ -197,12 +220,72 @@ const SelectionBadge = styled.div`
   }
 `;
 
+function ListCardActions({
+  bookId,
+  bookInfo,
+  isAllTab,
+  isRefreshing,
+  onAddToCollection,
+  onDownload,
+  onRefreshClick,
+  refetch,
+  onDeleteClick,
+}) {
+  return (
+    <>
+      {onAddToCollection && (
+        <CardActionButton
+          type="button"
+          $variant="collection"
+          onClick={(e) => { e.stopPropagation(); onAddToCollection(bookId); }}
+          title="加入收藏夾"
+          aria-label="加入收藏夾"
+        >
+          <FolderInput />
+        </CardActionButton>
+      )}
+      {onDownload && (
+        <CardActionButton
+          type="button"
+          $variant="download"
+          onClick={(e) => { e.stopPropagation(); onDownload(bookId); }}
+          title="下載全部"
+          aria-label="下載全部"
+        >
+          <Download />
+        </CardActionButton>
+      )}
+      <CardActionButton
+        type="button"
+        $variant="refresh"
+        disabled={isRefreshing}
+        onClick={(e) => { e.stopPropagation(); (onRefreshClick ?? refetch)(e, bookId); }}
+        title="刷新目錄與書籍資料"
+        aria-label="刷新目錄與書籍資料"
+      >
+        {isRefreshing ? <CardSpinningIcon><Loader2 size={18} /></CardSpinningIcon> : <RefreshCw />}
+      </CardActionButton>
+      <CardActionButton
+        type="button"
+        $variant="delete"
+        onClick={(e) => { e.stopPropagation(); onDeleteClick?.(e, bookId, bookInfo); }}
+        title={isAllTab ? '刪除此書的本地資料' : '從收藏夾移除'}
+        aria-label={isAllTab ? '刪除此書的本地資料' : '從收藏夾移除'}
+      >
+        <Trash2 />
+      </CardActionButton>
+    </>
+  );
+}
+
 function ListCard({
   bookId,
   onClick,
   onRefreshClick,
   onDeleteClick,
   onAddToCollection,
+  onDownload,
+  isAllTab = true,
   conversionMode,
   dragHandleProps,
   isDragging,
@@ -221,6 +304,7 @@ function ListCard({
     bookDataVersion,
   });
   const isRefreshing = hookRefreshing || bulkRefreshing;
+  const isMobile = useMediaQuery('(max-width: 480px)');
   useErrorToast(error);
 
   if (!bookInfo) {
@@ -251,6 +335,23 @@ function ListCard({
     onClick?.();
   };
 
+  const showItemActions = showActions && !selectionMode && !reorderMode;
+  const actionProps = {
+    bookId,
+    bookInfo,
+    isAllTab,
+    isRefreshing,
+    onAddToCollection,
+    onDownload,
+    onRefreshClick,
+    refetch,
+    onDeleteClick,
+  };
+  const actionBarHandlers = {
+    onClick: (e) => e.stopPropagation(),
+    onTouchStart: (e) => e.stopPropagation(),
+  };
+
   return (
     <Card
       onClick={handleCardClick}
@@ -275,39 +376,10 @@ function ListCard({
             <Check />
           </SelectionBadge>
         )}
-        {showActions && !selectionMode && !reorderMode && (
-          <ActionButtons>
-            {onAddToCollection && (
-              <CardActionButton
-                type="button"
-                $variant="collection"
-                onClick={(e) => { e.stopPropagation(); onAddToCollection(bookId); }}
-                title="加入收藏夾"
-                aria-label="加入收藏夾"
-              >
-                <FolderInput />
-              </CardActionButton>
-            )}
-            <CardActionButton
-              type="button"
-              $variant="refresh"
-              disabled={isRefreshing}
-              onClick={(e) => { e.stopPropagation(); (onRefreshClick ?? refetch)(e, bookId); }}
-              title="刷新目錄與書籍資料"
-              aria-label="刷新目錄與書籍資料"
-            >
-              {isRefreshing ? <CardSpinningIcon><Loader2 size={18} /></CardSpinningIcon> : <RefreshCw />}
-            </CardActionButton>
-            <CardActionButton
-              type="button"
-              $variant="delete"
-              onClick={(e) => { e.stopPropagation(); onDeleteClick?.(e, bookId, bookInfo); }}
-              title={onAddToCollection ? '刪除此書的本地資料' : '從收藏夾移除'}
-              aria-label={onAddToCollection ? '刪除此書的本地資料' : '從收藏夾移除'}
-            >
-              <Trash2 />
-            </CardActionButton>
-          </ActionButtons>
+        {showItemActions && !isMobile && (
+          <ActionButtonsOverlay {...actionBarHandlers}>
+            <ListCardActions {...actionProps} />
+          </ActionButtonsOverlay>
         )}
         <CardBody>
           <BookInfo
@@ -317,6 +389,11 @@ function ListCard({
           />
         </CardBody>
       </CardMainRow>
+      {showItemActions && isMobile && (
+        <ActionFooter {...actionBarHandlers}>
+          <ListCardActions {...actionProps} />
+        </ActionFooter>
+      )}
       <BookRefreshError message={refreshError} />
     </Card>
   );

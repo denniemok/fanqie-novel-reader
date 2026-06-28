@@ -262,6 +262,16 @@ const MetaRow = styled.div`
 
   .variant-compact & {
     margin-top: 4px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    min-width: 0;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 `;
 
@@ -276,6 +286,10 @@ const MetaTag = styled.span`
   border: 1px solid var(--border-color);
   background: var(--background-color2);
   font-family: inherit;
+
+  .variant-compact & {
+    flex-shrink: 0;
+  }
 
   &.meta-score {
     color: #a7b8a7;
@@ -365,7 +379,10 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer }) {
           )}
           {truncated}
         </Abstract>
-        <MetaRow>
+        <MetaRow
+          onClick={isCompact ? (e) => e.stopPropagation() : undefined}
+          onTouchStart={isCompact ? (e) => e.stopPropagation() : undefined}
+        >
           {!audio_thumb_uri && (
             <MetaTag className="meta-chapters">{chapter_count ? `共 ${chapter_count} 章節` : '暫無章節資訊'}</MetaTag>
           )}

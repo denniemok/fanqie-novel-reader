@@ -337,10 +337,7 @@ function Content({ conversionMode = 'tw' }) {
     handleAddToCollection(Array.from(selectedBookIds));
   };
 
-  const handleGoToDownload = async () => {
-    if (selectedBookIds.size !== 1) return;
-    const bookId = Array.from(selectedBookIds)[0];
-
+  const handleBookDownload = useCallback(async (bookId) => {
     try {
       const directory = await getCachedOrFetchDirectory(bookId);
       const list = directory?.item_data_list ?? [];
@@ -360,6 +357,11 @@ function Content({ conversionMode = 'tw' }) {
     } catch (err) {
       showToast(formatErrorMessage(err, '無法開始下載，請稍後再試。'));
     }
+  }, [navigate, showToast, startDownloadAll]);
+
+  const handleGoToDownload = async () => {
+    if (selectedBookIds.size !== 1) return;
+    await handleBookDownload(Array.from(selectedBookIds)[0]);
   };
 
   const handleBulkRefresh = async () => {
@@ -587,6 +589,7 @@ function Content({ conversionMode = 'tw' }) {
             onBookRefresh={handleBookRefresh}
             onBookDelete={handleBookDelete}
             onBookAddToCollection={handleAddToCollection}
+            onBookDownload={handleBookDownload}
             isSampleOnly={isSampleOnly}
           />
 

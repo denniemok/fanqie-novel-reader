@@ -9,7 +9,7 @@ function Download() {
   return (
     <NavPageLayout>
       <NavTopBar pageTitle="下載" conversionMode={conversionMode} onConversionModeChange={setConversionMode} />
-      <Content />
+      <Content conversionMode={conversionMode} />
     </NavPageLayout>
   );
 }

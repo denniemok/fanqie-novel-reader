@@ -26,6 +26,7 @@ function BookshelfBookList({
   onBookRefresh,
   onBookDelete,
   onBookAddToCollection,
+  onBookDownload,
   isSampleOnly,
 }) {
   if (sortedDisplayBooks.length === 0) {
@@ -64,7 +65,9 @@ function BookshelfBookList({
     showActions: showListActions,
     onRefreshClick: onBookRefresh,
     onDeleteClick: onBookDelete,
-    onAddToCollection: isAllTab && !isSampleOnly ? onBookAddToCollection : undefined,
+    onAddToCollection: !isSampleOnly ? onBookAddToCollection : undefined,
+    onDownload: !isSampleOnly ? onBookDownload : undefined,
+    isAllTab,
   });
 
   if (viewMode === 'list') {

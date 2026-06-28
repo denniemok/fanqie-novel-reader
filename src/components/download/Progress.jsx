@@ -8,6 +8,7 @@ import { detailCache } from '../../utils/cache';
 import { isChapterCached } from '../../utils/storage';
 import { buildCatalogUrl } from '../../utils/navigation';
 import { runBookTxtExport } from '../../utils/exportBookActions';
+import { useConvertedText } from '../../hooks/useConvertedText';
 import { CardSpinningIcon } from '../common/CardActionButton';
 import { GrayButton } from '../common/GrayButton';
 import { SectionTitle } from './styles';
@@ -153,7 +154,7 @@ const ActionRow = styled.div`
   flex-wrap: wrap;
 `;
 
-function Progress() {
+function Progress({ conversionMode = 'tw' }) {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const {
@@ -166,6 +167,7 @@ function Progress() {
   } = useDownloadManager();
 
   const [bookTitle, setBookTitle] = useState(null);
+  const convertedBookTitle = useConvertedText(bookTitle, conversionMode);
   const [progress, setProgress] = useState({ done: 0, total: 0, active: 0 });
 
   useEffect(() => {
@@ -238,7 +240,7 @@ function Progress() {
               </CardSpinningIcon>
               <BookMeta>
                 <TitleLink type="button" onClick={() => navigate(buildCatalogUrl(downloadAllBookId))}>
-                  {bookTitle || '載入書名中…'}
+                  {convertedBookTitle || '載入書名中…'}
                 </TitleLink>
                 <BookId>ID：{downloadAllBookId}</BookId>
               </BookMeta>
