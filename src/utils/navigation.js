@@ -4,6 +4,7 @@ export const ROUTES = {
   newBook: '/new-book',
   announcements: '/announcements',
   download: '/download',
+  status: '/status',
   catalog: '/catalog',
   chapter: '/chapter',
   comments: '/comments',

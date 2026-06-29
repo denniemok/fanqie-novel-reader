@@ -1,3 +1,5 @@
+import { AUTO_BAN_DURATION_MINUTES } from './constants';
+
 export class HttpError extends Error {
   constructor(message, { status } = {}) {
     super(message);
@@ -29,6 +31,10 @@ export function formatErrorMessage(error, defaultMessage) {
 
   if (error.status === 429) {
     return '請求過於頻繁，請稍後再試。';
+  }
+
+  if (error.status === 403) {
+    return `請求過於頻繁，您已被暫時封禁 ${AUTO_BAN_DURATION_MINUTES} 分鐘，請稍後再試。`;
   }
 
   if (msg.includes('timed out')) {

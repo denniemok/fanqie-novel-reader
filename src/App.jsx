@@ -11,6 +11,7 @@ import Bookshelf from './pages/Bookshelf';
 import NewBook from './pages/NewBook';
 import Announcements from './pages/Announcements';
 import Download from './pages/Download';
+import Status from './pages/Status';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path={ROUTES.newBook} element={<NewBook />} />
             <Route path={ROUTES.announcements} element={<Announcements />} />
             <Route path={ROUTES.download} element={<Download />} />
+            <Route path={ROUTES.status} element={<Status />} />
             <Route path={ROUTES.catalog} element={<Catalog />} />
             <Route path={ROUTES.chapter} element={<Chapter />} />
             <Route path={ROUTES.comments} element={<Comments />} />

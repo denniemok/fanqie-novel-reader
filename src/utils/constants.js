@@ -54,9 +54,8 @@ export const API_OPTIONS = [
   { value: 'master-1', label: 'master-1' },
 ];
 
-/** Chinese fonts for reader: { value: CSS font-family, label: display name } */
+/** Chinese fonts for reader: { value: CSS font-family, label: display name, fontFamily: preview in dropdown } */
 export const CHINESE_FONTS = [
-  { value: "'Noto Serif TC', 'Noto Serif SC', sans-serif", label: '系統預設' },
   { value: "'Noto Serif TC', 'Noto Serif SC', sans-serif", label: '思源宋體' },
   { value: "'PMingLiU', 'Songti TC', 'Songti SC', sans-serif", label: '新細明體' },
   { value: "'STSong', '华文宋体', 'STFangsong', sans-serif", label: '華文宋體' },
@@ -64,7 +63,7 @@ export const CHINESE_FONTS = [
   { value: "'LXGW WenKai TC', 'LXGW WenKai', sans-serif", label: '霞鷸文楷' },
   { value: "'Noto Sans TC', 'Noto Sans SC', sans-serif", label: '思源黑體' },
   { value: "'Microsoft JhengHei', 'Heiti TC', 'Heiti SC', sans-serif", label: '微軟正黑體' },
-];
+].map((font) => ({ ...font, fontFamily: font.value }));
 
 export const FONT_SIZE_MIN = 18;
 export const FONT_SIZE_MAX = 56;
@@ -85,5 +84,6 @@ export const RETRY_DELAY_MS = 5000;
 export const TOAST_DURATION_MS = 2000;
 export const REQUEST_TIMEOUT_MS = 45000;
 export const RATE_LIMIT_RPM = 60;
+export const AUTO_BAN_DURATION_MINUTES = 10;
 export const MAX_ABSTRACT_LENGTH = 180;
 export const MOBILE_ABSTRACT_LENGTH = 45;

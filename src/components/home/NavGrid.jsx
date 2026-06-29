@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { BookOpen, PlusCircle, Megaphone, MessageCircleWarning, Info, Github, Download } from 'lucide-react';
+import { BookOpen, PlusCircle, Megaphone, MessageCircleWarning, Info, Github, Download, Activity } from 'lucide-react';
 import { GITHUB_ISSUES_URL, GITHUB_README_URL, GITHUB_REPO_URL } from '../../utils/constants';
 import { ROUTES } from '../../utils/navigation';
 
 const ICON_SIZE = 40;
 
-const staggerDelays = [0.08, 0.14, 0.2, 0.26, 0.32, 0.38, 0.44];
+const staggerDelays = [0.08, 0.14, 0.2, 0.26, 0.32, 0.38, 0.44, 0.5];
 
 const Grid = styled.div`
   display: grid;
@@ -25,6 +25,7 @@ const Grid = styled.div`
   & > *:nth-child(5) { animation-delay: ${staggerDelays[4]}s; }
   & > *:nth-child(6) { animation-delay: ${staggerDelays[5]}s; }
   & > *:nth-child(7) { animation-delay: ${staggerDelays[6]}s; }
+  & > *:nth-child(8) { animation-delay: ${staggerDelays[7]}s; }
 
   @media (max-width: 700px) {
     grid-template-columns: repeat(3, 1fr);
@@ -174,7 +175,7 @@ function NavGrid() {
       <TileButton type="button" onClick={() => navigate(ROUTES.bookshelf)}>
         <BookOpen size={ICON_SIZE} strokeWidth={2} aria-hidden />
         <TileLabel>書架</TileLabel>
-        <TileSubLabel>閱讀歷史 · 收藏</TileSubLabel>
+        <TileSubLabel>閱讀歷史與收藏</TileSubLabel>
       </TileButton>
       <TileButton type="button" onClick={() => navigate(ROUTES.newBook)}>
         <PlusCircle size={ICON_SIZE} strokeWidth={2} aria-hidden />
@@ -184,7 +185,12 @@ function NavGrid() {
       <TileButton type="button" onClick={() => navigate(ROUTES.download)}>
         <Download size={ICON_SIZE} strokeWidth={2} aria-hidden />
         <TileLabel>下載</TileLabel>
-        <TileSubLabel>狀態 · 使用說明</TileSubLabel>
+        <TileSubLabel>下載管理與說明</TileSubLabel>
+      </TileButton>
+      <TileButton type="button" onClick={() => navigate(ROUTES.status)}>
+        <Activity size={ICON_SIZE} strokeWidth={2} aria-hidden />
+        <TileLabel>API 狀態</TileLabel>
+        <TileSubLabel>鏡像源健康檢測</TileSubLabel>
       </TileButton>
       <TileButton type="button" onClick={() => navigate(ROUTES.announcements)}>
         <Megaphone size={ICON_SIZE} strokeWidth={2} aria-hidden />

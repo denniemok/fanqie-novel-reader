@@ -8,6 +8,7 @@ export default defineConfig({
       '/proxy': 'http://localhost:8000',
       '/top-books': 'http://localhost:8000',
       '/recommend-books': 'http://localhost:8000',
+      '/api-status': 'http://localhost:8000',
     },
   },
   build: {

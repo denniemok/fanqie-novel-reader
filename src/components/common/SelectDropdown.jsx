@@ -64,7 +64,7 @@ const Trigger = styled.button`
   border: 1px solid var(--border-color);
   background: var(--background-color2);
   color: var(--text-color);
-  font-family: inherit;
+  font-family: var(--ui-font-family);
   font-size: 14px;
   font-weight: ${(p) => (p.$bold ? 700 : 'inherit')};
   cursor: pointer;
@@ -189,7 +189,7 @@ const Option = styled.button`
   border-radius: ${(p) => (p.$square ? '0' : 'var(--border-radius-xs)')};
   cursor: pointer;
   transition: background 0.2s;
-  font-family: inherit;
+  font-family: var(--ui-font-family);
   color: var(--text-color);
   box-sizing: border-box;
 

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { IconButton } from './IconButton';
+import ApiOverallBadge from './ApiOverallBadge';
 import { thinScrollbarStyles } from '../../utils/styled/scrollbars';
 
 const Wrapper = styled.div`
@@ -11,7 +12,7 @@ const Menu = styled.div`
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  min-width: 180px;
+  min-width: 220px;
   max-width: calc(100vw - 32px);
   max-height: 280px;
   overflow-y: auto;
@@ -27,7 +28,10 @@ const Menu = styled.div`
 `;
 
 const Option = styled.button`
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   width: 100%;
   padding: 10px 12px;
   text-align: left;
@@ -38,7 +42,7 @@ const Option = styled.button`
   border-radius: var(--border-radius-xs);
   cursor: pointer;
   transition: background 0.2s;
-  font-family: ${(p) => p.$fontFamily ?? 'inherit'};
+  font-family: ${(p) => p.$fontFamily ?? 'var(--ui-font-family)'};
 
   @media (hover: hover) {
     &:hover {
@@ -56,10 +60,50 @@ const Option = styled.button`
   `}
 `;
 
+const OptionLabel = styled.span`
+  min-width: 0;
+  flex: 1;
+`;
+
+const MenuDivider = styled.div`
+  height: 1px;
+  margin: 4px 8px;
+  background: var(--border-color);
+`;
+
+const MenuFooterButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 14px;
+  font-family: var(--ui-font-family);
+  color: var(--text-color-secondary);
+  background: none;
+  border: none;
+  border-radius: var(--border-radius-xs);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+
+  svg {
+    flex-shrink: 0;
+    color: var(--accent-color);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--hover-background-color);
+      color: var(--accent-color);
+    }
+  }
+`;
+
 /**
  * Reusable icon dropdown for selecting from a list of options.
  */
-function IconDropdown({ icon, title, ariaLabel, options, value, onChange, disabled = false }) {
+function IconDropdown({ icon, title, ariaLabel, options, value, onChange, disabled = false, footer }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -92,19 +136,27 @@ function IconDropdown({ icon, title, ariaLabel, options, value, onChange, disabl
               role="option"
               aria-selected={value === opt.value}
               $active={value === opt.value}
-              $fontFamily={opt.fontFamily ?? opt.value}
+              $fontFamily={opt.fontFamily}
               onClick={() => {
                 onChange(opt.value);
                 setOpen(false);
               }}
             >
-              {opt.label}
+              <OptionLabel>{opt.label}</OptionLabel>
+              {opt.status && <ApiOverallBadge status={opt.status} compact />}
             </Option>
           ))}
+          {footer && (
+            <>
+              <MenuDivider />
+              {typeof footer === 'function' ? footer(() => setOpen(false)) : footer}
+            </>
+          )}
         </Menu>
       )}
     </Wrapper>
   );
 }
 
+export { MenuFooterButton };
 export default IconDropdown;

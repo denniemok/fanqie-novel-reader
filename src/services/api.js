@@ -184,3 +184,7 @@ export async function fetchComments(bookId, { count = 20, offset = 1, signal } =
   const url = buildProxyUrl('comment', { book_id: bookId, count, offset });
   return fetchJson(url, { signal });
 }
+
+export async function fetchApiStatus({ signal } = {}) {
+  return fetchJson(getApiUrl('/api-status'), { signal });
+}
