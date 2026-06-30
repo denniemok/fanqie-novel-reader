@@ -188,3 +188,7 @@ export async function fetchComments(bookId, { count = 20, offset = 1, signal } =
 export async function fetchApiStatus({ signal } = {}) {
   return fetchJson(getApiUrl('/api-status'), { signal });
 }
+
+export async function fetchAnnouncements({ signal } = {}) {
+  return fetchJson(getApiUrl('/announcements'), { cache: 'no-store', signal });
+}

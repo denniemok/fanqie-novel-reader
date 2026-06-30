@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { URGENT_NOTICE } from '../../data/announcements';
+import { useAnnouncements } from '../../hooks/useAnnouncements';
 
 const Notice = styled.div`
   width: 100%;
@@ -47,12 +47,14 @@ const Message = styled.p`
 `;
 
 function UrgentNotice() {
-  if (!URGENT_NOTICE) return null;
+  const { urgentNotice } = useAnnouncements();
+
+  if (!urgentNotice) return null;
 
   return (
     <Notice role="alert">
-      <Label>緊急通知（{URGENT_NOTICE.date}）</Label>
-      <Message>{URGENT_NOTICE.message}</Message>
+      <Label>緊急通知（{urgentNotice.date}）</Label>
+      <Message>{urgentNotice.message}</Message>
     </Notice>
   );
 }

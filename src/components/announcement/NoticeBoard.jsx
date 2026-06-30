@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { ANNOUNCEMENTS } from '../../data/announcements';
+import EmptyHint from '../common/EmptyHint';
 import { retroDashedCardStyles, retroTagStyles } from '../../utils/styled/retro';
 
 const Section = styled.section`
@@ -39,10 +39,12 @@ const NoticeCard = styled.div`
   }
 `;
 
-function NoticeBoard() {
+function NoticeBoard({ announcements }) {
+  if (!announcements.length) return <EmptyHint>暫無公告</EmptyHint>;
+
   return (
     <Section>
-      {ANNOUNCEMENTS.map((item, index) => (
+      {announcements.map((item, index) => (
         <NoticeCard key={`${item.date}-${index}`}>
           <b>{item.date}</b> {item.message}
         </NoticeCard>

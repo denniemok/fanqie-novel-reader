@@ -1,8 +1,6 @@
 import styled from 'styled-components';
 import { Check, Loader2, RefreshCw, X } from 'lucide-react';
 import PageContent from '../common/PageContent';
-import Loading from '../common/Loading';
-import Error from '../common/Error';
 import { GrayButton } from '../common/GrayButton';
 import { CardSpinningIcon } from '../common/CardActionButton';
 import { refreshApiStatus, useApiStatusStore } from '../../hooks/useApiStatus';
@@ -216,23 +214,7 @@ function formatCheckedAt(iso) {
 }
 
 function StatusContent() {
-  const { data, error, loading, refreshing } = useApiStatusStore();
-
-  if (loading && !data) {
-    return (
-      <PageContent $paddingBottom={48} $paddingBottomMobile={32}>
-        <Loading />
-      </PageContent>
-    );
-  }
-
-  if (error && !data) {
-    return (
-      <PageContent $paddingBottom={48} $paddingBottomMobile={32}>
-        <Error message={error} />
-      </PageContent>
-    );
-  }
+  const { data, refreshing } = useApiStatusStore();
 
   const apis = data?.apis ?? [];
   const intervalMin = Math.round((data?.interval_seconds ?? 300) / 60);
@@ -251,7 +233,7 @@ function StatusContent() {
             </span>
             <RefreshButton
               type="button"
-              disabled={loading || refreshing}
+              disabled={refreshing}
               onClick={() => refreshApiStatus()}
             >
               {refreshing ? (
