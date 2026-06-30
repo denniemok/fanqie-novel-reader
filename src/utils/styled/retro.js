@@ -92,3 +92,8 @@ export const retroTagStyles = css`
     margin-right: 4px;
   }
 `;
+
+export const retroTagCardStyles = css`
+  ${retroDashedCardStyles}
+  ${retroTagStyles}
+`;

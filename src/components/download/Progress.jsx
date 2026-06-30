@@ -11,7 +11,7 @@ import { runBookTxtExport } from '../../utils/exportBookActions';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import { CardSpinningIcon } from '../common/CardActionButton';
 import { GrayButton } from '../common/GrayButton';
-import { SectionTitle } from './styles';
+import { SectionTitle } from '../../utils/styled/sections';
 
 const Section = styled.section`
   display: flex;

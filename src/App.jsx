@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { ToastProvider } from './contexts/ToastContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { DownloadManagerProvider } from './contexts/DownloadManager';
@@ -32,6 +32,7 @@ function App() {
             <Route path={ROUTES.comments} element={<Comments />} />
             <Route path={ROUTES.export} element={<Export />} />
             <Route path={ROUTES.import} element={<Import />} />
+            <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
           </Routes>
         </DownloadManagerProvider>
       </ToastProvider>

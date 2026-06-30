@@ -1,5 +1,6 @@
 import {
   CANONICAL_SITE_URL,
+  CANONICAL_HOSTNAME,
   DATA_BACKUP_VERSION,
   DATA_BACKUP_EXTENSION,
   LEGACY_HOSTNAMES,
@@ -41,8 +42,6 @@ const LOCAL_STORAGE_KEYS = [
   READING_HISTORY_LEGACY_KEY,
 ];
 
-const CANONICAL_HOSTNAMES = ['fanqietc.com', 'www.fanqietc.com'];
-
 export function getHostname() {
   if (typeof window === 'undefined') return '';
   return window.location.hostname;
@@ -53,7 +52,7 @@ export function isLegacyOrigin(hostname = getHostname()) {
 }
 
 export function isCanonicalOrigin(hostname = getHostname()) {
-  return CANONICAL_HOSTNAMES.includes(hostname);
+  return hostname === CANONICAL_HOSTNAME;
 }
 
 function collectLocalStorageSnapshot() {

@@ -1,17 +1,10 @@
 import styled from 'styled-components';
 import EmptyHint from '../common/EmptyHint';
-import { retroDashedCardStyles, retroTagStyles } from '../../utils/styled/retro';
-
-const Section = styled.section`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
-`;
+import { retroTagCardStyles } from '../../utils/styled/retro';
+import { Section } from '../../utils/styled/sections';
 
 const NoticeCard = styled.div`
-  ${retroDashedCardStyles}
-  ${retroTagStyles}
+  ${retroTagCardStyles}
   font-family: inherit;
   transition: var(--transition-default);
 

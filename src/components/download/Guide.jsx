@@ -4,19 +4,11 @@ import {
   BATCH_COOLDOWN_MS,
   RATE_LIMIT_RPM,
 } from '../../utils/constants';
-import { retroDashedCardStyles, retroTagStyles } from '../../utils/styled/retro';
-import { SectionTitle } from './styles';
-
-const Section = styled.section`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
-`;
+import { retroTagCardStyles } from '../../utils/styled/retro';
+import { Section, SectionTitle } from '../../utils/styled/sections';
 
 const InfoCard = styled.div`
-  ${retroDashedCardStyles}
-  ${retroTagStyles}
+  ${retroTagCardStyles}
 
   ul {
     margin: 8px 0 0;

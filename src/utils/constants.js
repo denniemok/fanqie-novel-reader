@@ -1,5 +1,6 @@
 export const CANONICAL_SITE_URL = 'https://fanqietc.com';
 export const CANONICAL_IMPORT_URL = 'https://fanqietc.com/import';
+export const CANONICAL_HOSTNAME = new URL(CANONICAL_SITE_URL).hostname;
 export const LEGACY_HOSTNAMES = ['fanqietc.pages.dev', 'fqnr.pages.dev'];
 export const DATA_BACKUP_VERSION = 1;
 export const DATA_BACKUP_EXTENSION = '.fanqie-backup';

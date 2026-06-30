@@ -5,6 +5,7 @@ import { GrayButton } from '../common/GrayButton';
 import { CardSpinningIcon } from '../common/CardActionButton';
 import { refreshApiStatus, useApiStatusStore } from '../../hooks/useApiStatus';
 import { retroDashedCardStyles } from '../../utils/styled/retro';
+import { Section } from '../../utils/styled/sections';
 import { thinScrollbarStyles } from '../../utils/styled/scrollbars';
 import ApiOverallBadge from '../common/ApiOverallBadge';
 import { API_DROPDOWN_TITLE } from '../common/ApiDropdown';
@@ -15,13 +16,6 @@ const ENDPOINTS = [
   { key: 'content', label: '章節' },
   { key: 'comment', label: '評論' },
 ];
-
-const Section = styled.section`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
-`;
 
 const MetaCard = styled.div`
   ${retroDashedCardStyles}

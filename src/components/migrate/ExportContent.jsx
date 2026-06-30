@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import PageContent from '../common/PageContent';
 import { GrayButton } from '../common/GrayButton';
+import HostCodeList from '../common/HostCodeList';
 import { useToast } from '../../contexts/ToastContext';
 import {
   CANONICAL_IMPORT_URL,
+  CANONICAL_HOSTNAME,
   CANONICAL_SITE_URL,
   LEGACY_HOSTNAMES,
 } from '../../utils/constants';
@@ -41,15 +43,9 @@ function ExportContent() {
         <StepCard>
           <b>誰需要此步驟？</b>
           <p>
-            僅限曾在{' '}
-            {LEGACY_HOSTNAMES.map((host, index) => (
-              <span key={host}>
-                {index > 0 ? ' 或 ' : ''}
-                <code>{host}</code>
-              </span>
-            ))}{' '}
+            僅限曾在 <HostCodeList hostnames={LEGACY_HOSTNAMES} />{' '}
             使用過、且本機仍有閱讀紀錄或已下載章節的使用者。若您已在{' '}
-            <code>fanqietc.com</code> 開始使用，無需匯出。
+            <code>{CANONICAL_HOSTNAME}</code> 開始使用，無需匯出。
           </p>
         </StepCard>
 
@@ -58,7 +54,7 @@ function ExportContent() {
           <ol>
             <li>
               開啟您<strong>實際存有資料</strong>的舊站網址（
-              <code>fanqietc.pages.dev</code> 或 <code>fqnr.pages.dev</code>）。
+              <HostCodeList hostnames={LEGACY_HOSTNAMES} />）。
             </li>
             <li>進入本頁（<code>/export</code>）或從首頁點擊「遷移資料」。</li>
             <li>點擊下方「匯出資料」，瀏覽器會下載 <code>.fanqie-backup</code> 備份檔。</li>
@@ -81,7 +77,7 @@ function ExportContent() {
             <li>
               前往{' '}
               <a href={CANONICAL_SITE_URL} target="_blank" rel="noopener noreferrer">
-                fanqietc.com
+                {CANONICAL_HOSTNAME}
               </a>
               的匯入頁面。
             </li>
@@ -93,7 +89,7 @@ function ExportContent() {
               type="button"
               onClick={() => window.open(CANONICAL_IMPORT_URL, '_blank', 'noopener,noreferrer')}
             >
-              前往 fanqietc.com 匯入
+              前往 {CANONICAL_HOSTNAME} 匯入
             </GrayButton>
           </ActionRow>
         </StepCard>

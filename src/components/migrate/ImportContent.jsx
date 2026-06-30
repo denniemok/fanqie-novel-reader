@@ -1,8 +1,14 @@
 import { useRef, useState } from 'react';
 import PageContent from '../common/PageContent';
 import { GrayButton } from '../common/GrayButton';
+import HostCodeList from '../common/HostCodeList';
 import { useToast } from '../../contexts/ToastContext';
-import { DATA_BACKUP_EXTENSION } from '../../utils/constants';
+import {
+  CANONICAL_HOSTNAME,
+  CANONICAL_IMPORT_URL,
+  DATA_BACKUP_EXTENSION,
+  LEGACY_HOSTNAMES,
+} from '../../utils/constants';
 import { importUserData, isCanonicalOrigin } from '../../utils/dataMigration';
 import { ActionRow, FileInput, FileLabel, Hint, Section, SectionTitle, StepCard } from './styles';
 
@@ -46,14 +52,18 @@ function ImportContent() {
         <StepCard>
           <b>匯入前請確認</b>
           <ol>
-            <li>您已在舊站（<code>fanqietc.pages.dev</code> 或 <code>fqnr.pages.dev</code>）完成匯出。</li>
+            <li>
+              您已在舊站（<HostCodeList hostnames={LEGACY_HOSTNAMES} />）完成匯出。
+            </li>
             <li>備份檔副檔名為 <code>{DATA_BACKUP_EXTENSION}</code>。</li>
-            <li>建議在 <code>fanqietc.com</code> 執行匯入，資料才會寫入新網域。</li>
+            <li>
+              建議在 <code>{CANONICAL_HOSTNAME}</code> 執行匯入，資料才會寫入新網域。
+            </li>
           </ol>
           {!onCanonicalSite && (
             <Hint>
-              您目前不在 fanqietc.com。匯入仍會寫入<strong>目前網域</strong>的本機儲存；若要遷移至新站，請在
-              fanqietc.com/import 開啟此頁。
+              您目前不在 {CANONICAL_HOSTNAME}。匯入仍會寫入<strong>目前網域</strong>的本機儲存；若要遷移至新站，請在{' '}
+              {CANONICAL_IMPORT_URL.replace('https://', '')} 開啟此頁。
             </Hint>
           )}
         </StepCard>

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { CANONICAL_SITE_URL } from '../../utils/constants';
+import { CANONICAL_HOSTNAME, CANONICAL_SITE_URL } from '../../utils/constants';
 import { isLegacyOrigin } from '../../utils/dataMigration';
 import { ROUTES } from '../../utils/navigation';
 import { GrayButton } from '../common/GrayButton';
@@ -54,7 +54,7 @@ function MigrationNotice() {
       <Message>
         我們已遷移至新網域{' '}
         <SiteLink href={CANONICAL_SITE_URL} target="_blank" rel="noopener noreferrer">
-          fanqietc.com
+          {CANONICAL_HOSTNAME}
         </SiteLink>
         ，建議您盡快切換並匯出本機資料後匯入新站，以保留閱讀紀錄、書架與已下載章節。
       </Message>
