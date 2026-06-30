@@ -28,37 +28,39 @@ export const THEME_KEY = 'fanqie-theme';
 
 /** Reader background presets: { value: hex, label } */
 export const READER_BACKGROUND_OPTIONS = [
-  { value: '#f0e9e4', label: '暖紙', textColor: '#4a3d48' },
   { value: '#e8dce4', label: '淡粉', textColor: '#4a3d48' },
   { value: '#e4e0e8', label: '薰衣草', textColor: '#443d50' },
   { value: '#d4ccc8', label: '薄暮', textColor: '#3a3438' },
+  { value: '#f0e9e4', label: '暖紙', textColor: '#4a3d48' },
   { value: '#fffef5', label: '米白', textColor: '#1a1a1a' },
   { value: '#ffffff', label: '純白', textColor: '#1a1a1a' },
-  { value: '#ede5d0', label: '米黃', textColor: '#1a1a1a' },
   { value: '#e0e0e0', label: '淺灰', textColor: '#1a1a1a' },
+  { value: '#ede5d0', label: '米黃', textColor: '#1a1a1a' },
   { value: '#c0d0c0', label: '青綠', textColor: '#1a1a1a' },
-  { value: '#1a1a1a', label: '灰黑', textColor: '#b8b8b0' },
-  { value: '#0a0a0a', label: '深色', textColor: '#b8b8b0' },
   { value: '#2c2630', label: '深夜', textColor: '#ddd0d8' },
+  { value: '#1a1a1a', label: '灰黑', textColor: '#b8b8b0' },
+  { value: '#0a0a0a', label: '深黑', textColor: '#b8b8b0' },
 ];
 
 /** Chinese conversion modes: { value, label } */
 export const ZH_CONVERSION_OPTIONS = [
-  { value: 'original', label: '原文簡體' },
+  { value: 'cn', label: '原文簡體' },
   { value: 'tw', label: '臺灣繁體' },
   { value: 'hk', label: '香港繁體' },
 ];
 
 /** API sources: { value: opaque ID (used with proxy), label: display name } - real URLs live in proxy only */
 export const API_OPTIONS = [
-  { value: 'cn-old-1', label: 'cn-old-1' },
+  { value: 'old-1', label: 'old-1' },
+  { value: 'sg-1', label: 'sg-1' },
+  { value: 'sg-2', label: 'sg-2' },
   { value: 'hk-1', label: 'hk-1' },
   { value: 'hk-2', label: 'hk-2' },
   { value: 'hk-3', label: 'hk-3' },
+  { value: 'hk-4', label: 'hk-4' },
   { value: 'cn-1', label: 'cn-1' },
   { value: 'cn-2', label: 'cn-2' },
-  { value: 'india-1', label: 'india-1' },
-  { value: 'master-1', label: 'master-1' },
+  { value: 'in-1', label: 'in-1' },
 ];
 
 /** Chinese fonts for reader: { value: CSS font-family, label: display name, fontFamily: preview in dropdown } */
