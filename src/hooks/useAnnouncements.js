@@ -77,6 +77,6 @@ export function useAnnouncements() {
     getSnapshot,
     getSnapshot,
   );
-  const urgentNotice = announcements?.find((item) => item.urgent) ?? null;
-  return { announcements, urgentNotice, loading, error };
+  const pinnedNotices = announcements?.filter((item) => item.pin) ?? [];
+  return { announcements, pinnedNotices, loading, error };
 }

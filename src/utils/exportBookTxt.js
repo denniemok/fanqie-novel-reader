@@ -7,7 +7,7 @@ import { sortChaptersByNumber } from './sorting';
 import { getConversionMode } from './storage';
 
 /** Shown when export runs but no chapters are cached locally. */
-export const EXPORT_NO_CACHED_CHAPTERS_MSG = '沒有已下載的章節，無法匯出正文。請先下載章節。';
+export const EXPORT_NO_CACHED_CHAPTERS_MSG = '沒有已下載的章節，請先下載後再匯出。';
 
 /**
  * Builds and downloads a book .txt file with book metadata and cached chapter content.

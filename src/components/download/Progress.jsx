@@ -222,7 +222,7 @@ function Progress({ conversionMode = 'tw' }) {
         <SectionTitle>下載狀態</SectionTitle>
         <IdleCard>
           <DownloadIcon size={32} strokeWidth={2} aria-hidden />
-          <StatusLine>目前沒有進行中的下載</StatusLine>
+          <StatusLine>目前沒有正在下載的書籍喔</StatusLine>
         </IdleCard>
       </Section>
     );
@@ -246,7 +246,7 @@ function Progress({ conversionMode = 'tw' }) {
               </BookMeta>
             </BookRow>
             <StatusLine>
-              正在下載全部章節 · 已完成 {progress.done} / {progress.total} 章（{percent}%）
+              正在下載全書 · 已完成 {progress.done} / {progress.total} 章（{percent}%）
             </StatusLine>
             <ProgressTrack aria-hidden>
               <ProgressFill $percent={percent} />
@@ -285,12 +285,12 @@ function Progress({ conversionMode = 'tw' }) {
               </CardSpinningIcon>
               <BookMeta>
                 <TitleText>手動章節下載</TitleText>
-                <BookId>未使用「下載全部」排程</BookId>
+                <BookId>這是您手動點擊的單章下載</BookId>
               </BookMeta>
             </BookRow>
             <StatusLine>
               正在下載 {activeCount} 個章節
-              {queueLength > 0 ? `，另有 ${queueLength} 章在佇列等候` : ''}
+              {queueLength > 0 ? `，還有 ${queueLength} 章在排隊喔` : ''}
             </StatusLine>
           </>
         )}

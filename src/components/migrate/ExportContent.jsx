@@ -22,10 +22,10 @@ function ExportContent() {
     try {
       const summary = await exportUserData();
       if (summary.totalKeys === 0 && summary.localStorageKeys === 0) {
-        showToast('已匯出備份檔，但目前沒有可遷移的本機資料。');
+        showToast('備份檔已下載，但目前沒有可遷移的資料。');
       } else {
         showToast(
-          `已下載備份檔（${summary.chapters} 章節、${summary.directories} 本書目錄、${summary.localStorageKeys} 項設定）。`
+          `已匯出備份檔（${summary.chapters} 章節、${summary.directories} 本目錄、${summary.localStorageKeys} 項設定）。`
         );
       }
     } catch {
@@ -41,48 +41,48 @@ function ExportContent() {
         <SectionTitle>資料遷移 — 匯出</SectionTitle>
 
         <StepCard>
-          <b>誰需要此步驟？</b>
+          <b>誰需要匯出？</b>
           <p>
-            僅限曾在 <HostCodeList hostnames={LEGACY_HOSTNAMES} />{' '}
-            使用過、且本機仍有閱讀紀錄或已下載章節的使用者。若您已在{' '}
-            <code>{CANONICAL_HOSTNAME}</code> 開始使用，無需匯出。
+            如果您曾在 <HostCodeList hostnames={LEGACY_HOSTNAMES} />{' '}
+            看過書，而且想保留閱讀紀錄和下載的章節，就需要進行匯出。如果您已經在{' '}
+            <code>{CANONICAL_HOSTNAME}</code> 開始使用了，就不需要匯出囉。
           </p>
         </StepCard>
 
         <StepCard>
-          <b>步驟一：在舊網域匯出</b>
+          <b>第一步：在舊站下載備份</b>
           <ol>
             <li>
-              開啟您<strong>實際存有資料</strong>的舊站網址（
+              請先回到您<strong>原本看書</strong>的舊站（
               <HostCodeList hostnames={LEGACY_HOSTNAMES} />）。
             </li>
-            <li>進入本頁（<code>/export</code>）或從首頁點擊「遷移資料」。</li>
-            <li>點擊下方「匯出資料」，瀏覽器會下載 <code>.fanqie-backup</code> 備份檔。</li>
+            <li>進入本頁（<code>/export</code>）或從首頁點擊「前往匯出資料」。</li>
+            <li>點擊下方的「匯出資料」，瀏覽器會下載一個 <code>.fanqie-backup</code> 的備份檔。</li>
           </ol>
           {!onLegacySite && (
             <Hint>
-              您目前不在舊網域上。請先前往存有資料的舊站再匯出；在此頁匯出只會包含目前網域的資料。
+              提醒您：您目前不在舊站喔！請先回到原本看書的網址再匯出，否則只會備份到目前的空資料。
             </Hint>
           )}
           <ActionRow>
             <GrayButton type="button" onClick={handleExport} disabled={exporting}>
-              {exporting ? '匯出中…' : '匯出資料'}
+              {exporting ? '打包中…' : '匯出資料'}
             </GrayButton>
           </ActionRow>
         </StepCard>
 
         <StepCard>
-          <b>步驟二：在新網域匯入</b>
+          <b>第二步：到新站匯入</b>
           <ol>
             <li>
-              前往{' '}
+              前往新站{' '}
               <a href={CANONICAL_SITE_URL} target="_blank" rel="noopener noreferrer">
                 {CANONICAL_HOSTNAME}
               </a>
-              的匯入頁面。
+              {' '}的匯入頁面。
             </li>
-            <li>上傳剛才下載的 <code>.fanqie-backup</code> 檔案並確認匯入。</li>
-            <li>匯入完成後重新整理書架，即可繼續閱讀。</li>
+            <li>上傳剛剛下載的 <code>.fanqie-backup</code> 檔案。</li>
+            <li>匯入成功後，重新整理書架就可以繼續看書囉！</li>
           </ol>
           <ActionRow>
             <GrayButton

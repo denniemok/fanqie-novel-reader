@@ -26,7 +26,7 @@ function ImportContent() {
       return;
     }
     if (!hasBackupExtension(file.name)) {
-      showToast(`請選擇 ${DATA_BACKUP_EXTENSION} 備份檔，不接受其他副檔名。`);
+      showToast(`請選擇 ${DATA_BACKUP_EXTENSION} 結尾的備份檔。`);
       event.target.value = '';
       setSelectedFile(null);
       return;
@@ -60,33 +60,33 @@ function ImportContent() {
         <SectionTitle>資料遷移 — 匯入</SectionTitle>
 
         <StepCard>
-          <b>匯入前請確認</b>
+          <b>匯入前的小提醒</b>
           <ol>
             <li>
-              您已在舊站（<HostCodeList hostnames={LEGACY_HOSTNAMES} />）完成匯出。
+              請確認您已經在舊站（<HostCodeList hostnames={LEGACY_HOSTNAMES} />）下載好備份檔。
             </li>
-            <li>備份檔副檔名為 <code>{DATA_BACKUP_EXTENSION}</code>。</li>
+            <li>備份檔的副檔名應該要是 <code>{DATA_BACKUP_EXTENSION}</code>。</li>
             <li>
-              建議在 <code>{CANONICAL_HOSTNAME}</code> 執行匯入，資料才會寫入新網域。
+              建議您在 <code>{CANONICAL_HOSTNAME}</code> 進行匯入，資料才會寫進新站喔！
             </li>
           </ol>
           {!onCanonicalSite && (
             <Hint>
-              您目前不在 {CANONICAL_HOSTNAME}。匯入仍會寫入<strong>目前網域</strong>的本機儲存；若要遷移至新站，請在{' '}
-              {CANONICAL_IMPORT_URL.replace('https://', '')} 開啟此頁。
+              提醒您：您目前不在 {CANONICAL_HOSTNAME}。在這裡匯入只會把資料寫進<strong>目前的網址</strong>；如果要搬家到新站，請在{' '}
+              {CANONICAL_IMPORT_URL.replace('https://', '')} 打開這個頁面。
             </Hint>
           )}
         </StepCard>
 
         <StepCard>
           <b>上傳備份檔</b>
-          <p>選擇從舊站匯出的備份檔，匯入後會覆寫同名的本機快取與設定。</p>
+          <p>請選擇從舊站下載的備份檔。匯入後，相同的書籍資料和設定會被覆蓋更新。</p>
           <ActionRow>
             <GrayButton type="button" onClick={() => fileInputRef.current?.click()}>
               選擇檔案
             </GrayButton>
             <GrayButton type="button" onClick={handleImport} disabled={!selectedFile || importing}>
-              {importing ? '匯入中…' : '開始匯入'}
+              {importing ? '搬運中…' : '開始匯入'}
             </GrayButton>
           </ActionRow>
           <FileInput
