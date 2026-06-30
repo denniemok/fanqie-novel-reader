@@ -1,3 +1,9 @@
+export const CANONICAL_SITE_URL = 'https://fanqietc.com';
+export const CANONICAL_IMPORT_URL = 'https://fanqietc.com/import';
+export const LEGACY_HOSTNAMES = ['fanqietc.pages.dev', 'fqnr.pages.dev'];
+export const DATA_BACKUP_VERSION = 1;
+export const DATA_BACKUP_EXTENSION = '.fanqie-backup';
+
 export const INDEXEDDB_STORE_NAME = 'fanqie-database';
 export const DIRECTORY_CACHE_KEY = 'fanqie-directory';
 export const CHAPTER_CACHE_KEY = 'fanqie-chapter';

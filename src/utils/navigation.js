@@ -8,6 +8,8 @@ export const ROUTES = {
   catalog: '/catalog',
   chapter: '/chapter',
   comments: '/comments',
+  export: '/export',
+  import: '/import',
 };
 
 export function buildChapterUrl(itemId, bookId = null) {

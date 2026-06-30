@@ -12,6 +12,8 @@ import NewBook from './pages/NewBook';
 import Announcements from './pages/Announcements';
 import Download from './pages/Download';
 import Status from './pages/Status';
+import Export from './pages/Export';
+import Import from './pages/Import';
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
             <Route path={ROUTES.catalog} element={<Catalog />} />
             <Route path={ROUTES.chapter} element={<Chapter />} />
             <Route path={ROUTES.comments} element={<Comments />} />
+            <Route path={ROUTES.export} element={<Export />} />
+            <Route path={ROUTES.import} element={<Import />} />
           </Routes>
         </DownloadManagerProvider>
       </ToastProvider>

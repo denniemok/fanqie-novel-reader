@@ -27,3 +27,18 @@ export function getStoreItem(key) {
 export function setStoreItem(key, value) {
   return store.setItem(key, value);
 }
+
+export async function getAllStoreEntries() {
+  const entries = {};
+  await store.iterate((value, key) => {
+    entries[key] = value;
+  });
+  return entries;
+}
+
+export async function importStoreEntries(entries) {
+  if (!entries || typeof entries !== 'object') return 0;
+  const pairs = Object.entries(entries);
+  await Promise.all(pairs.map(([key, value]) => store.setItem(key, value)));
+  return pairs.length;
+}
