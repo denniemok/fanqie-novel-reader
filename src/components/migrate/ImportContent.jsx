@@ -9,7 +9,7 @@ import {
   DATA_BACKUP_EXTENSION,
   LEGACY_HOSTNAMES,
 } from '../../utils/constants';
-import { importUserData, isCanonicalOrigin } from '../../utils/dataMigration';
+import { importUserData, isCanonicalOrigin, hasBackupExtension } from '../../utils/dataMigration';
 import { ActionRow, FileInput, FileLabel, Hint, Section, SectionTitle, StepCard } from './styles';
 
 function ImportContent() {
@@ -21,6 +21,16 @@ function ImportContent() {
 
   const handleFileChange = (event) => {
     const file = event.target.files?.[0] ?? null;
+    if (!file) {
+      setSelectedFile(null);
+      return;
+    }
+    if (!hasBackupExtension(file.name)) {
+      showToast(`請選擇 ${DATA_BACKUP_EXTENSION} 備份檔，不接受其他副檔名。`);
+      event.target.value = '';
+      setSelectedFile(null);
+      return;
+    }
     setSelectedFile(file);
   };
 

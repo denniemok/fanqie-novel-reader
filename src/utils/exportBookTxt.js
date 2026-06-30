@@ -1,4 +1,5 @@
 import { chapterCache } from './cache';
+import { triggerFileDownload } from './downloadFile';
 import { maybeConvert } from './zh-convert';
 import { getChapterTitle } from './chapter-helpers';
 import { addBlankLine } from './text';
@@ -62,13 +63,7 @@ export async function exportBookToTxt({ bookId, bookInfo, itemDataList }) {
   if (exportedCount === 0) return { exportedCount: 0 };
 
   const text = lines.join('\n');
-  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
   const safeName = (bookName || '').replace(/[<>:"/\\|?*]/g, '_').trim().slice(0, 200) || bookId;
-  a.download = `${safeName}.txt`;
-  a.click();
-  URL.revokeObjectURL(url);
+  triggerFileDownload(text, `${safeName}.txt`, 'text/plain;charset=utf-8');
   return { exportedCount };
 }

@@ -23,6 +23,7 @@ import {
   READING_HISTORY_LEGACY_KEY,
 } from './constants';
 import { getAllStoreEntries, importStoreEntries } from './cache';
+import { triggerFileDownload } from './downloadFile';
 import { safeGetItem, safeSetItem } from './storage';
 
 const LOCAL_STORAGE_KEYS = [
@@ -92,14 +93,7 @@ function buildBackupFilename() {
 
 function downloadJsonBackup(payload) {
   const json = JSON.stringify(payload);
-  const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = buildBackupFilename();
-  anchor.click();
-  URL.revokeObjectURL(url);
-  return json.length;
+  return triggerFileDownload(json, buildBackupFilename());
 }
 
 export async function exportUserData() {
@@ -135,8 +129,17 @@ function parseBackupFile(text) {
   return data;
 }
 
+function hasBackupExtension(filename) {
+  return filename?.toLowerCase().endsWith(DATA_BACKUP_EXTENSION);
+}
+
+export { hasBackupExtension };
+
 export async function importUserData(file) {
   if (!file) throw new Error('請選擇備份檔案。');
+  if (!hasBackupExtension(file.name)) {
+    throw new Error(`請選擇 ${DATA_BACKUP_EXTENSION} 備份檔，不接受其他副檔名。`);
+  }
 
   const text = await file.text();
   const data = parseBackupFile(text);
