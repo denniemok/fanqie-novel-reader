@@ -13,7 +13,7 @@
 
 藉由 OpenCC 詞彙級轉換，我們賦予每一行文字最道地的繁體語感；透過深度優化排版與字體，我們為同樣追求純粹的你，打造一個安靜、精緻且數據完全本地化的閱讀空間。
 
-### 👉 **立即體驗**：[https://fanqietc.pages.dev](https://fanqietc.pages.dev)
+### 👉 **立即體驗**：[https://fanqietc.com](https://fanqietc.com)
 
 <br>
 
@@ -50,7 +50,7 @@
 ## 🧩 快速上手
 
 無需複雜操作，只需三步即可開始閱讀：
-1. **複製網址**：在 [番茄小說網](https://fanqienovel.com) 找到喜歡的小說，複製瀏覽器網址。
+1. **複製網址**：在 [番茄小說網](https://fanqienovel.com) 或 [Tomato MTL](https://tomatomtl.com) 找到喜歡的小說，複製瀏覽器網址。
 2. **直接貼上**：將網址直接貼入本工具的輸入框，點擊「開始閱讀」。
 3. **享受閱讀**：系統自動解析 ID 並載入，歷史紀錄會自動保存於本地。
 
@@ -64,7 +64,7 @@
 > [!CAUTION]
 > 為確保第三方 API 的服務安全與穩定，後端與 API 調用邏輯暫不公開。敬請見諒！
 
-本專案基於 **Vite + React** 構建，純前端實現，可一鍵部署至任何靜態託管平台。
+本專案基於 **Vite + React** 構建。
 
 ```bash
 # 本地開發
@@ -75,7 +75,7 @@ npm run dev # 開啟 http://localhost:5173 即可
 npm run build
 ```
 
-**技術細節**：受 [fanqienovel-book](https://github.com/kailous/fanqienovel-book) 啟發重寫，應用會以負載平衡方式接入閉源代理端，透過中轉請求調用 [番茄小說 API](https://github.com/POf-L/Fanqie-novel-Downloader) 進行資料檢索與處理。
+**技術細節**：受 [fanqienovel-book](https://github.com/kailous/fanqienovel-book) 啟發重寫，應用會透過後端中轉請求調用 [番茄小說 API](https://github.com/POf-L/Fanqie-novel-Downloader) 進行資料檢索與處理。
 
 <br>
 
