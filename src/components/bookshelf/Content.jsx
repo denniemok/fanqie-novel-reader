@@ -524,7 +524,7 @@ function Content({ conversionMode = 'tw' }) {
   return (
     <Wrapper
       key={refreshKey}
-      $gap={20}
+      $gap={24}
       $paddingBottom={manageBarVisible ? 88 : undefined}
       $paddingBottomMobile={manageBarVisible ? 80 : undefined}
     >

@@ -55,8 +55,7 @@ function Guide() {
       <SectionTitle>使用說明</SectionTitle>
       {GUIDE_ITEMS.map((item) => (
         <InfoCard key={item.tag}>
-          <b>{item.tag}</b>
-          {item.body}
+          <b>{item.tag}</b> {item.body}
         </InfoCard>
       ))}
     </Section>

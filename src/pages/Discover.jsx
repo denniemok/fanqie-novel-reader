@@ -1,9 +1,9 @@
 import NavPageLayout from '../components/common/NavPageLayout';
 import NavTopBar from '../components/common/NavTopBar';
-import Content from '../components/newbook/Content';
+import Content from '../components/discover/Content';
 import { useConversionMode } from '../hooks/useConversionMode';
 
-function NewBook() {
+function Discover() {
   const [conversionMode, setConversionMode] = useConversionMode();
 
   return (
@@ -14,4 +14,4 @@ function NewBook() {
   );
 }
 
-export default NewBook;
+export default Discover;

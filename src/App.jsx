@@ -8,7 +8,7 @@ import Catalog from './pages/Catalog';
 import Chapter from './pages/Chapter';
 import Comments from './pages/Comments';
 import Bookshelf from './pages/Bookshelf';
-import NewBook from './pages/NewBook';
+import Discover from './pages/Discover';
 import Announcements from './pages/Announcements';
 import Download from './pages/Download';
 import Status from './pages/Status';
@@ -23,7 +23,8 @@ function App() {
           <Routes>
             <Route path={ROUTES.home} element={<Home />} />
             <Route path={ROUTES.bookshelf} element={<Bookshelf />} />
-            <Route path={ROUTES.newBook} element={<NewBook />} />
+            <Route path={ROUTES.discover} element={<Navigate to={`${ROUTES.discover}/others`} replace />} />
+            <Route path={`${ROUTES.discover}/:tab/:section?`} element={<Discover />} />
             <Route path={ROUTES.announcements} element={<Announcements />} />
             <Route path={ROUTES.download} element={<Download />} />
             <Route path={ROUTES.status} element={<Status />} />

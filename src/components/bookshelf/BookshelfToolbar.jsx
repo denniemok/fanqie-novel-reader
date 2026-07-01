@@ -12,7 +12,8 @@ import {
 } from 'lucide-react';
 import SelectDropdown from '../common/SelectDropdown';
 import { BOOKSHELF_SORT_OPTIONS } from '../../utils/bookshelfSort';
-import { ROUTES } from '../../utils/navigation';
+import { buildDiscoverUrl } from '../../utils/navigation';
+import { PRIMARY_TAB_OTHERS } from '../discover/constants';
 import { ALL_TAB } from './constants';
 import {
   ToolbarRoot,
@@ -173,7 +174,7 @@ function BookshelfToolbar({
           <ViewToggle>
             <ToggleBtn
               type="button"
-              onClick={() => navigate(ROUTES.newBook)}
+              onClick={() => navigate(buildDiscoverUrl(PRIMARY_TAB_OTHERS))}
               title="新增書籍"
               aria-label="新增書籍"
             >

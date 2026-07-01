@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import PageContent from '../common/PageContent';
 import { CardActionButton } from '../common/CardActionButton';
-import { toolbarRetroUnit, retroGlassButtonStyles } from '../../utils/styled/retro';
+import { toolbarRetroUnit } from '../../utils/styled/retro';
 
 export const TOOLBAR_CONTROL_HEIGHT = '44px';
 
@@ -133,17 +133,17 @@ export const SearchClearBtn = styled.button`
   width: 28px;
   height: 28px;
   flex-shrink: 0;
-  border-radius: 0;
+  border: none;
+  background: transparent;
   color: var(--text-color-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  ${retroGlassButtonStyles}
 
   svg {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
   }
 
   &:hover {
@@ -164,7 +164,7 @@ export const TabActions = styled.div`
 export const ToolbarRoot = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
   position: relative;
   z-index: 30;
 `;

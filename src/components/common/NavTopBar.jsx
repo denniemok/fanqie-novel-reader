@@ -1,7 +1,7 @@
 import TopBarBase from './TopBarBase';
 import HomeButton from './HomeButton';
 import BookshelfButton from './BookshelfButton';
-import NewBookButton from './NewBookButton';
+import DiscoverButton from './DiscoverButton';
 import ApiDropdown from './ApiDropdown';
 import LangDropdown from './LangDropdown';
 
@@ -10,7 +10,7 @@ function NavTopBar({ pageTitle, conversionMode, onConversionModeChange }) {
     <TopBarBase pageTitle={pageTitle}>
       <HomeButton />
       <BookshelfButton />
-      <NewBookButton />
+      <DiscoverButton />
       <ApiDropdown />
       <LangDropdown value={conversionMode} onChange={onConversionModeChange} />
     </TopBarBase>

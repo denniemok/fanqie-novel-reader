@@ -13,8 +13,6 @@ import { useConversionMode } from '../hooks/useConversionMode';
 import { useConvertedText } from '../hooks/useConvertedText';
 import { useErrorToast } from '../hooks/useErrorToast';
 
-const COMMENTS_PER_PAGE = 20;
-
 function Comments() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -29,7 +27,6 @@ function Comments() {
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const offset = (page - 1) * COMMENTS_PER_PAGE + 1;
   const error = bookError || commentsError;
 
   useEffect(() => {
@@ -38,7 +35,7 @@ function Comments() {
     const controller = new AbortController();
     setLoading(true);
     setCommentsError(null);
-    fetchComments(bookId, { count: COMMENTS_PER_PAGE, offset, signal: controller.signal })
+    fetchComments(bookId, { page, signal: controller.signal })
       .then((res) => {
         setData(res);
         setLoading(false);
@@ -50,7 +47,7 @@ function Comments() {
         setLoading(false);
       });
     return () => controller.abort();
-  }, [bookId, offset, refreshKey]);
+  }, [bookId, page, refreshKey]);
 
   const comments = data?.comment ?? [];
   const commentCnt = data?.comment_cnt ?? 0;

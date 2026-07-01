@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { GripHorizontal, Loader2, Check } from 'lucide-react';
 import { useBookLoader } from '../../hooks/useBookLoader';
@@ -277,6 +277,7 @@ function GridCard({
   const convertedAuthor = useConvertedText(author, conversionMode);
   const convertedWordCount = useConvertedText(word_number, conversionMode);
   const chapter_count = bookInfo?.chapter_count ?? null;
+  const [imgError, setImgError] = useState(false);
 
   const coverMetaLines = (() => {
     switch (sortBy) {
@@ -352,8 +353,8 @@ function GridCard({
       )}
 
       <CoverWrapper>
-        {audio_thumb_uri ? (
-          <CoverImg src={audio_thumb_uri} alt="書籍封面" />
+        {audio_thumb_uri && !imgError ? (
+          <CoverImg src={audio_thumb_uri} alt="書籍封面" onError={() => setImgError(true)} />
         ) : (
           <CoverPlaceholder>無封面</CoverPlaceholder>
         )}

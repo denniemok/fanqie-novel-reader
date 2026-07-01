@@ -3,7 +3,7 @@ import { httpErrorFromResponse } from '../utils/errors';
 import { safeGetItem, safeSetItem, setLastReadChapter } from '../utils/storage';
 import { directoryCache, chapterCache, detailCache } from '../utils/cache';
 
-/** Backend base URL. Set VITE_BACKEND_URL in .env (empty = same-origin via Vite dev proxy). */
+/** Backend base URL (VITE_BACKEND_URL). */
 const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL ?? '').trim().replace(/\/$/, '');
 const API_TOKEN = import.meta.env.VITE_API_TOKEN ?? '';
 const DEFAULT_API_BASE = API_OPTIONS[0].value;
@@ -129,16 +129,17 @@ function withFetchOptions({ forceRefresh = false, signal } = {}) {
   };
 }
 
-export async function fetchRecommendedBookList(channel, { signal } = {}) {
-  return fetchDiscoverBookList(`/recommend-books?channel=${channel}`, { signal });
-}
-
 export async function fetchHomepageBookList(section, { signal } = {}) {
-  return fetchDiscoverBookList(`/homepage-books?section=${section}`, { signal });
+  return fetchDiscoverBookList(`/recommend?section=${section}`, { signal });
 }
 
 export async function fetchRankBookList(board, { signal } = {}) {
-  return fetchDiscoverBookList(`/rank-books?board=${board}`, { signal });
+  return fetchDiscoverBookList(`/rank?board=${board}`, { signal });
+}
+
+export async function fetchSearchBooks(query, { signal } = {}) {
+  const params = new URLSearchParams({ query });
+  return fetchDiscoverBookList(`/search?${params}`, { signal });
 }
 
 export async function fetchBookDetail(bookId, { forceRefresh = false, signal } = {}) {
@@ -184,13 +185,13 @@ export async function fetchItem(itemId, { forceRefresh = false, signal } = {}) {
   return { content };
 }
 
-export async function fetchComments(bookId, { count = 20, offset = 1, signal } = {}) {
-  const url = buildProxyUrl('comment', { book_id: bookId, count, offset });
+export async function fetchComments(bookId, { page = 1, signal } = {}) {
+  const url = buildProxyUrl('comment', { book_id: bookId, page });
   return fetchJson(url, { signal });
 }
 
 export async function fetchApiStatus({ signal } = {}) {
-  return fetchJson(getApiUrl('/api-status'), { signal });
+  return fetchJson(getApiUrl('/status'), { signal });
 }
 
 export async function fetchAnnouncements({ signal } = {}) {

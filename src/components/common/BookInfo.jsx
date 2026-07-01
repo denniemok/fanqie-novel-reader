@@ -126,6 +126,44 @@ const CoverMeta = styled.div`
   }
 `;
 
+const CoverPlaceholder = styled.div`
+  width: 120px;
+  height: 160px;
+  background-color: var(--cover-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--retro-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--text-color-secondary);
+
+  @media (max-width: 480px) {
+    width: 80px;
+    height: 107px;
+  }
+
+  .variant-card & {
+    width: 80px;
+    height: 107px;
+
+    @media (max-width: 480px) {
+      width: 60px;
+      height: 80px;
+    }
+  }
+
+  .variant-compact & {
+    width: 100px;
+    height: 134px;
+
+    @media (max-width: 374px) {
+      width: 72px;
+      height: 96px;
+    }
+  }
+`;
+
 const TextBlock = styled.div`
   flex: 1;
   min-width: 0;
@@ -330,8 +368,9 @@ const Footer = styled.div`
   width: 100%;
 `;
 
-function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer }) {
+function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapterCount = true }) {
   const [showFullAbstract, setShowFullAbstract] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const isMobile = useMediaQuery('(max-width: 480px)');
   
   const bookInfoData = bookInfo?.book_info || bookInfo || {};
@@ -359,10 +398,16 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer }) {
     <InfoWrapper className={wrapperClass}>
       {audio_thumb_uri && (
           <CoverWrapper>
-          <img src={audio_thumb_uri} alt="書籍封面" width="128" height="128" />
-          <CoverMeta>
-            {chapter_count ? `共 ${chapter_count} 章節` : '暫無章節資訊'}
-          </CoverMeta>
+          {imgError ? (
+            <CoverPlaceholder>無封面</CoverPlaceholder>
+          ) : (
+            <img src={audio_thumb_uri} alt="書籍封面" width="128" height="128" onError={() => setImgError(true)} />
+          )}
+          {showChapterCount && (
+            <CoverMeta>
+              {chapter_count ? `共 ${chapter_count} 章節` : '暫無章節資訊'}
+            </CoverMeta>
+          )}
         </CoverWrapper>
       )}
       <TextBlock>
@@ -383,7 +428,7 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer }) {
           onClick={isCompact ? (e) => e.stopPropagation() : undefined}
           onTouchStart={isCompact ? (e) => e.stopPropagation() : undefined}
         >
-          {!audio_thumb_uri && (
+          {showChapterCount && !audio_thumb_uri && (
             <MetaTag className="meta-chapters">{chapter_count ? `共 ${chapter_count} 章節` : '暫無章節資訊'}</MetaTag>
           )}
           {score && (

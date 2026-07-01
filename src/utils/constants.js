@@ -44,7 +44,7 @@ export const READER_BACKGROUND_OPTIONS = [
 
 /** Chinese conversion modes: { value, label } */
 export const ZH_CONVERSION_OPTIONS = [
-  { value: 'cn', label: '原文簡體' },
+  { value: 'original', label: '原文簡體' },
   { value: 'tw', label: '臺灣繁體' },
   { value: 'hk', label: '香港繁體' },
 ];

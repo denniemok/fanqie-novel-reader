@@ -1,7 +1,7 @@
 export const ROUTES = {
   home: '/',
   bookshelf: '/bookshelf',
-  newBook: '/new-book',
+  discover: '/discover',
   announcements: '/announcements',
   download: '/download',
   status: '/status',
@@ -11,6 +11,26 @@ export const ROUTES = {
   export: '/export',
   import: '/import',
 };
+
+export const DISCOVER_SEARCH_QUERY_KEY = 'q';
+
+const DISCOVER_SECTION_TABS = new Set(['rank', 'recommend']);
+
+export function buildDiscoverUrl(tab, section, query) {
+  const path = section && DISCOVER_SECTION_TABS.has(tab)
+    ? `${ROUTES.discover}/${tab}/${section}`
+    : `${ROUTES.discover}/${tab}`;
+  const trimmedQuery = query?.trim();
+  if (tab === 'search' && trimmedQuery) {
+    const params = new URLSearchParams({ [DISCOVER_SEARCH_QUERY_KEY]: trimmedQuery });
+    return `${path}?${params.toString()}`;
+  }
+  return path;
+}
+
+export function isDiscoverPath(pathname) {
+  return pathname === ROUTES.discover || pathname.startsWith(`${ROUTES.discover}/`);
+}
 
 export function buildChapterUrl(itemId, bookId = null) {
   const params = new URLSearchParams({ itemId });
