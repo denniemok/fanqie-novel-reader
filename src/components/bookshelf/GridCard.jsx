@@ -5,6 +5,7 @@ import { useBookLoader } from '../../hooks/useBookLoader';
 import { useErrorToast } from '../../hooks/useErrorToast';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import { shimmerStyle } from '../../utils/styled/animations';
+import { getCoverMetaEntries } from '../../utils/coverMetaLines';
 import { CardLoadingOverlay } from '../common/CardActionButton';
 import BookRefreshError from './BookRefreshError';
 
@@ -281,34 +282,21 @@ function GridCard({
   const chapter_count = bookInfo?.chapter_count ?? null;
   const [imgError, setImgError] = useState(false);
 
-  const coverMetaLines = (() => {
-    switch (sortBy) {
-      case 'rating':
-        return score ? [<CoverMetaLine key="score">評分 {score}</CoverMetaLine>] : [];
-      case 'update':
-        return last_publish_time ? [<CoverMetaLine key="update">更新 {last_publish_time}</CoverMetaLine>] : [];
-      case 'chapters':
-        return [
-          <CoverMetaLine key="chapters">
-            {chapter_count ? `共 ${chapter_count} 章節` : '暫無章節資訊'}
-          </CoverMetaLine>,
-        ];
-      case 'words':
-        return convertedWordCount
-          ? [<CoverMetaLine key="words">{convertedWordCount}字</CoverMetaLine>]
-          : [];
-      case 'manual':
-        return convertedCategory
-          ? [<CoverMetaLine key="category">{convertedCategory}</CoverMetaLine>]
-          : [];
-      default:
-        return [];
-    }
-  })();
+  const coverMetaLines = getCoverMetaEntries(sortBy, {
+    score,
+    lastPublishTime: last_publish_time,
+    wordCount: word_number,
+    category,
+    chapterCount: chapter_count,
+    convertedWordCount,
+    convertedCategory,
+  });
 
   const coverOverlayBottom = coverMetaLines.length > 0 && (
     <CoverMetaOverlayBottom>
-      {coverMetaLines}
+      {coverMetaLines.map(({ key, text }) => (
+        <CoverMetaLine key={key}>{text}</CoverMetaLine>
+      ))}
     </CoverMetaOverlayBottom>
   );
 
