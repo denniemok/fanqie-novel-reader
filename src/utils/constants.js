@@ -51,15 +51,16 @@ export const ZH_CONVERSION_OPTIONS = [
 
 /** API sources: { value: opaque ID (used with proxy), label: display name } - real URLs live in proxy only */
 export const API_OPTIONS = [
-  { value: 'sg-1', label: 'sg-1' },
-  { value: 'sg-2', label: 'sg-2' },
-  { value: 'old-1', label: 'old-1' },
+  { value: 'default', label: 'auto' },
   { value: 'hk-1', label: 'hk-1' },
   { value: 'hk-2', label: 'hk-2' },
   { value: 'hk-3', label: 'hk-3' },
   { value: 'cn-1', label: 'cn-1' },
   { value: 'cn-2', label: 'cn-2' },
   { value: 'in-1', label: 'in-1' },
+  { value: 'sg-1', label: 'sg-1' },
+  { value: 'sg-2', label: 'sg-2' },
+  { value: 'old-1', label: 'old-1' },
 ];
 
 /** Chinese fonts for reader: { value: CSS font-family, label: display name, fontFamily: preview in dropdown } */

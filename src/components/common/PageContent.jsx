@@ -17,7 +17,6 @@ const PageContent = styled.div`
   ${({ $variant }) => $variant === 'home' && 'align-items: center;'}
   padding-top: ${({ $variant }) => {
     if ($variant === 'home') return '0';
-    if ($variant === 'bookshelf') return 'calc(100px + env(safe-area-inset-top))';
     return 'calc(76px + 48px + env(safe-area-inset-top))';
   }};
   padding-left: 24px;
@@ -28,7 +27,6 @@ const PageContent = styled.div`
   @media (max-width: 480px) {
     padding-top: ${({ $variant }) => {
       if ($variant === 'home') return '0';
-      if ($variant === 'bookshelf') return 'calc(88px + env(safe-area-inset-top))';
       return 'calc(68px + 32px + env(safe-area-inset-top))';
     }};
     padding-left: 16px;
