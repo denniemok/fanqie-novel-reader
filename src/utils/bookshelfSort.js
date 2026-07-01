@@ -6,6 +6,13 @@ export const BOOKSHELF_SORT_OPTIONS = [
   { value: 'words', label: '字數' },
 ];
 
+export const DISCOVER_SORT_OPTIONS = [
+  { value: 'default', label: '預設' },
+  { value: 'rating', label: '評分' },
+  { value: 'update', label: '更新日期' },
+  { value: 'words', label: '字數' },
+];
+
 const SORT_FIELD = {
   rating: 'score',
   update: 'updateTime',
@@ -48,4 +55,20 @@ export function sortBookshelfItems(items, sortBy, metaMap, direction = 'desc') {
       return a.index - b.index;
     })
     .map(({ item }) => item);
+}
+
+/** @param {Array<{book_id: string}>} books */
+export function sortDiscoverBooks(books, sortBy, direction = 'desc') {
+  if (!books.length || sortBy === 'default' || !SORT_FIELD[sortBy]) return books;
+  const bookById = Object.fromEntries(books.map((book) => [book.book_id, book]));
+  const metaMap = Object.fromEntries(
+    books.map((book) => [book.book_id, extractBookshelfSortMeta(book)])
+  );
+  const sortedItems = sortBookshelfItems(
+    books.map((book) => ({ bookId: book.book_id })),
+    sortBy,
+    metaMap,
+    direction,
+  );
+  return sortedItems.map(({ bookId }) => bookById[bookId]);
 }

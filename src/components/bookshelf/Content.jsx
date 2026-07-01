@@ -289,7 +289,7 @@ function Content({ conversionMode = 'tw' }) {
 
   const handleDeleteBook = useCallback((e, bookId, bookInfo) => {
     e.stopPropagation();
-    const bookName = bookInfo?.book_info?.original_book_name;
+    const bookName = bookInfo?.book_info?.book_name;
     const convertedName = maybeConvert(bookName, conversionMode) || bookId;
     setConfirmDialog({
       title: '刪除書籍',
@@ -311,7 +311,7 @@ function Content({ conversionMode = 'tw' }) {
   const handleRemoveFromCollection = useCallback((e, bookId, bookInfo) => {
     e.stopPropagation();
     if (!activeCollection) return;
-    const bookName = bookInfo?.book_info?.original_book_name;
+    const bookName = bookInfo?.book_info?.book_name;
     const convertedName = maybeConvert(bookName, conversionMode) || bookId;
     setConfirmDialog({
       title: '移除書籍',

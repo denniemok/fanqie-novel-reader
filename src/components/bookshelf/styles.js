@@ -78,7 +78,8 @@ export const SearchBar = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   height: ${TOOLBAR_CONTROL_HEIGHT};
   box-sizing: border-box;
   padding: 0 12px;
@@ -99,6 +100,13 @@ export const SearchBar = styled.div`
     flex-shrink: 0;
     color: var(--text-color-secondary);
   }
+`;
+
+export const SearchRow = styled.div`
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
 `;
 
 export const SearchInput = styled.input`
@@ -199,6 +207,8 @@ export const SortUnit = styled.div`
   height: ${TOOLBAR_CONTROL_HEIGHT};
   box-sizing: border-box;
   border-radius: 0;
+  overflow: visible;
+  margin-right: auto;
   ${toolbarRetroUnit}
 `;
 

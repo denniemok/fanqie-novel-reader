@@ -374,11 +374,11 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
   const isMobile = useMediaQuery('(max-width: 480px)');
   
   const bookInfoData = bookInfo?.book_info || bookInfo || {};
-  const { original_book_name, author, audio_thumb_uri, abstract, tags, score, category, sub_info, word_number, creation_status, last_publish_time } = bookInfoData;
+  const { book_name, author, thumb_url, abstract, tags, score, category, sub_info, word_number, creation_status, last_publish_time } = bookInfoData;
   const chapter_count = bookInfo?.chapter_count ?? null;
 
   const convertedAbstract = useConvertedText(abstract, conversionMode);
-  const convertedBookName = useConvertedText(original_book_name, conversionMode);
+  const convertedBookName = useConvertedText(book_name, conversionMode);
   const convertedAuthor = useConvertedText(author, conversionMode);
   const convertedTags = useConvertedText(tags, conversionMode);
   const convertedCategory = useConvertedText(category, conversionMode);
@@ -390,18 +390,18 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
   const truncated = truncateText(convertedAbstract, maxLen);
   const isCompact = variant === 'compact';
 
-  if (!original_book_name && !author) return null;
+  if (!book_name && !author) return null;
 
   const wrapperClass = variant === 'card' ? 'variant-card' : variant === 'compact' ? 'variant-compact' : '';
 
   return (
     <InfoWrapper className={wrapperClass}>
-      {audio_thumb_uri && (
+      {thumb_url && (
           <CoverWrapper>
           {imgError ? (
             <CoverPlaceholder>無封面</CoverPlaceholder>
           ) : (
-            <img src={audio_thumb_uri} alt="書籍封面" width="128" height="128" onError={() => setImgError(true)} />
+            <img src={thumb_url} alt="書籍封面" width="128" height="128" onError={() => setImgError(true)} />
           )}
           {showChapterCount && (
             <CoverMeta>
@@ -428,7 +428,7 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
           onClick={isCompact ? (e) => e.stopPropagation() : undefined}
           onTouchStart={isCompact ? (e) => e.stopPropagation() : undefined}
         >
-          {showChapterCount && !audio_thumb_uri && (
+          {showChapterCount && !thumb_url && (
             <MetaTag className="meta-chapters">{chapter_count ? `共 ${chapter_count} 章節` : '暫無章節資訊'}</MetaTag>
           )}
           {score && (

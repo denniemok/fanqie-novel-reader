@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams, useSearchParams, Navigate } from 'react-router-dom';
-import { Grid2X2, LayoutList, Loader2, RefreshCw, Search, X } from 'lucide-react';
+import { ArrowDownZA, ArrowUpAZ, Grid2X2, LayoutList, Loader2, RefreshCw, Search, X } from 'lucide-react';
 import styled from 'styled-components';
 import {
   fetchHomepageBookList,
@@ -9,11 +9,14 @@ import {
 } from '../../services/api';
 import { buildCatalogUrl, buildDiscoverUrl } from '../../utils/navigation';
 import { formatErrorMessage } from '../../utils/errors';
+import { normalizeDiscoverBookInfo } from '../../utils/bookInfo';
+import { DISCOVER_SORT_OPTIONS, sortDiscoverBooks } from '../../utils/bookshelfSort';
+import SelectDropdown from '../common/SelectDropdown';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import { shimmerStyle } from '../../utils/styled/animations';
-import { GridLayout, ListLayout, TabBar, Tab, SearchBar, SearchInput, ViewToggle, ToggleBtn, BtnLabel } from '../bookshelf/styles';
+import { GridLayout, ListLayout, TabBar, Tab, SearchBar, SearchInput, ViewToggle, ToggleBtn, BtnLabel, SortUnit, SortTrailingBtn, TOOLBAR_CONTROL_HEIGHT, TabActions, ToolbarRight } from '../bookshelf/styles';
 import BookInfo from '../common/BookInfo';
-import { getBookshelfViewMode, setBookshelfViewMode } from '../../utils/storage';
+import { getBookshelfViewMode, setBookshelfViewMode, getDiscoverSort, setDiscoverSort, getDiscoverSortDirection, setDiscoverSortDirection } from '../../utils/storage';
 import {
   DEFAULT_SECONDARY_BY_PRIMARY,
   HOMEPAGE_SECTIONS,
@@ -73,7 +76,7 @@ const SearchSubmitBtn = styled.button`
   padding: 0 20px;
   min-height: 44px;
   height: 44px;
-  border-radius: var(--border-radius-sm);
+  border-radius: 0;
   border: var(--retro-border-width) solid var(--border-color);
   background: var(--accent-color);
   color: var(--text-on-accent);
@@ -100,6 +103,9 @@ const TabStack = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  position: relative;
+  z-index: 30;
+  overflow: visible;
 `;
 
 const SecondaryTabRow = styled.div`
@@ -111,36 +117,37 @@ const SecondaryTabRow = styled.div`
 const SecondaryTabBar = styled(TabBar)`
   flex: 1;
   min-width: 0;
-  border-radius: var(--border-radius-sm);
+  height: ${TOOLBAR_CONTROL_HEIGHT};
+  border-radius: 0;
   background: color-mix(in srgb, var(--background-color2) 70%, transparent);
 `;
 
 const SecondaryRefreshBtn = styled(IconButton)`
   flex-shrink: 0;
-  align-self: stretch;
-  min-width: 40px;
-  width: 40px;
+  min-width: ${TOOLBAR_CONTROL_HEIGHT};
+  width: ${TOOLBAR_CONTROL_HEIGHT};
+  height: ${TOOLBAR_CONTROL_HEIGHT};
   padding: 0;
+  border-radius: 0;
 `;
 
 const SecondaryTab = styled(Tab)`
-  padding: 10px 14px;
-  min-height: 40px;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  min-height: 0;
+  padding: 0 14px;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.03em;
   max-width: 160px;
+  border-radius: 0;
 
   @media (max-width: 374px) {
-    padding: 8px 10px;
+    padding: 0 10px;
     font-size: 12px;
     max-width: 120px;
   }
-`;
-
-const ViewToggleRow = styled.div`
-  display: flex;
-  justify-content: flex-end;
 `;
 
 const ListCard = styled.div`
@@ -397,22 +404,37 @@ const SkeletonLine = styled.div`
 `;
 
 function toDiscoverBookInfo(book) {
-  return {
-    book_info: {
-      original_book_name: book.book_name,
-      author: book.author,
-      audio_thumb_uri: book.thumb_url,
-      abstract: book.abstract,
-      category: book.category,
-    },
-  };
+  return { book_info: normalizeDiscoverBookInfo(book) };
 }
 
-function DiscoverBookCard({ book, conversionMode, onClick }) {
-  const convertedName = useConvertedText(book.book_name, conversionMode);
-  const convertedAuthor = useConvertedText(book.author, conversionMode);
-  const convertedCategory = useConvertedText(book.category, conversionMode);
+function DiscoverBookCard({ book, conversionMode, onClick, sortBy = 'default' }) {
+  const info = normalizeDiscoverBookInfo(book);
+  const convertedName = useConvertedText(info.book_name, conversionMode);
+  const convertedAuthor = useConvertedText(info.author, conversionMode);
+  const convertedCategory = useConvertedText(info.category, conversionMode);
+  const convertedWordCount = useConvertedText(info.word_number, conversionMode);
   const [imgError, setImgError] = useState(false);
+
+  const coverMetaLines = (() => {
+    switch (sortBy) {
+      case 'default':
+        return convertedCategory
+          ? [<CoverMetaLine key="category">{convertedCategory}</CoverMetaLine>]
+          : [];
+      case 'rating':
+        return info.score ? [<CoverMetaLine key="score">評分 {info.score}</CoverMetaLine>] : [];
+      case 'update':
+        return info.last_publish_time
+          ? [<CoverMetaLine key="update">更新 {info.last_publish_time}</CoverMetaLine>]
+          : [];
+      case 'words':
+        return info.word_number
+          ? [<CoverMetaLine key="words">{convertedWordCount}字</CoverMetaLine>]
+          : [];
+      default:
+        return [];
+    }
+  })();
 
   return (
     <Card
@@ -427,14 +449,14 @@ function DiscoverBookCard({ book, conversionMode, onClick }) {
       }}
     >
       <CoverWrapper>
-        {book.thumb_url && !imgError ? (
-          <CoverImg src={book.thumb_url} alt="" loading="lazy" onError={() => setImgError(true)} />
+        {info.thumb_url && !imgError ? (
+          <CoverImg src={info.thumb_url} alt="" loading="lazy" onError={() => setImgError(true)} />
         ) : (
           <CoverPlaceholder>無封面</CoverPlaceholder>
         )}
-        {convertedCategory && (
+        {coverMetaLines.length > 0 && (
           <CoverMetaOverlayBottom>
-            <CoverMetaLine>{convertedCategory}</CoverMetaLine>
+            {coverMetaLines}
           </CoverMetaOverlayBottom>
         )}
       </CoverWrapper>
@@ -507,6 +529,8 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
   const [error, setError] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [viewMode, setViewModeState] = useState(getBookshelfViewMode);
+  const [sortBy, setSortByState] = useState(getDiscoverSort);
+  const [sortDirection, setSortDirectionState] = useState(getDiscoverSortDirection);
   const [searchInput, setSearchInput] = useState(submittedQuery);
 
   useEffect(() => {
@@ -550,9 +574,26 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
     setBookshelfViewMode(mode);
   };
 
+  const handleSortChange = (next) => {
+    setSortByState(next);
+    setDiscoverSort(next);
+  };
+
+  const handleSortDirectionToggle = () => {
+    const next = sortDirection === 'desc' ? 'asc' : 'desc';
+    setSortDirectionState(next);
+    setDiscoverSortDirection(next);
+  };
+
+  const sortedBooks = useMemo(
+    () => sortDiscoverBooks(books, sortBy, sortDirection),
+    [books, sortBy, sortDirection],
+  );
+
   const bookCardProps = (book) => ({
     book,
     conversionMode,
+    sortBy,
     onClick: () => navigate(buildCatalogUrl(book.book_id)),
   });
 
@@ -706,7 +747,37 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
         )}
 
         {showListContent && (
-          <ViewToggleRow>
+          <TabActions>
+            <ToolbarRight>
+            <SortUnit>
+              <SelectDropdown
+                options={DISCOVER_SORT_OPTIONS}
+                value={sortBy}
+                onChange={handleSortChange}
+                ariaLabel="探索排序方式"
+                attachedLabel="排序"
+                hideAttachedLabelOnMobile
+                embedded
+                square
+                retro
+                hasTrailing={sortBy !== 'default'}
+                menuAlign="left"
+                triggerMinWidth={108}
+                triggerMinWidthMobile={72}
+                triggerBold
+              />
+              {sortBy !== 'default' && (
+              <SortTrailingBtn
+                type="button"
+                onClick={handleSortDirectionToggle}
+                title={sortDirection === 'desc' ? '由高到低（點擊切換）' : '由低到高（點擊切換）'}
+                aria-label={sortDirection === 'desc' ? '降序排列' : '升序排列'}
+              >
+                {sortDirection === 'desc' ? <ArrowDownZA /> : <ArrowUpAZ />}
+                <BtnLabel>{sortDirection === 'desc' ? '降序' : '升序'}</BtnLabel>
+              </SortTrailingBtn>
+              )}
+            </SortUnit>
             <ViewToggle>
               <ToggleBtn
                 type="button"
@@ -729,7 +800,8 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
                 <BtnLabel>格狀</BtnLabel>
               </ToggleBtn>
             </ViewToggle>
-          </ViewToggleRow>
+            </ToolbarRight>
+          </TabActions>
         )}
       </TabStack>
 
@@ -788,16 +860,16 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
         <EmptyHint>暫無書籍</EmptyHint>
       )}
 
-      {showListContent && !loading && !error && books.length > 0 && (
+      {showListContent && !loading && !error && sortedBooks.length > 0 && (
         viewMode === 'list' ? (
           <ListLayout>
-            {books.map((book) => (
+            {sortedBooks.map((book) => (
               <DiscoverBookListCard key={book.book_id} {...bookCardProps(book)} />
             ))}
           </ListLayout>
         ) : (
           <GridLayout>
-            {books.map((book) => (
+            {sortedBooks.map((book) => (
               <DiscoverBookCard key={book.book_id} {...bookCardProps(book)} />
             ))}
           </GridLayout>

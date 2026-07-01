@@ -13,7 +13,7 @@ const InputGroup = styled.div`
   box-sizing: border-box;
   background-color: var(--background-color2);
   border: var(--retro-border-width) solid var(--border-color);
-  border-radius: var(--border-radius);
+  border-radius: 0;
   width: 100%;
   box-shadow: var(--retro-shadow);
 `;
@@ -32,7 +32,7 @@ const FormEl = styled.form`
     padding: 14px 20px;
     background-color: var(--background-color);
     border: var(--retro-border-width) solid var(--border-color);
-    border-radius: var(--border-radius-sm);
+    border-radius: 0;
     color: var(--text-color);
     font-size: 16px;
     transition: var(--transition-default);
@@ -55,7 +55,7 @@ const FormEl = styled.form`
     background-color: var(--accent-color);
     color: var(--text-on-accent);
     border: var(--retro-border-width) solid var(--accent-color);
-    border-radius: var(--border-radius-sketch);
+    border-radius: 0;
     font-size: 16px;
     font-weight: 600;
     font-family: var(--display-font-family);

@@ -8,6 +8,8 @@ import {
   BOOKSHELF_VIEW_MODE_KEY,
   BOOKSHELF_SORT_KEY,
   BOOKSHELF_SORT_DIRECTION_KEY,
+  DISCOVER_SORT_KEY,
+  DISCOVER_SORT_DIRECTION_KEY,
   BOOKSHELF_ACTIVE_TAB_KEY,
   FONT_SIZE_KEY,
   FONT_SIZE_MIN,
@@ -393,6 +395,29 @@ export function getBookshelfSortDirection() {
 export function setBookshelfSortDirection(direction) {
   const valid = direction === 'asc' || direction === 'desc';
   return valid ? safeSetItem(BOOKSHELF_SORT_DIRECTION_KEY, direction) : false;
+}
+
+const DISCOVER_SORT_VALUES = ['default', 'rating', 'update', 'words'];
+
+/** @returns {'default'|'rating'|'update'|'words'} */
+export function getDiscoverSort() {
+  const raw = safeGetItem(DISCOVER_SORT_KEY);
+  return DISCOVER_SORT_VALUES.includes(raw) ? raw : 'default';
+}
+
+export function setDiscoverSort(sort) {
+  return DISCOVER_SORT_VALUES.includes(sort) ? safeSetItem(DISCOVER_SORT_KEY, sort) : false;
+}
+
+/** @returns {'asc'|'desc'} */
+export function getDiscoverSortDirection() {
+  const raw = safeGetItem(DISCOVER_SORT_DIRECTION_KEY);
+  return raw === 'asc' ? 'asc' : 'desc';
+}
+
+export function setDiscoverSortDirection(direction) {
+  const valid = direction === 'asc' || direction === 'desc';
+  return valid ? safeSetItem(DISCOVER_SORT_DIRECTION_KEY, direction) : false;
 }
 
 export function getBookshelfActiveTab() {

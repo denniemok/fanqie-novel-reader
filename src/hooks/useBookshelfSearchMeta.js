@@ -5,7 +5,7 @@ import { maybeConvert } from '../utils/zh-convert';
 export function extractBookshelfSearchMeta(detail) {
   const d = detail || {};
   return {
-    title: d.original_book_name || '',
+    title: d.book_name || d.original_book_name || '',
     author: d.author || '',
   };
 }

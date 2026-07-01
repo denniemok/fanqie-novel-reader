@@ -265,17 +265,19 @@ function GridCard({
 
   const bookInfoData = bookInfo?.book_info || bookInfo || {};
   const {
-    original_book_name,
+    book_name,
     author,
-    audio_thumb_uri,
+    thumb_url,
     word_number,
     score,
     last_publish_time,
+    category,
   } = bookInfoData;
 
-  const convertedName = useConvertedText(original_book_name, conversionMode);
+  const convertedName = useConvertedText(book_name, conversionMode);
   const convertedAuthor = useConvertedText(author, conversionMode);
   const convertedWordCount = useConvertedText(word_number, conversionMode);
+  const convertedCategory = useConvertedText(category, conversionMode);
   const chapter_count = bookInfo?.chapter_count ?? null;
   const [imgError, setImgError] = useState(false);
 
@@ -294,6 +296,10 @@ function GridCard({
       case 'words':
         return convertedWordCount
           ? [<CoverMetaLine key="words">{convertedWordCount}字</CoverMetaLine>]
+          : [];
+      case 'manual':
+        return convertedCategory
+          ? [<CoverMetaLine key="category">{convertedCategory}</CoverMetaLine>]
           : [];
       default:
         return [];
@@ -353,8 +359,8 @@ function GridCard({
       )}
 
       <CoverWrapper>
-        {audio_thumb_uri && !imgError ? (
-          <CoverImg src={audio_thumb_uri} alt="書籍封面" onError={() => setImgError(true)} />
+        {thumb_url && !imgError ? (
+          <CoverImg src={thumb_url} alt="書籍封面" onError={() => setImgError(true)} />
         ) : (
           <CoverPlaceholder>無封面</CoverPlaceholder>
         )}

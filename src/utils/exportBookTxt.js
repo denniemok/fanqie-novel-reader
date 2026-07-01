@@ -16,7 +16,7 @@ export const EXPORT_NO_CACHED_CHAPTERS_MSG = '沒有已下載的章節，請先�
  *
  * @param {Object} params
  * @param {string} params.bookId - Book ID
- * @param {Object} params.bookInfo - Book info (book_info.original_book_name, author, abstract)
+ * @param {Object} params.bookInfo - Book info (book_info.book_name, author, abstract)
  * @param {Array<{item_id: string, title: string}>} params.itemDataList - Chapter list
  * @returns {Promise<{ exportedCount: number }>} Number of chapters exported; 0 if none were cached
  */
@@ -26,7 +26,7 @@ export async function exportBookToTxt({ bookId, bookInfo, itemDataList }) {
   const conversionMode = getConversionMode();
 
   const bookInfoData = bookInfo?.book_info || bookInfo;
-  const bookName = maybeConvert(bookInfoData.original_book_name, conversionMode);
+  const bookName = maybeConvert(bookInfoData.book_name || bookInfoData.original_book_name, conversionMode);
   const author = maybeConvert(bookInfoData.author, conversionMode);
   const abstract = maybeConvert(bookInfoData.abstract, conversionMode);
 

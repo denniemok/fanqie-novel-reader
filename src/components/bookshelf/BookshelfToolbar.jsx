@@ -23,6 +23,7 @@ import {
   TabName,
   TabCount,
   SearchBar,
+  SearchRow,
   SearchInput,
   SearchClearBtn,
   TabActions,
@@ -84,40 +85,42 @@ function BookshelfToolbar({
         ))}
       </TabBar>
 
-      <SearchBar>
-        <Search className="search-icon" aria-hidden />
-        <SearchInput
-          type="search"
-          value={searchQuery}
-          onChange={(e) => onSearchQueryChange(e.target.value)}
-          placeholder="搜尋書名或作者"
-          aria-label="搜尋書名或作者"
-        />
-        {searchQuery && (
-          <SearchClearBtn
+      <SearchRow>
+        <SearchBar>
+          <Search className="search-icon" aria-hidden />
+          <SearchInput
+            type="search"
+            value={searchQuery}
+            onChange={(e) => onSearchQueryChange(e.target.value)}
+            placeholder="搜尋書名或作者"
+            aria-label="搜尋書名或作者"
+          />
+          {searchQuery && (
+            <SearchClearBtn
+              type="button"
+              onClick={() => onSearchQueryChange('')}
+              title="清除搜尋"
+              aria-label="清除搜尋"
+            >
+              <X />
+            </SearchClearBtn>
+          )}
+        </SearchBar>
+        <ViewToggle>
+          <ToggleBtn
             type="button"
-            onClick={() => onSearchQueryChange('')}
-            title="清除搜尋"
-            aria-label="清除搜尋"
+            onClick={onOpenCollectionManagement}
+            title="管理收藏夾"
+            aria-label="管理收藏夾"
           >
-            <X />
-          </SearchClearBtn>
-        )}
-      </SearchBar>
+            <Folders />
+            <BtnLabel>收藏夾</BtnLabel>
+          </ToggleBtn>
+        </ViewToggle>
+      </SearchRow>
 
       <TabActions>
         <ToolbarRight>
-          <ViewToggle>
-            <ToggleBtn
-              type="button"
-              onClick={onOpenCollectionManagement}
-              title="管理收藏夾"
-              aria-label="管理收藏夾"
-            >
-              <Folders />
-              <BtnLabel>收藏夾</BtnLabel>
-            </ToggleBtn>
-          </ViewToggle>
           <SortUnit>
             <SelectDropdown
               options={BOOKSHELF_SORT_OPTIONS}

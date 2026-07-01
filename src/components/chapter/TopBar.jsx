@@ -115,7 +115,7 @@ const ProgressText = styled.div`
 function TopBar({ chapterData, bookInfo, bookId, itemId, fontSize, onFontSizeChange, fontFamily, onFontFamilyChange, textBrightness, onTextBrightnessChange, readerBackground, onReaderBackgroundChange, conversionMode = 'tw', onConversionModeChange, onRefresh }) {
   const novelData = chapterData?.novel_data;
   const convertedTitle = useConvertedText(novelData?.title, conversionMode);
-  const convertedBookName = useConvertedText(bookInfo?.book_info?.original_book_name, conversionMode);
+  const convertedBookName = useConvertedText(bookInfo?.book_info?.book_name, conversionMode);
 
   if (!chapterData) return null;
 

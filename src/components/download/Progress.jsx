@@ -179,7 +179,7 @@ function Progress({ conversionMode = 'tw' }) {
     let cancelled = false;
     detailCache.get(downloadAllBookId).then((detail) => {
       if (!cancelled) {
-        setBookTitle(detail?.original_book_name || downloadAllBookId);
+        setBookTitle(detail?.book_name || detail?.original_book_name || downloadAllBookId);
       }
     });
     return () => {
