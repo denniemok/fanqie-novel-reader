@@ -20,8 +20,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/proxy': API_TARGET,
-      '/top-books': API_TARGET,
       '/recommend-books': API_TARGET,
+      '/homepage-books': API_TARGET,
+      '/rank-books': API_TARGET,
       '/api-status': API_TARGET,
       '/announcements': apiProxy(),
     },

@@ -129,12 +129,16 @@ function withFetchOptions({ forceRefresh = false, signal } = {}) {
   };
 }
 
-export async function fetchTopBookList({ signal } = {}) {
-  return fetchDiscoverBookList('/top-books', { signal });
+export async function fetchRecommendedBookList(channel, { signal } = {}) {
+  return fetchDiscoverBookList(`/recommend-books?channel=${channel}`, { signal });
 }
 
-export async function fetchRecommendedBookList(type, { signal } = {}) {
-  return fetchDiscoverBookList(`/recommend-books?type=${type}`, { signal });
+export async function fetchHomepageBookList(section, { signal } = {}) {
+  return fetchDiscoverBookList(`/homepage-books?section=${section}`, { signal });
+}
+
+export async function fetchRankBookList(board, { signal } = {}) {
+  return fetchDiscoverBookList(`/rank-books?board=${board}`, { signal });
 }
 
 export async function fetchBookDetail(bookId, { forceRefresh = false, signal } = {}) {

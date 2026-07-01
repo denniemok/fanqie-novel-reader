@@ -1,35 +1,53 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { fetchTopBookList, fetchRecommendedBookList } from '../../services/api';
+import { fetchHomepageBookList, fetchRankBookList, fetchRecommendedBookList } from '../../services/api';
 import { buildCatalogUrl } from '../../utils/navigation';
 import { formatErrorMessage } from '../../utils/errors';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import { shimmerStyle } from '../../utils/styled/animations';
 import { GridLayout, TabBar, Tab } from '../bookshelf/styles';
+import {
+  DEFAULT_SECONDARY_BY_PRIMARY,
+  HOMEPAGE_SECTIONS,
+  PRIMARY_ERROR_MESSAGES,
+  PRIMARY_TAB_OTHERS,
+  PRIMARY_TAB_RANK,
+  PRIMARY_TAB_RECOMMEND,
+  PRIMARY_TABS,
+  RECOMMEND_CHANNELS,
+  SECONDARY_TABS_BY_PRIMARY,
+} from './constants';
 import Section from './Section';
 import EmptyHint from '../common/EmptyHint';
 import Help from './Help';
 import Form from './Form';
 
-const TABS = [
-  { id: 'hot', label: '熱門' },
-  { id: 'male', label: '男頻推薦' },
-  { id: 'female', label: '女頻推薦' },
-  { id: 'others', label: '其他' },
-];
+const TabStack = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
 
-const TAB_FETCHERS = {
-  hot: (opts) => fetchTopBookList(opts),
-  male: (opts) => fetchRecommendedBookList(2, opts),
-  female: (opts) => fetchRecommendedBookList(3, opts),
-};
+const SecondaryTabBar = styled(TabBar)`
+  border-radius: var(--border-radius-sm);
+  background: color-mix(in srgb, var(--background-color2) 70%, transparent);
+`;
 
-const TAB_ERROR_MESSAGES = {
-  hot: '獲取熱門書籍失敗，請稍後再試。',
-  male: '獲取男頻推薦失敗，請稍後再試。',
-  female: '獲取女頻推薦失敗，請稍後再試。',
-};
+const SecondaryTab = styled(Tab)`
+  padding: 10px 14px;
+  min-height: 40px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  max-width: 160px;
+
+  @media (max-width: 374px) {
+    padding: 8px 10px;
+    font-size: 12px;
+    max-width: 120px;
+  }
+`;
 
 const OthersPanel = styled.div`
   display: flex;
@@ -249,15 +267,46 @@ function DiscoverBookCard({ book, conversionMode, onClick }) {
   );
 }
 
+function fetchDiscoverList(primaryId, secondaryId, { signal } = {}) {
+  if (primaryId === PRIMARY_TAB_RECOMMEND) {
+    if (HOMEPAGE_SECTIONS.has(secondaryId)) {
+      return fetchHomepageBookList(secondaryId, { signal });
+    }
+    if (RECOMMEND_CHANNELS.has(secondaryId)) {
+      return fetchRecommendedBookList(secondaryId, { signal });
+    }
+    return Promise.resolve([]);
+  }
+
+  if (primaryId === PRIMARY_TAB_RANK) {
+    return fetchRankBookList(secondaryId, { signal });
+  }
+
+  return Promise.resolve([]);
+}
+
 function DiscoverBooks({ conversionMode = 'tw' }) {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('others');
+  const [activePrimary, setActivePrimary] = useState(PRIMARY_TAB_OTHERS);
+  const [activeSecondary, setActiveSecondary] = useState('recommend');
   const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const secondaryTabs = SECONDARY_TABS_BY_PRIMARY[activePrimary] ?? [];
+
+  const handlePrimaryChange = (id) => {
+    setActivePrimary(id);
+    if (id === PRIMARY_TAB_OTHERS) return;
+    const tabs = SECONDARY_TABS_BY_PRIMARY[id] ?? [];
+    const defaultId = DEFAULT_SECONDARY_BY_PRIMARY[id];
+    setActiveSecondary((current) => (
+      tabs.some((tab) => tab.id === current) ? current : defaultId
+    ));
+  };
+
   useEffect(() => {
-    if (activeTab === 'others') {
+    if (activePrimary === PRIMARY_TAB_OTHERS) {
       setLoading(false);
       setError(null);
       setBooks([]);
@@ -269,44 +318,63 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
     setError(null);
     setBooks([]);
 
-    TAB_FETCHERS[activeTab]({ signal: controller.signal })
+    fetchDiscoverList(activePrimary, activeSecondary, { signal: controller.signal })
       .then((list) => {
         setBooks(list);
         setLoading(false);
       })
       .catch((err) => {
         if (err.name === 'AbortError') return;
-        console.error('獲取書籍列表失敗:', activeTab, err);
-        setError(formatErrorMessage(err, TAB_ERROR_MESSAGES[activeTab]));
+        console.error('獲取書籍列表失敗:', activePrimary, activeSecondary, err);
+        setError(formatErrorMessage(err, PRIMARY_ERROR_MESSAGES[activePrimary]));
         setLoading(false);
       });
 
     return () => controller.abort();
-  }, [activeTab]);
+  }, [activePrimary, activeSecondary]);
+
+  const showRecommendContent = activePrimary !== PRIMARY_TAB_OTHERS;
 
   return (
     <Section>
-      <TabBar>
-        {TABS.map((tab) => (
-          <Tab
-            key={tab.id}
-            type="button"
-            $active={activeTab === tab.id}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.label}
-          </Tab>
-        ))}
-      </TabBar>
+      <TabStack>
+        <TabBar>
+          {PRIMARY_TABS.map((tab) => (
+            <Tab
+              key={tab.id}
+              type="button"
+              $active={activePrimary === tab.id}
+              onClick={() => handlePrimaryChange(tab.id)}
+            >
+              {tab.label}
+            </Tab>
+          ))}
+        </TabBar>
 
-      {activeTab === 'others' && (
+        {showRecommendContent && secondaryTabs.length > 0 && (
+          <SecondaryTabBar>
+            {secondaryTabs.map((tab) => (
+              <SecondaryTab
+                key={tab.id}
+                type="button"
+                $active={activeSecondary === tab.id}
+                onClick={() => setActiveSecondary(tab.id)}
+              >
+                {tab.label}
+              </SecondaryTab>
+            ))}
+          </SecondaryTabBar>
+        )}
+      </TabStack>
+
+      {activePrimary === PRIMARY_TAB_OTHERS && (
         <OthersPanel>
           <Form embedded autoFocus />
           <Help embedded />
         </OthersPanel>
       )}
 
-      {activeTab !== 'others' && loading && (
+      {showRecommendContent && loading && (
         <GridLayout>
           {Array.from({ length: 8 }, (_, i) => (
             <SkeletonCard key={i}>
@@ -320,13 +388,13 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
         </GridLayout>
       )}
 
-      {activeTab !== 'others' && !loading && error && <EmptyHint>{error}</EmptyHint>}
+      {showRecommendContent && !loading && error && <EmptyHint>{error}</EmptyHint>}
 
-      {activeTab !== 'others' && !loading && !error && books.length === 0 && (
+      {showRecommendContent && !loading && !error && books.length === 0 && (
         <EmptyHint>暫無書籍</EmptyHint>
       )}
 
-      {activeTab !== 'others' && !loading && !error && books.length > 0 && (
+      {showRecommendContent && !loading && !error && books.length > 0 && (
         <GridLayout>
           {books.map((book) => (
             <DiscoverBookCard
