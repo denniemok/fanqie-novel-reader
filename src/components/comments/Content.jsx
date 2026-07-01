@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 import { TopBarOffset } from '../common/PageContent';
 import BookInfo from '../common/BookInfo';
-import { maybeConvert } from '../../utils/zh-convert';
+import CommentThread from './CommentThread';
 
 const Section = styled.div`
   padding: 24px 24px 24px;
@@ -40,40 +40,6 @@ const CommentList = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 16px;
-`;
-
-const CommentItem = styled.li`
-  padding: 16px;
-  background-color: var(--background-color2);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  color: var(--text-color);
-`;
-
-const CommentHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-`;
-
-const CommentUser = styled.span`
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--accent-color);
-`;
-
-const CommentScore = styled.span`
-  font-size: 12px;
-  color: var(--text-color-secondary);
-`;
-
-const CommentText = styled.div`
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--text-color);
-  white-space: pre-wrap;
-  word-break: break-word;
 `;
 
 const Pagination = styled.div`
@@ -169,30 +135,13 @@ function Content({
               </CommentStats>
             )}
             <CommentList>
-              {comments.map((item, idx) => {
-                const user = item.user_info?.user_name ?? '匿名';
-                const score = item.score ?? '';
-                const text = item.text ?? '';
-
-                const convertedUser = maybeConvert(user, conversionMode);
-                const convertedText = maybeConvert(text, conversionMode);
-
-                return (
-                  <CommentItem key={item.comment_id ?? idx}>
-                    <CommentHeader>
-                      <CommentUser>{convertedUser}</CommentUser>
-                      {score !== undefined &&
-                        score !== null &&
-                        score !== '' && (
-                          <CommentScore>
-                            評分: {score === '0' || score === 0 ? '暫無' : score}
-                          </CommentScore>
-                        )}
-                    </CommentHeader>
-                    <CommentText>{convertedText}</CommentText>
-                  </CommentItem>
-                );
-              })}
+              {comments.map((item, idx) => (
+                <CommentThread
+                  key={item.comment_id ?? idx}
+                  comment={item}
+                  conversionMode={conversionMode}
+                />
+              ))}
             </CommentList>
           </>
         )}
