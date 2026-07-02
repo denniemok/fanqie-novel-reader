@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { CirclePlus } from 'lucide-react';
+import { Compass } from 'lucide-react';
 import { IconButton } from './IconButton';
 import { buildDefaultDiscoverUrl, isDiscoverPath } from '../../utils/navigation';
 
@@ -17,11 +17,11 @@ function DiscoverButton({ title = DISCOVER_BUTTON_TITLE, disabled: disabledProp 
       disabled={disabled}
       onClick={() => navigate(buildDefaultDiscoverUrl())}
     >
-      <CirclePlus size={20} strokeWidth={2.5} />
+      <Compass size={20} strokeWidth={2.5} />
     </IconButton>
   );
 }
 
-DiscoverButton.toolLabel = DISCOVER_BUTTON_TITLE;
+DiscoverButton.toolLabel = '新書';
 
 export default DiscoverButton;

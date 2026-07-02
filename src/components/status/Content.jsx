@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import styled from 'styled-components';
-import { Check, Loader2, RefreshCw, X } from 'lucide-react';
+import { Check, Loader2, RefreshCw, Settings, X } from 'lucide-react';
 import PageContent from '../common/PageContent';
 import { GrayButton } from '../common/GrayButton';
 import { CardSpinningIcon } from '../common/CardActionButton';
+import SettingsModal from '../common/SettingsModal';
 import { refreshApiStatus, useApiStatusStore } from '../../hooks/useApiStatus';
 import { retroDashedCardStyles } from '../../utils/styled/retro';
 import { Section } from '../../utils/styled/sections';
@@ -36,7 +38,14 @@ const CheckedAt = styled.span`
   font-weight: 600;
 `;
 
-const RefreshButton = styled(GrayButton)`
+const ControlsRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+`;
+
+const MetaActionButton = styled(GrayButton)`
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -208,6 +217,7 @@ function formatCheckedAt(iso) {
 
 function StatusContent() {
   const { data, refreshing } = useApiStatusStore();
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const apis = data?.apis ?? [];
   const intervalMin = Math.round((data?.interval_seconds ?? 300) / 60);
@@ -220,26 +230,37 @@ function StatusContent() {
             <span>
               後端每 {intervalMin} 分鐘對各鏡像源發送詳情、目錄、章節、評論請求。
               <br />
-              可透過頂部導覽列的「設定」→「API 服務」切換鏡像源。
+              可點擊「設定」切換鏡像源。
               <br />
               上次檢測：<CheckedAt>{formatCheckedAt(data?.checked_at)}</CheckedAt>
             </span>
-            <RefreshButton
-              type="button"
-              disabled={refreshing}
-              onClick={() => refreshApiStatus()}
-            >
-              {refreshing ? (
-                <CardSpinningIcon>
-                  <Loader2 size={16} />
-                </CardSpinningIcon>
-              ) : (
-                <RefreshCw size={16} strokeWidth={2.5} />
-              )}
-              重新整理
-            </RefreshButton>
+            <ControlsRow>
+              <MetaActionButton
+                type="button"
+                title="設定"
+                onClick={() => setSettingsOpen(true)}
+              >
+                <Settings size={16} strokeWidth={2.5} />
+                設定
+              </MetaActionButton>
+              <MetaActionButton
+                type="button"
+                disabled={refreshing}
+                onClick={() => refreshApiStatus()}
+              >
+                {refreshing ? (
+                  <CardSpinningIcon>
+                    <Loader2 size={16} />
+                  </CardSpinningIcon>
+                ) : (
+                  <RefreshCw size={16} strokeWidth={2.5} />
+                )}
+                重新整理
+              </MetaActionButton>
+            </ControlsRow>
           </MetaRow>
         </MetaCard>
+        {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
 
         <TableWrap>
           <Table>

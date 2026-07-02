@@ -1,8 +1,9 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { useSearchParams, Navigate, useNavigate } from 'react-router-dom';
 import TopBar from '../components/chapter/TopBar';
 import BottomBar from '../components/chapter/BottomBar';
 import Reader from '../components/chapter/Reader';
+import ReaderControlsPanel from '../components/chapter/ReaderControlsPanel';
 import Error from '../components/common/Error';
 import Loading from '../components/common/Loading';
 import PageWrapper from '../components/common/PageWrapper';
@@ -24,6 +25,7 @@ function Chapter() {
   const [textBrightness, handleTextBrightnessChange] = useTextBrightness();
   const [readerBackground, handleReaderBackgroundChange] = useReaderBackground();
   const [conversionMode] = useConversionMode();
+  const [readerControlsOpen, setReaderControlsOpen] = useState(false);
 
   const handleRefresh = useCallback(() => {
     loadChapter(true);
@@ -31,6 +33,10 @@ function Chapter() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, [itemId]);
+
+  useEffect(() => {
+    setReaderControlsOpen(false);
   }, [itemId]);
 
   useErrorToast(error);
@@ -56,6 +62,15 @@ function Chapter() {
                 bookInfo={bookInfo}
                 bookId={bookId}
                 itemId={itemId}
+                conversionMode={conversionMode}
+                readerControlsOpen={readerControlsOpen}
+                onReaderControlsToggle={() => setReaderControlsOpen((open) => !open)}
+              />
+              <ReaderControlsPanel
+                open={readerControlsOpen}
+                onClose={() => setReaderControlsOpen(false)}
+                bookId={bookId ?? chapterData?.novel_data?.book_id}
+                onRefresh={handleRefresh}
                 fontSize={fontSize}
                 onFontSizeChange={handleFontSizeChange}
                 fontFamily={fontFamily}
@@ -64,8 +79,6 @@ function Chapter() {
                 onTextBrightnessChange={handleTextBrightnessChange}
                 readerBackground={readerBackground}
                 onReaderBackgroundChange={handleReaderBackgroundChange}
-                conversionMode={conversionMode}
-                onRefresh={handleRefresh}
               />
               <Reader chapterData={chapterData} fontSize={fontSize} fontFamily={fontFamily} textBrightness={textBrightness} readerBackground={readerBackground} conversionMode={conversionMode} />
               <BottomBar chapterData={chapterData} bookId={bookId} />

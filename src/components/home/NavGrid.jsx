@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { BookOpen, PlusCircle, Megaphone, MessageCircleWarning, Info, Github, Download, Activity } from 'lucide-react';
+import { BookOpen, Compass, Megaphone, MessageCircleWarning, Info, Github, Download, Activity } from 'lucide-react';
 import { GITHUB_ISSUES_URL, GITHUB_README_URL, GITHUB_REPO_URL } from '../../utils/constants';
 import { ROUTES, buildDefaultDiscoverUrl } from '../../utils/navigation';
 
@@ -178,7 +178,7 @@ function NavGrid() {
         <TileSubLabel>閱讀歷史與收藏</TileSubLabel>
       </TileButton>
       <TileButton type="button" onClick={() => navigate(buildDefaultDiscoverUrl())}>
-        <PlusCircle size={ICON_SIZE} strokeWidth={2} aria-hidden />
+        <Compass size={ICON_SIZE} strokeWidth={2} aria-hidden />
         <TileLabel>新書</TileLabel>
         <TileSubLabel>開始新閱讀</TileSubLabel>
       </TileButton>

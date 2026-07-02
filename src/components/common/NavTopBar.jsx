@@ -1,14 +1,10 @@
 import TopBarBase from './TopBarBase';
-import HomeButton from './HomeButton';
-import BookshelfButton from './BookshelfButton';
-import DiscoverButton from './DiscoverButton';
+import NavButtons from './NavButtons';
 
 function NavTopBar({ pageTitle }) {
   return (
     <TopBarBase pageTitle={pageTitle}>
-      <HomeButton />
-      <BookshelfButton />
-      <DiscoverButton />
+      <NavButtons />
     </TopBarBase>
   );
 }

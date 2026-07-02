@@ -22,6 +22,6 @@ function BookshelfButton({ title = BOOKSHELF_BUTTON_TITLE, disabled: disabledPro
   );
 }
 
-BookshelfButton.toolLabel = BOOKSHELF_BUTTON_TITLE;
+BookshelfButton.toolLabel = '書架';
 
 export default BookshelfButton;

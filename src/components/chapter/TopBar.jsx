@@ -1,15 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Minus, Plus, Sun, Moon, RefreshCw, Type, Palette } from 'lucide-react';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import ActionBar from '../common/ActionBar';
-import HomeButton from '../common/HomeButton';
-import BookshelfButton from '../common/BookshelfButton';
-import CatalogButton from '../common/CatalogButton';
+import BackButton from '../common/BackButton';
+import ForwardButton from '../common/ForwardButton';
+import NavButtons from '../common/NavButtons';
 import SettingsButton from '../common/SettingsButton';
-import { IconButton } from '../common/IconButton';
-import IconDropdown from '../common/IconDropdown';
-import { FONT_SIZE_MIN, FONT_SIZE_MAX, TEXT_BRIGHTNESS_MIN, TEXT_BRIGHTNESS_MAX, CHINESE_FONTS, READER_BACKGROUND_OPTIONS } from '../../utils/constants';
+import ReaderSettingsButton from './ReaderSettingsButton';
 import { resolveBookDisplay } from '../../utils/bookInfo';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 
@@ -112,7 +109,25 @@ const ProgressText = styled.div`
   }
 `;
 
-function TopBar({ chapterData, bookInfo, bookId, itemId, fontSize, onFontSizeChange, fontFamily, onFontFamilyChange, textBrightness, onTextBrightnessChange, readerBackground, onReaderBackgroundChange, conversionMode = 'tw', onRefresh }) {
+const PinnedEndGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  @media (max-width: 900px) {
+    gap: 0;
+  }
+`;
+
+function TopBar({
+  chapterData,
+  bookInfo,
+  bookId,
+  itemId,
+  conversionMode = 'tw',
+  readerControlsOpen,
+  onReaderControlsToggle,
+}) {
   const { variant } = useBookDisplayVariant();
   const novelData = chapterData?.novel_data;
   const convertedTitle = useConvertedText(novelData?.title, conversionMode);
@@ -121,7 +136,6 @@ function TopBar({ chapterData, bookInfo, bookId, itemId, fontSize, onFontSizeCha
 
   if (!chapterData) return null;
 
-  const catalogBookId = bookId ?? novelData?.book_id;
   const displayTitle = convertedTitle || (itemId ? `第 ${itemId} 章` : '章節');
   const { order, serial_count } = novelData ?? {};
   const progress = order && serial_count
@@ -135,77 +149,25 @@ function TopBar({ chapterData, bookInfo, bookId, itemId, fontSize, onFontSizeCha
           <h1>{displayTitle}</h1>
           {bookInfo && <h3>{convertedBookName}</h3>}
         </TitleBlock>
-        <ActionBar>
-            <HomeButton />
-            <BookshelfButton />
-            {onFontSizeChange && (
-              <IconButton
-                type="button"
-                title="減小字號"
-                disabled={fontSize <= FONT_SIZE_MIN}
-                onClick={() => onFontSizeChange(-1)}
-              >
-                <Minus size={20} strokeWidth={2.5} />
-              </IconButton>
-            )}
-            {onFontSizeChange && (
-              <IconButton
-                type="button"
-                title="增大字號"
-                disabled={fontSize >= FONT_SIZE_MAX}
-                onClick={() => onFontSizeChange(1)}
-              >
-                <Plus size={20} strokeWidth={2.5} />
-              </IconButton>
-            )}
-            {onFontFamilyChange && (
-              <IconDropdown
-                icon={<Type size={20} strokeWidth={2.5} />}
-                title="字體"
-                ariaLabel="選擇字體"
-                options={CHINESE_FONTS}
-                value={fontFamily}
-                onChange={onFontFamilyChange}
+        <ActionBar
+          pinnedStart={
+            <>
+              <BackButton />
+              <ForwardButton />
+            </>
+          }
+          pinnedEnd={(
+            <PinnedEndGroup>
+              <ReaderSettingsButton
+                active={readerControlsOpen}
+                onToggle={onReaderControlsToggle}
               />
-            )}
-            {onTextBrightnessChange && (
-              <IconButton
-                type="button"
-                title="變暗"
-                disabled={textBrightness <= TEXT_BRIGHTNESS_MIN}
-                onClick={() => onTextBrightnessChange(-1)}
-              >
-                <Moon size={20} strokeWidth={2.5} />
-              </IconButton>
-            )}
-            {onTextBrightnessChange && (
-              <IconButton
-                type="button"
-                title="變亮"
-                disabled={textBrightness >= TEXT_BRIGHTNESS_MAX}
-                onClick={() => onTextBrightnessChange(1)}
-              >
-                <Sun size={20} strokeWidth={2.5} />
-              </IconButton>
-            )}
-            {onReaderBackgroundChange && (
-              <IconDropdown
-                icon={<Palette size={20} strokeWidth={2.5} />}
-                title="閱讀背景"
-                ariaLabel="選擇閱讀背景顏色"
-                options={READER_BACKGROUND_OPTIONS}
-                value={readerBackground}
-                onChange={onReaderBackgroundChange}
-              />
-            )}
-            <SettingsButton />
-            {onRefresh && (
-              <IconButton type="button" title="刷新章節" onClick={onRefresh}>
-                <RefreshCw size={20} strokeWidth={2.5} />
-              </IconButton>
-            )}
-            <CatalogButton bookId={catalogBookId} />
-          </ActionBar>
+              <SettingsButton />
+            </PinnedEndGroup>
+          )}
+        >
+          <NavButtons />
+        </ActionBar>
       </InfoRow>
       {progress != null && (
       <ProgressBox aria-hidden="true">

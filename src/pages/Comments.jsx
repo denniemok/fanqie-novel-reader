@@ -7,7 +7,7 @@ import { formatErrorMessage } from '../utils/errors';
 import Error from '../components/common/Error';
 import Loading from '../components/common/Loading';
 import PageWrapper from '../components/common/PageWrapper';
-import TopBar from '../components/comments/TopBar';
+import NavTopBar from '../components/common/NavTopBar';
 import Content from '../components/comments/Content';
 import { useConversionMode } from '../hooks/useConversionMode';
 import { useConvertedText } from '../hooks/useConvertedText';
@@ -84,7 +84,7 @@ function Comments() {
         <Loading onAbort={() => navigate(buildCatalogUrl(bookId))} />
       ) : (
         <>
-          <TopBar />
+          <NavTopBar pageTitle="評論" />
           <Content
             bookId={bookId}
             bookInfo={bookInfo}

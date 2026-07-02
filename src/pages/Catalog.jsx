@@ -6,7 +6,7 @@ import Error from '../components/common/Error';
 import Loading from '../components/common/Loading';
 import PageWrapper from '../components/common/PageWrapper';
 import { useToast } from '../contexts/ToastContext';
-import TopBar from '../components/catalog/TopBar';
+import NavTopBar from '../components/common/NavTopBar';
 import CatalogActionBar from '../components/catalog/CatalogActionBar';
 import { TopBarOffset } from '../components/common/PageContent';
 import { getLastReadChapter, getCatalogSortDirection, setCatalogSortDirection, getUncachedItemIds } from '../utils/storage';
@@ -112,7 +112,7 @@ function Catalog() {
 
   return (
     <PageWrapper>
-      {bookInfo && <TopBar />}
+      {bookInfo && <NavTopBar pageTitle="目錄" />}
       {bookInfo ? (
         <TopBarOffset>
           <BookInfo bookInfo={bookInfo} conversionMode={conversionMode} />
