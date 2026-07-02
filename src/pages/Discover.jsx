@@ -4,11 +4,11 @@ import Content from '../components/discover/Content';
 import { useConversionMode } from '../hooks/useConversionMode';
 
 function Discover() {
-  const [conversionMode, setConversionMode] = useConversionMode();
+  const [conversionMode] = useConversionMode();
 
   return (
     <NavPageLayout>
-      <NavTopBar pageTitle="新書" conversionMode={conversionMode} onConversionModeChange={setConversionMode} />
+      <NavTopBar pageTitle="新書" />
       <Content conversionMode={conversionMode} />
     </NavPageLayout>
   );

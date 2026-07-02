@@ -1,6 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
-import ThemeToggle from '../common/ThemeToggle';
+import SettingsButton from '../common/SettingsButton';
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(12px); }
@@ -22,7 +22,7 @@ const HeaderWrapper = styled.header`
   }
 `;
 
-const ThemeToggleSlot = styled.div`
+const SettingsButtonSlot = styled.div`
   position: fixed;
   top: calc(12px + env(safe-area-inset-top));
   right: calc(16px + env(safe-area-inset-right));
@@ -96,9 +96,9 @@ const Subtitle = styled.p`
 function Header() {
   return (
     <HeaderWrapper>
-      <ThemeToggleSlot>
-        <ThemeToggle />
-      </ThemeToggleSlot>
+      <SettingsButtonSlot>
+        <SettingsButton />
+      </SettingsButtonSlot>
       <Title>番茄繁體閱讀</Title>
       <Subtitle>輕鬆閱讀每一天</Subtitle>
     </HeaderWrapper>

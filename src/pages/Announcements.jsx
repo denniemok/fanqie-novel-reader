@@ -4,11 +4,9 @@ import PageWrapper from '../components/common/PageWrapper';
 import Loading from '../components/common/Loading';
 import Error from '../components/common/Error';
 import Content from '../components/announcement/Content';
-import { useConversionMode } from '../hooks/useConversionMode';
 import { useAnnouncements } from '../hooks/useAnnouncements';
 
 function Announcements() {
-  const [conversionMode, setConversionMode] = useConversionMode();
   const { announcements, loading, error } = useAnnouncements();
 
   if (loading && announcements === null) {
@@ -29,7 +27,7 @@ function Announcements() {
 
   return (
     <NavPageLayout>
-      <NavTopBar pageTitle="公告" conversionMode={conversionMode} onConversionModeChange={setConversionMode} />
+      <NavTopBar pageTitle="公告" />
       <Content announcements={announcements ?? []} />
     </NavPageLayout>
   );

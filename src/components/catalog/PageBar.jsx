@@ -1,4 +1,4 @@
-import { ArrowDownZA, ArrowUpAZ, ChevronLeft, ChevronRight, Settings } from 'lucide-react';
+import { ArrowDownZA, ArrowUpAZ, ChevronLeft, ChevronRight, ListChecks } from 'lucide-react';
 import styled from 'styled-components';
 import SelectDropdown from '../common/SelectDropdown';
 import { retroGlassControlBase, retroGlassControlHover } from '../../utils/styled/retro';
@@ -145,7 +145,7 @@ function PageBar({
       $active={manageMode}
       onClick={onManageModeToggle}
     >
-      <Settings size={18} />
+      <ListChecks size={18} />
     </NavButton>
   );
 

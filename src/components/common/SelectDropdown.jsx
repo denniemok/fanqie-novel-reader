@@ -1,16 +1,22 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown } from 'lucide-react';
 import styled, { css } from 'styled-components';
 import { thinScrollbarStyles } from '../../utils/styled/scrollbars';
 import { retroGlassButtonStyles } from '../../utils/styled/retro';
 import { DropdownOptionLine } from '../../utils/styled/dropdown';
 
+const MENU_GAP = 8;
+const MENU_MAX_HEIGHT = 280;
+const MENU_PORTAL_Z_INDEX = 1300;
+const MENU_ROW_HEIGHT = 48;
+
 const SelectWrapper = styled.div`
   position: relative;
   display: inline-flex;
   align-items: stretch;
   height: ${(p) => (p.$embedded ? '100%' : 'auto')};
-  ${(p) => p.$open && 'z-index: 50;'}
+  ${(p) => p.$open && !p.$menuPortal && 'z-index: 50;'}
 
   ${(p) =>
     p.$attached &&
@@ -130,11 +136,27 @@ const SelectChevron = styled(ChevronDown)`
   position: absolute;
   right: 8px;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) ${(p) => (p.$openUpward ? 'rotate(180deg)' : '')};
   width: 14px;
   height: 14px;
   color: var(--text-color-secondary);
   pointer-events: none;
+`;
+
+const menuSurfaceStyles = css`
+  min-width: 100%;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: var(--dropdown-bg);
+  backdrop-filter: blur(12px);
+  border: ${(p) => (p.$retro ? 'var(--retro-border-width)' : '1px')} solid
+    ${(p) => (p.$retro ? 'color-mix(in srgb, var(--border-color) 85%, transparent)' : 'var(--border-color)')};
+  border-radius: ${(p) => (p.$square ? '0' : 'var(--border-radius-sm)')};
+  box-shadow: ${(p) => (p.$retro ? 'var(--retro-shadow)' : 'var(--panel-shadow)')};
+  padding: 4px;
+  ${thinScrollbarStyles}
 `;
 
 const Menu = styled.div`
@@ -149,32 +171,26 @@ const Menu = styled.div`
     left: 50%;
     transform: translateX(-50%);
   `}
-  min-width: 100%;
-  width: max-content;
-  max-width: calc(100vw - 32px);
-  max-height: 280px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background-color: var(--dropdown-bg);
-  backdrop-filter: blur(12px);
-  border: ${(p) => (p.$retro ? 'var(--retro-border-width)' : '1px')} solid
-    ${(p) => (p.$retro ? 'color-mix(in srgb, var(--border-color) 85%, transparent)' : 'var(--border-color)')};
-  border-radius: ${(p) => (p.$square ? '0' : 'var(--border-radius-sm)')};
-  box-shadow: ${(p) => (p.$retro ? 'var(--retro-shadow)' : 'var(--panel-shadow)')};
+  max-height: ${MENU_MAX_HEIGHT}px;
   z-index: 1100;
-  padding: 4px;
-  ${thinScrollbarStyles}
+  ${menuSurfaceStyles}
 
   ${(p) =>
     p.$openUpward
       ? `
-    bottom: calc(100% + 8px);
+    bottom: calc(100% + ${MENU_GAP}px);
     top: auto;
   `
       : `
-    top: calc(100% + 8px);
+    top: calc(100% + ${MENU_GAP}px);
     bottom: auto;
   `}
+`;
+
+const PortaledMenu = styled.div`
+  position: fixed;
+  z-index: ${MENU_PORTAL_Z_INDEX};
+  ${menuSurfaceStyles}
 `;
 
 const Option = styled.button`
@@ -209,6 +225,45 @@ const Option = styled.button`
   `}
 `;
 
+function computeMenuPlacement(triggerRect, optionCount, openUpwardPref, menuAlign) {
+  const estimatedHeight = Math.min(optionCount * MENU_ROW_HEIGHT + 8, MENU_MAX_HEIGHT);
+  const spaceBelow = window.innerHeight - triggerRect.bottom - MENU_GAP;
+  const spaceAbove = triggerRect.top - MENU_GAP;
+
+  let openUpward = openUpwardPref === true;
+  if (openUpwardPref === 'auto') {
+    openUpward = spaceBelow < estimatedHeight && spaceAbove > spaceBelow;
+  }
+
+  const maxHeight = Math.min(
+    MENU_MAX_HEIGHT,
+    Math.max(openUpward ? spaceAbove : spaceBelow, 120),
+  );
+
+  const style = {
+    minWidth: triggerRect.width,
+    maxHeight,
+  };
+
+  if (menuAlign === 'left') {
+    style.left = triggerRect.left;
+    style.transform = 'none';
+  } else {
+    style.left = triggerRect.left + triggerRect.width / 2;
+    style.transform = 'translateX(-50%)';
+  }
+
+  if (openUpward) {
+    style.bottom = window.innerHeight - triggerRect.top + MENU_GAP;
+    style.top = 'auto';
+  } else {
+    style.top = triggerRect.bottom + MENU_GAP;
+    style.bottom = 'auto';
+  }
+
+  return { openUpward, style };
+}
+
 /**
  * Custom select dropdown styled like the catalog page picker.
  */
@@ -220,6 +275,7 @@ function SelectDropdown({
   menuAriaLabel,
   openUpward = false,
   menuAlign = 'center',
+  menuPortal = false,
   triggerMinWidth = 96,
   triggerMinHeight = 40,
   triggerBold = false,
@@ -234,15 +290,47 @@ function SelectDropdown({
   renderValue,
 }) {
   const [open, setOpen] = useState(false);
+  const [menuPlacement, setMenuPlacement] = useState({ openUpward: false, style: {} });
   const ref = useRef(null);
+  const menuRef = useRef(null);
   const selected = options.find((opt) => opt.value === value) ?? options[0];
   const attached = Boolean(attachedLabel);
   const grouped = attached || embedded;
 
+  const updateMenuPlacement = useCallback(() => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    setMenuPlacement(computeMenuPlacement(rect, options.length, openUpward, menuAlign));
+  }, [menuAlign, openUpward, options.length]);
+
+  useLayoutEffect(() => {
+    if (!open || !menuPortal) return undefined;
+
+    updateMenuPlacement();
+
+    const handleReposition = () => updateMenuPlacement();
+    window.addEventListener('resize', handleReposition);
+    window.addEventListener('scroll', handleReposition, true);
+
+    return () => {
+      window.removeEventListener('resize', handleReposition);
+      window.removeEventListener('scroll', handleReposition, true);
+    };
+  }, [open, menuPortal, updateMenuPlacement]);
+
+  const handleToggle = () => {
+    if (!open && menuPortal && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      setMenuPlacement(computeMenuPlacement(rect, options.length, openUpward, menuAlign));
+    }
+    setOpen((prev) => !prev);
+  };
+
   useEffect(() => {
-    if (!open) return;
+    if (!open) return undefined;
     const handleClickOutside = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (ref.current?.contains(e.target) || menuRef.current?.contains(e.target)) return;
+      setOpen(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -254,9 +342,64 @@ function SelectDropdown({
   };
 
   const triggerLabel = renderValue ? renderValue(selected) : renderLabel(selected);
+  const resolvedOpenUpward = menuPortal ? menuPlacement.openUpward : openUpward === true;
+
+  const menuContent = (
+    <>
+      {options.map((opt) => (
+        <Option
+          key={opt.value}
+          type="button"
+          role="option"
+          aria-selected={opt.value === value}
+          $active={opt.value === value}
+          $square={square}
+          onClick={() => {
+            onChange(opt.value);
+            setOpen(false);
+          }}
+        >
+          {renderLabel(opt)}
+        </Option>
+      ))}
+    </>
+  );
+
+  const menu = menuPortal ? (
+    <PortaledMenu
+      ref={menuRef}
+      role="listbox"
+      aria-label={menuAriaLabel ?? ariaLabel}
+      $square={square}
+      $retro={retro}
+      style={menuPlacement.style}
+    >
+      {menuContent}
+    </PortaledMenu>
+  ) : (
+    <Menu
+      ref={menuRef}
+      role="listbox"
+      aria-label={menuAriaLabel ?? ariaLabel}
+      $openUpward={resolvedOpenUpward}
+      $menuAlign={menuAlign}
+      $square={square}
+      $retro={retro}
+    >
+      {menuContent}
+    </Menu>
+  );
 
   return (
-    <SelectWrapper ref={ref} $open={open} $attached={attached} $embedded={embedded} $square={square} $retro={retro}>
+    <SelectWrapper
+      ref={ref}
+      $open={open}
+      $attached={attached}
+      $embedded={embedded}
+      $square={square}
+      $retro={retro}
+      $menuPortal={menuPortal}
+    >
       {attachedLabel && (
         <AttachedLabel $hideOnMobile={hideAttachedLabelOnMobile} $square={square}>
           {attachedLabel}
@@ -264,7 +407,7 @@ function SelectDropdown({
       )}
       <Trigger
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={handleToggle}
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label={ariaLabel}
@@ -279,35 +422,9 @@ function SelectDropdown({
         $hasTrailing={hasTrailing}
       >
         <TriggerText>{triggerLabel}</TriggerText>
-        <SelectChevron size={14} aria-hidden="true" />
+        <SelectChevron size={14} aria-hidden="true" $openUpward={open && resolvedOpenUpward} />
       </Trigger>
-      {open && (
-        <Menu
-          role="listbox"
-          aria-label={menuAriaLabel ?? ariaLabel}
-          $openUpward={openUpward}
-          $menuAlign={menuAlign}
-          $square={square}
-          $retro={retro}
-        >
-          {options.map((opt) => (
-            <Option
-              key={opt.value}
-              type="button"
-              role="option"
-              aria-selected={opt.value === value}
-              $active={opt.value === value}
-              $square={square}
-              onClick={() => {
-                onChange(opt.value);
-                setOpen(false);
-              }}
-            >
-              {renderLabel(opt)}
-            </Option>
-          ))}
-        </Menu>
-      )}
+      {open && (menuPortal ? createPortal(menu, document.body) : menu)}
     </SelectWrapper>
   );
 }

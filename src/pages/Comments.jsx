@@ -19,7 +19,7 @@ function Comments() {
   const bookId = searchParams.get('bookId');
   const pageParam = parseInt(searchParams.get('page') || '1', 10);
   const page = Math.max(1, pageParam);
-  const [conversionMode, setConversionMode] = useConversionMode();
+  const [conversionMode] = useConversionMode();
 
   const { error: bookError, bookInfo } = useBookLoader(bookId, { detailOnly: true });
   const [data, setData] = useState(null);
@@ -86,8 +86,6 @@ function Comments() {
         <>
           <TopBar
             bookId={bookId}
-            conversionMode={conversionMode}
-            onConversionModeChange={setConversionMode}
             onRefresh={handleRefresh}
           />
           <Content

@@ -4,11 +4,11 @@ import Content from '../components/download/Content';
 import { useConversionMode } from '../hooks/useConversionMode';
 
 function Download() {
-  const [conversionMode, setConversionMode] = useConversionMode();
+  const [conversionMode] = useConversionMode();
 
   return (
     <NavPageLayout>
-      <NavTopBar pageTitle="下載" conversionMode={conversionMode} onConversionModeChange={setConversionMode} />
+      <NavTopBar pageTitle="下載" />
       <Content conversionMode={conversionMode} />
     </NavPageLayout>
   );

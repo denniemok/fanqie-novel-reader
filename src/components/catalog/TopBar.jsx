@@ -3,18 +3,12 @@ import { Bookmark, Download, FileText, MessageCircle, RefreshCw } from 'lucide-r
 import TopBarBase from '../common/TopBarBase';
 import HomeButton from '../common/HomeButton';
 import BookshelfButton from '../common/BookshelfButton';
-import ApiDropdown from '../common/ApiDropdown';
-import LangDropdown from '../common/LangDropdown';
-import BookVariantDropdown from '../common/BookVariantDropdown';
 import { IconButton } from '../common/IconButton';
 import { buildChapterUrl, buildCommentsUrl } from '../../utils/navigation';
-import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 
 function TopBar({
   bookId,
   navigate,
-  conversionMode,
-  onConversionModeChange,
   hasUncachedChapters,
   uncachedItemIds,
   downloadingAll,
@@ -23,8 +17,6 @@ function TopBar({
   onExportTxt,
   lastReadItemId,
 }) {
-  const { variant, setVariant } = useBookDisplayVariant();
-
   return (
     <TopBarBase pageTitle="目錄">
       <HomeButton />
@@ -46,12 +38,6 @@ function TopBar({
       >
         <FileText size={20} strokeWidth={2.5} />
       </IconButton>
-      <ApiDropdown />
-      <BookVariantDropdown value={variant} onChange={setVariant} />
-      <LangDropdown
-        value={conversionMode}
-        onChange={onConversionModeChange}
-      />
       <IconButton
         type="button"
         title="刷新目錄"

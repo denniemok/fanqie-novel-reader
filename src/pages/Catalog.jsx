@@ -29,7 +29,7 @@ function Catalog() {
   const { startDownloadAll, stopDownloadAll, isDownloadingAll, completedDownloads } = useDownloadManager();
   const { showToast } = useToast();
   const [sortOrder, setSortOrderState] = useState(getSortOrder);
-  const [conversionMode, setConversionMode] = useConversionMode();
+  const [conversionMode] = useConversionMode();
   const [, setCatalogRefresh] = useState(0);
   const [uncachedItemIds, setUncachedItemIds] = useState([]);
   const [downloadAllConfirmOpen, setDownloadAllConfirmOpen] = useState(false);
@@ -115,8 +115,6 @@ function Catalog() {
         <TopBar
           bookId={bookId}
           navigate={navigate}
-          conversionMode={conversionMode}
-          onConversionModeChange={setConversionMode}
           hasUncachedChapters={hasUncachedChapters}
           uncachedItemIds={uncachedItemIds}
           downloadingAll={downloadingAll}

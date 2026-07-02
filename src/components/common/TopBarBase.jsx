@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import ThemeToggle from './ThemeToggle';
+import SettingsButton from './SettingsButton';
 import ActionBar from './ActionBar';
 import { ROUTES } from '../../utils/navigation';
 
@@ -100,7 +100,7 @@ function TopBarBase({ pageTitle, children }) {
       </TitleGroup>
       <ActionBar>
         {children}
-        <ThemeToggle />
+        <SettingsButton />
       </ActionBar>
     </TopBarWrapper>
   );

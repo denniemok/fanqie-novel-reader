@@ -8,7 +8,7 @@ import { buildCatalogUrl } from '../utils/navigation';
 function Bookshelf() {
   const [searchParams] = useSearchParams();
   const bookId = searchParams.get('bookId');
-  const [conversionMode, setConversionMode] = useConversionMode();
+  const [conversionMode] = useConversionMode();
 
   if (bookId) {
     return <Navigate to={buildCatalogUrl(bookId)} replace />;
@@ -16,7 +16,7 @@ function Bookshelf() {
 
   return (
     <NavPageLayout>
-      <NavTopBar pageTitle="書架" conversionMode={conversionMode} onConversionModeChange={setConversionMode} />
+      <NavTopBar pageTitle="書架" />
       <Content conversionMode={conversionMode} />
     </NavPageLayout>
   );

@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import styled, { css } from 'styled-components';
 import { X } from 'lucide-react';
 import { modalScrollbarStyles } from '../../utils/styled/scrollbars';
@@ -7,7 +8,7 @@ export const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
   background: var(--overlay-bg);
-  z-index: 200;
+  z-index: 1200;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -203,12 +204,13 @@ export const ModalSecondaryButton = styled.button`
 `;
 
 export function Modal({ onClose, children, maxWidth }) {
-  return (
+  return createPortal(
     <ModalOverlay onClick={onClose}>
       <ModalBox onClick={(e) => e.stopPropagation()} $maxWidth={maxWidth}>
         {children}
       </ModalBox>
-    </ModalOverlay>
+    </ModalOverlay>,
+    document.body,
   );
 }
 

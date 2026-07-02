@@ -23,12 +23,7 @@ function Chapter() {
   const [fontFamily, handleFontFamilyChange] = useFontFamily();
   const [textBrightness, handleTextBrightnessChange] = useTextBrightness();
   const [readerBackground, handleReaderBackgroundChange] = useReaderBackground();
-  const [conversionMode, setConversionMode] = useConversionMode();
-
-  const handleConversionModeChange = useCallback(
-    (mode) => setConversionMode(mode),
-    [setConversionMode]
-  );
+  const [conversionMode] = useConversionMode();
 
   const handleRefresh = useCallback(() => {
     loadChapter(true);
@@ -70,7 +65,6 @@ function Chapter() {
                 readerBackground={readerBackground}
                 onReaderBackgroundChange={handleReaderBackgroundChange}
                 conversionMode={conversionMode}
-                onConversionModeChange={handleConversionModeChange}
                 onRefresh={handleRefresh}
               />
               <Reader chapterData={chapterData} fontSize={fontSize} fontFamily={fontFamily} textBrightness={textBrightness} readerBackground={readerBackground} conversionMode={conversionMode} />

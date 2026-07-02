@@ -6,7 +6,7 @@ import {
   Plus,
   Folders,
   Hand,
-  Settings,
+  ListChecks,
   Search,
   X,
 } from 'lucide-react';
@@ -170,7 +170,7 @@ function BookshelfToolbar({
               aria-label="管理書籍"
               aria-pressed={settingsMode}
             >
-              <Settings />
+              <ListChecks />
               <BtnLabel>管理</BtnLabel>
             </ToggleBtn>
           </ViewToggle>

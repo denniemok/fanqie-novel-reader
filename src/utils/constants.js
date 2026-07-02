@@ -29,6 +29,9 @@ export const TRADITIONAL_CHINESE_KEY = 'traditionalChinese';
 export const BOOK_DISPLAY_VARIANT_KEY = 'fanqie-bookDisplayVariant';
 export const THEME_KEY = 'fanqie-theme';
 
+export const API_SERVICE_LABEL = 'API 服務';
+export const API_STATUS_MENU_LABEL = 'API 狀態';
+
 /** Reader background presets: { value: hex, label } */
 export const READER_BACKGROUND_OPTIONS = [
   { value: '#e8dce4', label: '淡粉', textColor: '#4a3d48' },

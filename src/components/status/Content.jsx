@@ -8,7 +8,7 @@ import { retroDashedCardStyles } from '../../utils/styled/retro';
 import { Section } from '../../utils/styled/sections';
 import { thinScrollbarStyles } from '../../utils/styled/scrollbars';
 import ApiOverallBadge from '../common/ApiOverallBadge';
-import { API_DROPDOWN_TITLE } from '../common/ApiDropdown';
+import { API_SERVICE_LABEL } from '../../utils/constants';
 
 const ENDPOINTS = [
   { key: 'detail', label: '詳情' },
@@ -221,7 +221,7 @@ function StatusContent() {
             <span>
               後端每 {intervalMin} 分鐘對各鏡像源發送詳情、目錄、章節、評論請求。
               <br />
-              可透過頂部導覽列的「{API_DROPDOWN_TITLE}」按鈕切換鏡像源。
+              可透過頂部導覽列的「設定」→「{API_SERVICE_LABEL}」切換鏡像源。
               <br />
               上次檢測：<CheckedAt>{formatCheckedAt(data?.checked_at)}</CheckedAt>
             </span>
