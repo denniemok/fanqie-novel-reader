@@ -8,6 +8,7 @@ import EmptyHint from '../common/EmptyHint';
 import BookshelfToolbar from './BookshelfToolbar';
 import BookshelfBookList from './BookshelfBookList';
 import ManageActionBar from './ManageActionBar';
+import ExportBookModal from '../common/ExportBookModal';
 import { ModalText } from '../common/ModalBase';
 import { useToast } from '../../contexts/ToastContext';
 import { useDownloadManager } from '../../contexts/DownloadManager';
@@ -37,6 +38,7 @@ import {
   reorderCollectionBooks,
   reorderCollections,
   getUncachedItemIds,
+  getCatalogSortDirection,
 } from '../../utils/storage';
 import { sortBookshelfItems } from '../../utils/bookshelfSort';
 import { maybeConvert } from '../../utils/zh-convert';
@@ -83,6 +85,7 @@ function Content({ conversionMode = 'tw' }) {
   const [bookDataVersions, setBookDataVersions] = useState({});
   const [bookRefreshErrors, setBookRefreshErrors] = useState({});
   const [confirmDialog, setConfirmDialog] = useState(null);
+  const [exportBookId, setExportBookId] = useState(null);
 
   const reloadData = useCallback(async () => {
     const [history, cols] = await Promise.all([getReadingHistory(), getCollections()]);
@@ -397,6 +400,15 @@ function Content({ conversionMode = 'tw' }) {
     await handleBookDownload(Array.from(selectedBookIds)[0]);
   };
 
+  const handleBookExport = useCallback((bookId) => {
+    setExportBookId(bookId);
+  }, []);
+
+  const handleGoToExport = () => {
+    if (selectedBookIds.size !== 1) return;
+    setExportBookId(Array.from(selectedBookIds)[0]);
+  };
+
   const handleBulkRefresh = async () => {
     if (selectedBookIds.size === 0 || refreshingBookIds.size > 0) return;
     const ids = Array.from(selectedBookIds);
@@ -629,6 +641,7 @@ function Content({ conversionMode = 'tw' }) {
             onBookDelete={handleBookDelete}
             onBookAddToCollection={handleAddToCollection}
             onBookDownload={handleBookDownload}
+            onBookExport={handleBookExport}
           />
 
           {manageBarVisible && (
@@ -641,6 +654,7 @@ function Content({ conversionMode = 'tw' }) {
               onDeselectAll={handleDeselectAll}
               onBulkAddToCollection={handleBulkAddToCollection}
               onGoToDownload={handleGoToDownload}
+              onGoToExport={handleGoToExport}
               onBulkRefresh={handleBulkRefresh}
               onBulkDelete={handleBulkDelete}
               isRefreshing={refreshingBookIds.size > 0}
@@ -678,6 +692,17 @@ function Content({ conversionMode = 'tw' }) {
               confirmLabel={confirmDialog.confirmLabel}
               onConfirm={handleConfirmDialog}
               onCancel={closeConfirmDialog}
+            />
+          )}
+
+          {exportBookId && (
+            <ExportBookModal
+              bookId={exportBookId}
+              defaultSortOrder={getCatalogSortDirection()}
+              defaultConversionMode={conversionMode}
+              defaultDisplayVariant={variant}
+              showToast={showToast}
+              onClose={() => setExportBookId(null)}
             />
           )}
         </>

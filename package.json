@@ -3,7 +3,7 @@
     "node": ">=16.0.0"
   },
   "name": "fanqietc",
-  "version": "2026.07.01.0017",
+  "version": "2026.07.02.2350",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,6 +13,7 @@
     "lint": "eslint src --ext js,jsx"
   },
   "dependencies": {
+    "jszip": "^3.10.1",
     "localforage": "^1.10.0",
     "lucide-react": "^0.576.0",
     "opencc-js": "^1.0.5",

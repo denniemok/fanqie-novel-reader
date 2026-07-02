@@ -29,12 +29,29 @@ function reducer(state, action) {
         ...state,
         downloadAllBookId: action.bookId,
         downloadAllItemIds: action.itemIds,
+        downloadAllStatus: 'active',
+      };
+    case 'COMPLETE_DOWNLOAD_ALL':
+      return {
+        ...state,
+        downloadAllStatus: 'completed',
       };
     case 'STOP_DOWNLOAD_ALL':
       return {
         ...state,
+        downloadAllStatus: 'stopped',
+      };
+    case 'RESUME_DOWNLOAD_ALL':
+      return {
+        ...state,
+        downloadAllStatus: 'active',
+      };
+    case 'DISMISS_DOWNLOAD_ALL':
+      return {
+        ...state,
         downloadAllBookId: null,
         downloadAllItemIds: [],
+        downloadAllStatus: null,
       };
     default:
       return state;
@@ -46,6 +63,7 @@ export function DownloadManagerProvider({ children }) {
     downloading: new Set(),
     downloadAllBookId: null,
     downloadAllItemIds: [],
+    downloadAllStatus: null,
     completedDownloads: new Set(),
   });
   const queueRef = useRef([]);
@@ -136,14 +154,32 @@ export function DownloadManagerProvider({ children }) {
     dispatch({ type: 'STOP_DOWNLOAD_ALL' });
   }, []);
 
+  const dismissDownloadAll = useCallback(() => {
+    dispatch({ type: 'DISMISS_DOWNLOAD_ALL' });
+  }, []);
+
   const isDownloadingAll = useCallback((bookId) => {
-    return state.downloadAllBookId === bookId;
-  }, [state.downloadAllBookId]);
+    return state.downloadAllBookId === bookId && state.downloadAllStatus === 'active';
+  }, [state.downloadAllBookId, state.downloadAllStatus]);
+
+  const resumeDownloadAll = useCallback(() => {
+    if (!state.downloadAllBookId || state.downloadAllItemIds.length === 0) return;
+    if (state.downloadAllStatus !== 'stopped') return;
+    dispatch({ type: 'RESUME_DOWNLOAD_ALL' });
+    getUncachedItemIds(state.downloadAllItemIds).then((uncachedItems) => {
+      if (uncachedItems.length === 0) {
+        dispatch({ type: 'COMPLETE_DOWNLOAD_ALL' });
+        return;
+      }
+      const batch = uncachedItems.slice(0, MAX_CONCURRENT_DOWNLOADS);
+      batch.forEach((itemId) => addToQueue(itemId, false));
+    });
+  }, [state.downloadAllBookId, state.downloadAllItemIds, state.downloadAllStatus, addToQueue]);
 
   useEffect(() => {
     let cancelled = false;
 
-    if (!state.downloadAllBookId || state.downloadAllItemIds.length === 0) {
+    if (state.downloadAllStatus !== 'active' || !state.downloadAllBookId || state.downloadAllItemIds.length === 0) {
       if (batchCooldownRef.current) {
         clearTimeout(batchCooldownRef.current);
         batchCooldownRef.current = null;
@@ -155,7 +191,7 @@ export function DownloadManagerProvider({ children }) {
       .then((uncachedItems) => {
         if (cancelled) return;
         if (uncachedItems.length === 0) {
-          dispatch({ type: 'STOP_DOWNLOAD_ALL' });
+          dispatch({ type: 'COMPLETE_DOWNLOAD_ALL' });
           return;
         }
         const currentlyDownloading = uncachedItems.some((id) => state.downloading.has(id));
@@ -179,18 +215,21 @@ export function DownloadManagerProvider({ children }) {
         batchCooldownRef.current = null;
       }
     };
-  }, [state.downloadAllBookId, state.downloadAllItemIds, state.downloading, addToQueue]);
+  }, [state.downloadAllBookId, state.downloadAllItemIds, state.downloadAllStatus, state.downloading, addToQueue]);
 
   const value = {
     downloading: state.downloading,
     completedDownloads: state.completedDownloads,
     downloadAllBookId: state.downloadAllBookId,
     downloadAllItemIds: state.downloadAllItemIds,
+    downloadAllStatus: state.downloadAllStatus,
     queueLength,
     addToQueue,
     isDownloading,
     startDownloadAll,
     stopDownloadAll,
+    resumeDownloadAll,
+    dismissDownloadAll,
     isDownloadingAll,
   };
 

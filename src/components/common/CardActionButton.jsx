@@ -6,6 +6,7 @@ function actionVariantBg(variant) {
   if (variant === 'refresh') return '#a0c8e8';
   if (variant === 'collection') return '#e8d0a0';
   if (variant === 'download') return '#a8d8a8';
+  if (variant === 'export') return '#c8b8e8';
   return 'var(--background-color2)';
 }
 

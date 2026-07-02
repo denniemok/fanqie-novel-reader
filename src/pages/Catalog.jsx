@@ -10,13 +10,14 @@ import NavTopBar from '../components/common/NavTopBar';
 import CatalogActionBar from '../components/catalog/CatalogActionBar';
 import { TopBarOffset } from '../components/common/PageContent';
 import { getLastReadChapter, getCatalogSortDirection, setCatalogSortDirection, getUncachedItemIds } from '../utils/storage';
-import { runBookTxtExport } from '../utils/exportBookActions';
 import { useConversionMode } from '../hooks/useConversionMode';
+import { useBookDisplayVariant } from '../contexts/BookDisplayVariantContext';
 import { useBookLoader } from '../hooks/useBookLoader';
 import { useDownloadManager } from '../contexts/DownloadManager';
 import { CHAPTERS_PER_PAGE, getTotalPages } from '../utils/catalogPagination';
 import { buildCatalogUrl, ROUTES } from '../utils/navigation';
 import DownloadAllConfirmModal from '../components/catalog/DownloadAllConfirmModal';
+import ExportBookModal from '../components/common/ExportBookModal';
 import { useErrorToast } from '../hooks/useErrorToast';
 
 function Catalog() {
@@ -31,9 +32,11 @@ function Catalog() {
   const { showToast } = useToast();
   const [sortOrder, setSortOrderState] = useState(getCatalogSortDirection);
   const [conversionMode] = useConversionMode();
+  const { variant: displayVariant } = useBookDisplayVariant();
   const [, setCatalogRefresh] = useState(0);
   const [uncachedItemIds, setUncachedItemIds] = useState([]);
   const [downloadAllConfirmOpen, setDownloadAllConfirmOpen] = useState(false);
+  const [exportBookOpen, setExportBookOpen] = useState(false);
   const onChapterDeleted = (itemId) => {
     if (itemId) setUncachedItemIds((prev) => prev.filter((id) => id !== itemId));
     setCatalogRefresh((k) => k + 1);
@@ -98,8 +101,8 @@ function Catalog() {
     navigate(buildCatalogUrl(bookId));
   };
 
-  const handleExportTxt = () => {
-    runBookTxtExport({ bookId, bookInfo, showToast });
+  const handleExportBook = () => {
+    setExportBookOpen(true);
   };
 
   if (!bookId) {
@@ -123,7 +126,7 @@ function Catalog() {
             downloadingAll={downloadingAll}
             onDownloadAll={handleDownloadAll}
             onRefresh={() => loadBook(true)}
-            onExportTxt={handleExportTxt}
+            onExportBook={handleExportBook}
             lastReadItemId={lastReadItemId}
           />
           {bookInfo.item_data_list && (
@@ -151,6 +154,17 @@ function Catalog() {
           onStay={() => handleStartDownloadAll(false)}
           onGoToDownloadPage={() => handleStartDownloadAll(true)}
           onClose={() => setDownloadAllConfirmOpen(false)}
+        />
+      )}
+      {exportBookOpen && (
+        <ExportBookModal
+          bookId={bookId}
+          bookInfo={bookInfo}
+          defaultSortOrder={sortOrder}
+          defaultConversionMode={conversionMode}
+          defaultDisplayVariant={displayVariant}
+          showToast={showToast}
+          onClose={() => setExportBookOpen(false)}
         />
       )}
     </PageWrapper>

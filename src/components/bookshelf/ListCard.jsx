@@ -1,6 +1,6 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { GripVertical, Loader2, Check, RefreshCw, Trash2, FolderInput, Download } from 'lucide-react';
+import { GripVertical, Loader2, Check, RefreshCw, Trash2, FolderInput, Download, FileText } from 'lucide-react';
 import BookInfo from '../common/BookInfo';
 import { useBookLoader } from '../../hooks/useBookLoader';
 import { useErrorToast } from '../../hooks/useErrorToast';
@@ -236,6 +236,7 @@ function ListCardActions({
   isRefreshing,
   onAddToCollection,
   onDownload,
+  onExport,
   onRefreshClick,
   refetch,
   onDeleteClick,
@@ -262,6 +263,17 @@ function ListCardActions({
           aria-label="下載全部"
         >
           <Download />
+        </CardActionButton>
+      )}
+      {onExport && (
+        <CardActionButton
+          type="button"
+          $variant="export"
+          onClick={(e) => { e.stopPropagation(); onExport(bookId); }}
+          title="匯出書籍"
+          aria-label="匯出書籍"
+        >
+          <FileText />
         </CardActionButton>
       )}
       <CardActionButton
@@ -294,6 +306,7 @@ function ListCard({
   onDeleteClick,
   onAddToCollection,
   onDownload,
+  onExport,
   isAllTab = true,
   conversionMode,
   dragHandleProps,
@@ -352,6 +365,7 @@ function ListCard({
     isRefreshing,
     onAddToCollection,
     onDownload,
+    onExport,
     onRefreshClick,
     refetch,
     onDeleteClick,

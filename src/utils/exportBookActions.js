@@ -1,7 +1,9 @@
 import { detailCache } from './cache';
 import { fetchBookDetail } from '../services/api';
 import { getCachedOrFetchDirectory } from './api-helpers';
-import { exportBookToTxt, EXPORT_NO_CACHED_CHAPTERS_MSG } from './exportBookTxt';
+import { exportBookToTxt } from './exportBookTxt';
+import { exportBookToEpub } from './exportBookEpub';
+import { EXPORT_NO_CACHED_CHAPTERS_MSG } from './exportBookCommon';
 import { formatErrorMessage } from './errors';
 
 async function resolveExportBookData(bookId, bookInfo) {
@@ -21,27 +23,89 @@ async function resolveExportBookData(bookId, bookInfo) {
   return { bookInfo: { book_info: detail }, itemDataList };
 }
 
-/**
- * Resolves book/directory data when needed, exports cached chapters, and shows standard toasts.
- * @param {Object} params
- * @param {string} params.bookId
- * @param {Object} [params.bookInfo] - Optional; skips cache/API lookup when item_data_list is present
- * @param {(message: string) => void} [params.showToast]
- */
-export async function runBookTxtExport({ bookId, bookInfo, showToast }) {
+async function runBookExport({
+  bookId,
+  bookInfo,
+  showToast,
+  sortOrder,
+  conversionMode,
+  displayVariant,
+  exportFn,
+  errorMessage,
+}) {
   try {
     const resolved = await resolveExportBookData(bookId, bookInfo);
-    const result = await exportBookToTxt({
+    const result = await exportFn({
       bookId,
       bookInfo: resolved.bookInfo,
       itemDataList: resolved.itemDataList,
+      sortOrder,
+      conversionMode,
+      displayVariant,
     });
     if (result?.exportedCount === 0) {
       showToast?.(EXPORT_NO_CACHED_CHAPTERS_MSG);
     }
     return result;
   } catch (err) {
-    showToast?.(formatErrorMessage(err, '匯出失敗，請稍後再試。'));
+    showToast?.(formatErrorMessage(err, errorMessage));
     return { exportedCount: 0 };
   }
+}
+
+/**
+ * @param {Object} params
+ * @param {string} params.bookId
+ * @param {Object} [params.bookInfo]
+ * @param {(message: string) => void} [params.showToast]
+ * @param {'ascending'|'descending'} [params.sortOrder]
+ * @param {string} [params.conversionMode]
+ */
+export function runBookTxtExport({
+  bookId,
+  bookInfo,
+  showToast,
+  sortOrder = 'ascending',
+  conversionMode = 'tw',
+  displayVariant = 'new',
+}) {
+  return runBookExport({
+    bookId,
+    bookInfo,
+    showToast,
+    sortOrder,
+    conversionMode,
+    displayVariant,
+    exportFn: exportBookToTxt,
+    errorMessage: '匯出 TXT 失敗，請稍後再試。',
+  });
+}
+
+/**
+ * @param {Object} params
+ * @param {string} params.bookId
+ * @param {Object} [params.bookInfo]
+ * @param {(message: string) => void} [params.showToast]
+ * @param {'ascending'|'descending'} [params.sortOrder]
+ * @param {string} [params.conversionMode]
+ * @param {'new'|'old'} [params.displayVariant]
+ */
+export function runBookEpubExport({
+  bookId,
+  bookInfo,
+  showToast,
+  sortOrder = 'ascending',
+  conversionMode = 'tw',
+  displayVariant = 'new',
+}) {
+  return runBookExport({
+    bookId,
+    bookInfo,
+    showToast,
+    sortOrder,
+    conversionMode,
+    displayVariant,
+    exportFn: exportBookToEpub,
+    errorMessage: '匯出 EPUB 失敗，請稍後再試。',
+  });
 }

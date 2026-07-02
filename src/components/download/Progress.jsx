@@ -1,14 +1,14 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { Loader2, Download as DownloadIcon } from 'lucide-react';
+import { Loader2, Download as DownloadIcon, CheckCircle2, CirclePause } from 'lucide-react';
 import { useDownloadManager } from '../../contexts/DownloadManager';
 import { useToast } from '../../contexts/ToastContext';
 import { detailCache } from '../../utils/cache';
 import { resolveBookDisplay } from '../../utils/bookInfo';
-import { isChapterCached, getBookDisplayVariant } from '../../utils/storage';
+import { isChapterCached, getBookDisplayVariant, getCatalogSortDirection } from '../../utils/storage';
 import { buildCatalogUrl } from '../../utils/navigation';
-import { runBookTxtExport } from '../../utils/exportBookActions';
+import ExportBookModal from '../common/ExportBookModal';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import { CardSpinningIcon } from '../common/CardActionButton';
 import { GrayButton } from '../common/GrayButton';
@@ -163,11 +163,15 @@ function Progress({ conversionMode = 'tw' }) {
     downloadAllItemIds,
     downloading,
     completedDownloads,
+    downloadAllStatus,
     queueLength,
     stopDownloadAll,
+    resumeDownloadAll,
+    dismissDownloadAll,
   } = useDownloadManager();
 
   const [bookTitle, setBookTitle] = useState(null);
+  const [exportBookOpen, setExportBookOpen] = useState(false);
   const convertedBookTitle = useConvertedText(bookTitle, conversionMode);
   const [progress, setProgress] = useState({ done: 0, total: 0, active: 0 });
 
@@ -209,14 +213,13 @@ function Progress({ conversionMode = 'tw' }) {
 
   const activeCount = downloading.size;
   const isBatchActive = Boolean(downloadAllBookId);
+  const isBatchComplete = downloadAllStatus === 'completed';
+  const isBatchStopped = downloadAllStatus === 'stopped';
+  const isBatchInProgress = downloadAllStatus === 'active';
   const isAnyActive = activeCount > 0 || queueLength > 0 || isBatchActive;
   const percent = progress.total > 0 ? Math.round((progress.done / progress.total) * 100) : 0;
+  const displayPercent = isBatchComplete ? 100 : percent;
   const waitingCount = Math.max(0, progress.total - progress.done - progress.active);
-
-  const handleExportTxt = useCallback(() => {
-    if (!downloadAllBookId) return;
-    runBookTxtExport({ bookId: downloadAllBookId, showToast });
-  }, [downloadAllBookId, showToast]);
 
   if (!isAnyActive) {
     return (
@@ -231,15 +234,22 @@ function Progress({ conversionMode = 'tw' }) {
   }
 
   return (
-    <Section>
-      <SectionTitle>下載狀態</SectionTitle>
-      <StatusCard>
+    <>
+      <Section>
+        <SectionTitle>下載狀態</SectionTitle>
+        <StatusCard>
         {isBatchActive ? (
           <>
             <BookRow>
-              <CardSpinningIcon $duration="1s">
-                <Loader2 size={22} color="var(--accent-color)" aria-hidden />
-              </CardSpinningIcon>
+              {isBatchComplete ? (
+                <CheckCircle2 size={22} color="var(--accent-color)" aria-hidden />
+              ) : isBatchStopped ? (
+                <CirclePause size={22} color="var(--text-color-secondary)" aria-hidden />
+              ) : (
+                <CardSpinningIcon $duration="1s">
+                  <Loader2 size={22} color="var(--accent-color)" aria-hidden />
+                </CardSpinningIcon>
+              )}
               <BookMeta>
                 <TitleLink type="button" onClick={() => navigate(buildCatalogUrl(downloadAllBookId))}>
                   {convertedBookTitle || '載入書名中…'}
@@ -248,35 +258,52 @@ function Progress({ conversionMode = 'tw' }) {
               </BookMeta>
             </BookRow>
             <StatusLine>
-              正在下載全書 · 已完成 {progress.done} / {progress.total} 章（{percent}%）
+              {isBatchComplete
+                ? `下載完成 · 共 ${progress.total} 章`
+                : isBatchStopped
+                  ? `已停止下載 · 已完成 ${progress.done} / ${progress.total} 章（${percent}%）`
+                  : `正在下載全書 · 已完成 ${progress.done} / ${progress.total} 章（${percent}%）`}
             </StatusLine>
             <ProgressTrack aria-hidden>
-              <ProgressFill $percent={percent} />
+              <ProgressFill $percent={displayPercent} />
             </ProgressTrack>
             <StatGrid>
               <StatItem>
                 <StatLabel>已完成</StatLabel>
-                <StatValue>{progress.done}</StatValue>
+                <StatValue>{isBatchComplete ? progress.total : progress.done}</StatValue>
               </StatItem>
               <StatItem>
                 <StatLabel>進行中</StatLabel>
-                <StatValue>{progress.active}</StatValue>
+                <StatValue>{isBatchInProgress ? progress.active : 0}</StatValue>
               </StatItem>
               <StatItem>
                 <StatLabel>待下載</StatLabel>
-                <StatValue>{waitingCount}</StatValue>
+                <StatValue>{isBatchInProgress ? waitingCount : isBatchComplete ? 0 : Math.max(0, progress.total - progress.done)}</StatValue>
               </StatItem>
             </StatGrid>
             <ActionRow>
               <GrayButton type="button" onClick={() => navigate(buildCatalogUrl(downloadAllBookId))}>
                 前往目錄
               </GrayButton>
-              <GrayButton type="button" onClick={handleExportTxt}>
-                匯出 TXT
+              <GrayButton type="button" onClick={() => setExportBookOpen(true)}>
+                匯出書籍
               </GrayButton>
-              <GrayButton type="button" onClick={stopDownloadAll}>
-                停止下載
-              </GrayButton>
+              {isBatchInProgress ? (
+                <GrayButton type="button" onClick={stopDownloadAll}>
+                  停止下載
+                </GrayButton>
+              ) : (
+                <>
+                  {isBatchStopped && (
+                    <GrayButton type="button" onClick={resumeDownloadAll}>
+                      繼續下載
+                    </GrayButton>
+                  )}
+                  <GrayButton type="button" onClick={dismissDownloadAll}>
+                    清除記錄
+                  </GrayButton>
+                </>
+              )}
             </ActionRow>
           </>
         ) : (
@@ -311,6 +338,17 @@ function Progress({ conversionMode = 'tw' }) {
         )}
       </StatusCard>
     </Section>
+    {exportBookOpen && downloadAllBookId && (
+      <ExportBookModal
+        bookId={downloadAllBookId}
+        defaultSortOrder={getCatalogSortDirection()}
+        defaultConversionMode={conversionMode}
+        defaultDisplayVariant={getBookDisplayVariant()}
+        showToast={showToast}
+        onClose={() => setExportBookOpen(false)}
+      />
+    )}
+    </>
   );
 }
 

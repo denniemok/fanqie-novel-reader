@@ -4,6 +4,7 @@ import {
   FolderInput,
   Trash2,
   Download,
+  FileText,
   RefreshCw,
   Loader2,
 } from 'lucide-react';
@@ -25,6 +26,7 @@ function ManageActionBar({
   onDeselectAll,
   onBulkAddToCollection,
   onGoToDownload,
+  onGoToExport,
   onBulkRefresh,
   onBulkDelete,
   isRefreshing,
@@ -62,15 +64,26 @@ function ManageActionBar({
           <FolderInput />
         </ManageBarButton>
         {selectedCount === 1 && (
-          <ManageBarButton
-            type="button"
-            $variant="download"
-            onClick={onGoToDownload}
-            title="下載全部"
-            aria-label="下載全部"
-          >
-            <Download />
-          </ManageBarButton>
+          <>
+            <ManageBarButton
+              type="button"
+              $variant="download"
+              onClick={onGoToDownload}
+              title="下載全部"
+              aria-label="下載全部"
+            >
+              <Download />
+            </ManageBarButton>
+            <ManageBarButton
+              type="button"
+              $variant="export"
+              onClick={onGoToExport}
+              title="匯出書籍"
+              aria-label="匯出書籍"
+            >
+              <FileText />
+            </ManageBarButton>
+          </>
         )}
         <ManageBarButton
           type="button"

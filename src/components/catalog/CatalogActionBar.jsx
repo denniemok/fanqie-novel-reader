@@ -10,7 +10,7 @@ function CatalogActionBar({
   downloadingAll,
   onDownloadAll,
   onRefresh,
-  onExportTxt,
+  onExportBook,
   lastReadItemId,
 }) {
   const downloadText = downloadingAll ? '停止下載' : hasUncachedChapters ? '下載全部' : '已下載';
@@ -30,9 +30,9 @@ function CatalogActionBar({
       </LabeledIconButton>
       <LabeledIconButton
         type="button"
-        label="匯出 TXT"
-        title="匯出 TXT"
-        onClick={onExportTxt}
+        label="匯出書籍"
+        title="匯出書籍"
+        onClick={onExportBook}
       >
         <FileText size={20} strokeWidth={2.5} />
       </LabeledIconButton>

@@ -57,6 +57,12 @@ export const ZH_CONVERSION_OPTIONS = [
   { value: 'hk', label: '香港繁體' },
 ];
 
+/** Chapter order for book export: { value, label } */
+export const EXPORT_CHAPTER_ORDER_OPTIONS = [
+  { value: 'ascending', label: '正序（第一章起）' },
+  { value: 'descending', label: '倒序（最新章起）' },
+];
+
 /** Book metadata display: new (current) vs old (original) title and cover */
 export const BOOK_DISPLAY_VARIANT_OPTIONS = [
   { value: 'new', label: '最新書名及封面' },

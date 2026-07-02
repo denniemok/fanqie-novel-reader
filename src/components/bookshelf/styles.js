@@ -330,10 +330,21 @@ export const ManageActionBar = styled.div`
   padding: 10px 14px;
   max-width: min(640px, calc(100vw - 32px));
   box-sizing: border-box;
-  background: var(--card-surface);
-  border: var(--retro-border-width) solid var(--border-color);
-  box-shadow: var(--retro-shadow-hover);
+  background: color-mix(in srgb, var(--accent-color) 14%, var(--topbar-bg));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: var(--retro-border-width) solid color-mix(in srgb, var(--accent-color) 55%, var(--border-color));
+  box-shadow: var(--topbar-shadow), var(--panel-shadow);
   border-radius: var(--border-radius-sm);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--accent-color) 22%, transparent);
+  }
 
   @media (max-width: 480px) {
     gap: 8px;
@@ -346,7 +357,7 @@ export const ManageActionCount = styled.span`
   font-size: 14px;
   font-weight: 700;
   font-family: var(--ui-font-family);
-  color: var(--text-color);
+  color: var(--accent-color);
   white-space: nowrap;
   flex-shrink: 0;
   min-width: 3.5em;
