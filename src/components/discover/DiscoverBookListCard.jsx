@@ -2,7 +2,7 @@ import { FolderInput } from 'lucide-react';
 import BookInfo from '../common/BookInfo';
 import { CardActionButton } from '../common/CardActionButton';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { normalizeDiscoverBookInfo } from '../../utils/bookInfo';
+import { normalizeDiscoverBookPayload } from '../../utils/bookInfo';
 import { cardKeyDownHandler } from '../../utils/cardInteraction';
 import {
   ListCard,
@@ -10,10 +10,6 @@ import {
   ListCardActionOverlay,
   ListCardActionFooter,
 } from './styles';
-
-function toDiscoverBookInfo(book) {
-  return { book_info: normalizeDiscoverBookInfo(book) };
-}
 
 function DiscoverBookListCard({ book, conversionMode, onClick, onAddToCollection }) {
   const isMobile = useMediaQuery('(max-width: 480px)');
@@ -53,10 +49,9 @@ function DiscoverBookListCard({ book, conversionMode, onClick, onAddToCollection
       )}
       <ListCardBody>
         <BookInfo
-          bookInfo={toDiscoverBookInfo(book)}
+          bookInfo={normalizeDiscoverBookPayload(book)}
           conversionMode={conversionMode}
           variant="compact"
-          showChapterCount={false}
         />
       </ListCardBody>
       {actionButton && isMobile && (

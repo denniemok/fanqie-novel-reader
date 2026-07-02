@@ -15,6 +15,7 @@ import {
 } from '../bookshelf/styles';
 import { PRIMARY_TABS } from './constants';
 import DiscoverSearchForm from './DiscoverSearchForm';
+import BookFilterPanel from '../common/BookFilterPanel';
 import {
   SecondaryRefreshBtn,
   SecondaryTab,
@@ -45,7 +46,24 @@ function DiscoverToolbar({
   onViewModeChange,
   onSortChange,
   onSortDirectionToggle,
+  filterCategories,
+  bookFilters,
+  onBookFiltersChange,
+  filtersExpanded,
+  onFiltersExpandedChange,
+  conversionMode,
 }) {
+  const filterPanel = showListContent ? (
+    <BookFilterPanel
+      categories={filterCategories}
+      filters={bookFilters}
+      conversionMode={conversionMode}
+      onFiltersChange={onBookFiltersChange}
+      expanded={filtersExpanded}
+      onExpandedChange={onFiltersExpandedChange}
+    />
+  ) : null;
+
   return (
     <TabStack>
       <TabBar>
@@ -93,6 +111,8 @@ function DiscoverToolbar({
         </SecondaryTabRow>
       )}
 
+      {showDiscoverContent && filterPanel}
+
       {showSearchContent && (
         <DiscoverSearchForm
           searchInput={searchInput}
@@ -103,6 +123,8 @@ function DiscoverToolbar({
           onClear={onSearchClear}
         />
       )}
+
+      {showSearchContent && filterPanel}
 
       {showListContent && (
         <TabActions>

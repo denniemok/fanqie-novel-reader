@@ -4,7 +4,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { BookDisplayVariantProvider } from './contexts/BookDisplayVariantContext';
 import { ConversionModeProvider } from './contexts/ConversionModeContext';
 import { DownloadManagerProvider } from './contexts/DownloadManager';
-import { ROUTES } from './utils/navigation';
+import { ROUTES, buildDefaultDiscoverUrl } from './utils/navigation';
 import Home from './pages/Home';
 import Catalog from './pages/Catalog';
 import Chapter from './pages/Chapter';
@@ -17,6 +17,10 @@ import Status from './pages/Status';
 import Export from './pages/Export';
 import Import from './pages/Import';
 
+function DiscoverRootRedirect() {
+  return <Navigate to={buildDefaultDiscoverUrl()} replace />;
+}
+
 function App() {
   return (
     <ThemeProvider>
@@ -27,7 +31,7 @@ function App() {
               <Routes>
                 <Route path={ROUTES.home} element={<Home />} />
                 <Route path={ROUTES.bookshelf} element={<Bookshelf />} />
-                <Route path={ROUTES.discover} element={<Navigate to={`${ROUTES.discover}/others`} replace />} />
+                <Route path={ROUTES.discover} element={<DiscoverRootRedirect />} />
                 <Route path={`${ROUTES.discover}/:tab/:section?`} element={<Discover />} />
                 <Route path={ROUTES.announcements} element={<Announcements />} />
                 <Route path={ROUTES.download} element={<Download />} />

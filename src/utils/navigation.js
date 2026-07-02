@@ -1,3 +1,5 @@
+import { getDiscoverActiveTab } from './storage';
+
 export const ROUTES = {
   home: '/',
   bookshelf: '/bookshelf',
@@ -26,6 +28,11 @@ export function buildDiscoverUrl(tab, section, query) {
     return `${path}?${params.toString()}`;
   }
   return path;
+}
+
+export function buildDefaultDiscoverUrl() {
+  const { primary, secondary } = getDiscoverActiveTab();
+  return buildDiscoverUrl(primary, secondary);
 }
 
 export function isDiscoverPath(pathname) {

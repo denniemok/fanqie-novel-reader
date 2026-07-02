@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Modal from './Modal';
-import { truncateText, MAX_ABSTRACT_LENGTH, MOBILE_ABSTRACT_LENGTH } from '../../utils/text';
+import { formatExpandedAbstract } from '../../utils/text';
 import { useConvertedText } from '../../hooks/useConvertedText';
-import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { resolveBookDisplay } from '../../utils/bookInfo';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 
@@ -180,6 +179,21 @@ const TextBlock = styled.div`
   }
 `;
 
+const HorizontalScroll = styled.div`
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
 const TitleBlock = styled.div`
   display: flex;
   flex-direction: column;
@@ -187,30 +201,26 @@ const TitleBlock = styled.div`
   gap: 6px;
   width: 100%;
 
-  h1 {
+  .variant-compact & h1 {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     align-self: stretch;
     overflow: hidden;
     color: var(--text-color);
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 900;
     line-height: 1.3;
     margin: 0;
     text-transform: uppercase;
-  }
+    white-space: nowrap;
 
-  @media (max-width: 480px) {
-    h1 {
-      font-size: 18px;
-    }
-    h3 {
-      font-size: 13px;
+    @media (max-width: 374px) {
+      font-size: 16px;
     }
   }
 
-  h3 {
+  .variant-compact & h3 {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
@@ -220,22 +230,40 @@ const TitleBlock = styled.div`
     font-size: 14px;
     font-weight: 700;
     line-height: 1;
-    margin: 6px 0 0 0;
+    margin: 0;
     font-family: inherit;
-  }
 
-  .variant-compact & h1 {
-    font-size: 20px;
-    white-space: nowrap;
-    -webkit-line-clamp: 1;
-
-    @media (max-width: 374px) {
-      font-size: 16px;
+    @media (max-width: 480px) {
+      font-size: 13px;
     }
   }
+`;
 
-  .variant-compact & h3 {
-    margin: 0;
+const TitleText = styled.span`
+  white-space: nowrap;
+  flex-shrink: 0;
+  color: var(--text-color);
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.3;
+  text-transform: uppercase;
+
+  @media (max-width: 480px) {
+    font-size: 18px;
+  }
+`;
+
+const AuthorText = styled.span`
+  white-space: nowrap;
+  flex-shrink: 0;
+  color: var(--accent-color);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  font-family: inherit;
+
+  @media (max-width: 480px) {
+    font-size: 13px;
   }
 `;
 
@@ -260,29 +288,28 @@ const Abstract = styled.p`
 `;
 
 const ShowMore = styled.button`
-  background: var(--background-color2);
-  border: 1px solid var(--border-color);
-  padding: 6px 10px;
-  font-size: 12px;
-  font-weight: 900;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.6;
   color: var(--accent-color);
   cursor: pointer;
-  transition: all 0.1s steps(2);
-  margin-right: 8px;
-  text-transform: uppercase;
-  min-height: 32px;
+  margin-right: 6px;
+  font-family: inherit;
 
   &:hover {
-    background: var(--accent-color);
-    color: var(--background-color);
+    text-decoration: underline;
   }
 
   @media (max-width: 480px) {
-    font-size: 11px;
+    font-size: 13px;
   }
 `;
 
 const Tags = styled.div`
+  width: 100%;
   font-size: 12px;
   color: var(--text-color-secondary);
   line-height: 1.3;
@@ -293,25 +320,23 @@ const Tags = styled.div`
   font-family: inherit;
 `;
 
-const MetaRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+const ScrollableTagText = styled.span`
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--text-color-secondary);
+  line-height: 1.3;
+  opacity: 0.8;
+  font-family: inherit;
+`;
+
+const MetaRow = styled(HorizontalScroll)`
   align-items: center;
   gap: 8px;
   margin-top: 8px;
 
   .variant-compact & {
     margin-top: 4px;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    max-width: 100%;
-    min-width: 0;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
   }
 `;
 
@@ -323,13 +348,10 @@ const MetaTag = styled.span`
   font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
+  flex-shrink: 0;
   border: 1px solid var(--border-color);
   background: var(--background-color2);
   font-family: inherit;
-
-  .variant-compact & {
-    flex-shrink: 0;
-  }
 
   &.meta-score {
     color: #a7b8a7;
@@ -373,7 +395,6 @@ const Footer = styled.div`
 function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapterCount = true }) {
   const [showFullAbstract, setShowFullAbstract] = useState(false);
   const [imgError, setImgError] = useState(false);
-  const isMobile = useMediaQuery('(max-width: 480px)');
   const { variant: displayVariant } = useBookDisplayVariant();
   
   const bookInfoData = bookInfo?.book_info || bookInfo || {};
@@ -394,13 +415,14 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
   const convertedWordNumber = useConvertedText(word_number, conversionMode);
   const convertedCreationStatus = useConvertedText(creation_status, conversionMode);
   
-  const maxLen = isMobile ? MOBILE_ABSTRACT_LENGTH : MAX_ABSTRACT_LENGTH;
-  const truncated = truncateText(convertedAbstract, maxLen);
   const isCompact = variant === 'compact';
 
   if (!book_name && !author) return null;
 
   const wrapperClass = variant === 'card' ? 'variant-card' : variant === 'compact' ? 'variant-compact' : '';
+  const scrollCaptureProps = isCompact
+    ? { onClick: (e) => e.stopPropagation(), onTouchStart: (e) => e.stopPropagation() }
+    : {};
 
   return (
     <InfoWrapper className={wrapperClass}>
@@ -420,22 +442,42 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
       )}
       <TextBlock>
         <TitleBlock>
-          <h1>{convertedBookName}</h1>
-          <h3>{convertedAuthor}</h3>
+          {isCompact ? (
+            <>
+              <h1>{convertedBookName}</h1>
+              {convertedAuthor && <h3>{convertedAuthor}</h3>}
+            </>
+          ) : (
+            <>
+              <HorizontalScroll role="group" aria-label="書名">
+                <TitleText>{convertedBookName}</TitleText>
+              </HorizontalScroll>
+              {convertedAuthor && (
+                <HorizontalScroll role="group" aria-label="作者">
+                  <AuthorText>{convertedAuthor}</AuthorText>
+                </HorizontalScroll>
+              )}
+            </>
+          )}
         </TitleBlock>
-        {tags && <Tags>{convertedTags}</Tags>}
+        {tags && (
+          isCompact ? (
+            <Tags>{convertedTags}</Tags>
+          ) : (
+            <HorizontalScroll role="group" aria-label="標籤">
+              <ScrollableTagText>{convertedTags}</ScrollableTagText>
+            </HorizontalScroll>
+          )
+        )}
         <Abstract>
           {!isCompact && (
             <ShowMore type="button" onClick={() => setShowFullAbstract(true)}>
               展開
             </ShowMore>
           )}
-          {truncated}
+          {convertedAbstract}
         </Abstract>
-        <MetaRow
-          onClick={isCompact ? (e) => e.stopPropagation() : undefined}
-          onTouchStart={isCompact ? (e) => e.stopPropagation() : undefined}
-        >
+        <MetaRow {...scrollCaptureProps}>
           {showChapterCount && !thumb_url && (
             <MetaTag className="meta-chapters">{chapter_count ? `共 ${chapter_count} 章節` : '暫無章節資訊'}</MetaTag>
           )}
@@ -451,7 +493,7 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
         {!isCompact && footer && <Footer>{footer}</Footer>}
       </TextBlock>
       {!isCompact && showFullAbstract && (
-        <Modal text={convertedAbstract} onClose={() => setShowFullAbstract(false)} />
+        <Modal text={formatExpandedAbstract(convertedAbstract)} onClose={() => setShowFullAbstract(false)} />
       )}
     </InfoWrapper>
   );

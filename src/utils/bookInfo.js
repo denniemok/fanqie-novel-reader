@@ -20,6 +20,11 @@ function pickFirstNonEmpty(...values) {
   return values.find((value) => value != null && value !== '') ?? null;
 }
 
+/** Normalize chapter count from directory length or API metadata. */
+export function resolveChapterCount(value) {
+  return (value === 0 || value === '0' || value == null) ? null : value;
+}
+
 /** Resolve display title and cover from raw book fields for the chosen variant. */
 export function resolveBookDisplay(bookInfo, variant = 'new', bookId = null) {
   const data = bookInfo?.book_info || bookInfo || {};
@@ -66,6 +71,16 @@ export function normalizeDiscoverBookInfo(book) {
   return normalizeBookMetaFields(raw, bookId);
 }
 
+/** Book payload for ``BookInfo`` from a flat discover-list item. */
+export function normalizeDiscoverBookPayload(book) {
+  const book_info = normalizeDiscoverBookInfo(book);
+  if (!book_info) return { book_info: null, chapter_count: null };
+  return {
+    book_info,
+    chapter_count: resolveChapterCount(book_info.content_chapter_number),
+  };
+}
+
 /**
  * Normalizes raw book info from API or cache into a consistent shape with fallbacks.
  * @param {Object} raw - Raw merged book info (from fetchBookDetailAndDirectory or fetchBookDetail)
@@ -88,7 +103,7 @@ export function normalizeBookInfo(raw, bookId) {
     ...raw,
     book_info: normalizedBookInfo,
     item_data_list,
-    chapter_count: (n === 0 || n === '0' || n == null) ? null : n,
+    chapter_count: resolveChapterCount(n),
   };
 }
 

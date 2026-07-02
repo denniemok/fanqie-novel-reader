@@ -4,8 +4,6 @@ import {
   ModalTitleBar,
   ModalBody,
   ModalText,
-  ModalFooter,
-  ModalPrimaryButton,
 } from './ModalBase';
 
 function Modal({ text, onClose, title = '詳情' }) {
@@ -15,11 +13,6 @@ function Modal({ text, onClose, title = '詳情' }) {
       <ModalBody>
         <ModalText>{text}</ModalText>
       </ModalBody>
-      <ModalFooter>
-        <ModalPrimaryButton type="button" onClick={onClose}>
-          收起
-        </ModalPrimaryButton>
-      </ModalFooter>
     </ModalRoot>
   );
 }

@@ -1,16 +1,19 @@
 import {
-  SORT_ORDER_KEY,
+  CATALOG_SORT_DIRECTION_KEY,
   CATALOG_MANAGE_MODE_KEY,
   READING_HISTORY_KEY,
   READING_HISTORY_LEGACY_KEY,
-  READING_HISTORY_MAX,
   COLLECTIONS_KEY,
   BOOKSHELF_VIEW_MODE_KEY,
+  DISCOVER_VIEW_MODE_KEY,
   BOOKSHELF_SORT_KEY,
   BOOKSHELF_SORT_DIRECTION_KEY,
   DISCOVER_SORT_KEY,
   DISCOVER_SORT_DIRECTION_KEY,
   BOOKSHELF_ACTIVE_TAB_KEY,
+  DISCOVER_ACTIVE_TAB_KEY,
+  BOOKSHELF_FILTERS_KEY,
+  DISCOVER_FILTERS_KEY,
   FONT_SIZE_KEY,
   FONT_SIZE_MIN,
   FONT_SIZE_MAX,
@@ -27,6 +30,7 @@ import {
   READER_BACKGROUND_OPTIONS,
   THEME_KEY,
 } from './constants';
+import { normalizeBookFilterState } from './bookFilters';
 import { directoryCache, chapterCache, detailCache, getStoreItem, setStoreItem } from './cache';
 
 export function safeGetItem(key) {
@@ -149,11 +153,11 @@ export async function setLastReadChapter(bookId, itemId) {
     } else {
       history.unshift({ bookId: bid, itemId: itemIdStr, lastReadAt: now });
     }
-    return saveReadingHistory(history.slice(0, READING_HISTORY_MAX));
+    return saveReadingHistory(history);
   }
   if (existing) return true;
   history.unshift({ bookId: bid, itemId: null, lastReadAt: now });
-  return saveReadingHistory(history.slice(0, READING_HISTORY_MAX));
+  return saveReadingHistory(history);
 }
 
 /** Add books to reading history (「全部」) without requiring a chapter read. */
@@ -170,7 +174,7 @@ export async function addBooksToReadingHistory(bookIds) {
       history.unshift({ bookId: bid, itemId: null, lastReadAt: now });
     }
   }
-  return saveReadingHistory(history.slice(0, READING_HISTORY_MAX));
+  return saveReadingHistory(history);
 }
 
 /** Remove books from reading history only; cached data is kept. */
@@ -264,14 +268,14 @@ export function setBookDisplayVariant(variant) {
 }
 
 /** @returns {'ascending'|'descending'} Default: 'ascending' */
-export function getSortOrder() {
-  const raw = safeGetItem(SORT_ORDER_KEY);
+export function getCatalogSortDirection() {
+  const raw = safeGetItem(CATALOG_SORT_DIRECTION_KEY) ?? safeGetItem('sortOrder');
   return raw === 'descending' ? 'descending' : 'ascending';
 }
 
-export function setSortOrder(order) {
-  const valid = order === 'ascending' || order === 'descending';
-  return valid ? safeSetItem(SORT_ORDER_KEY, order) : false;
+export function setCatalogSortDirection(direction) {
+  const valid = direction === 'ascending' || direction === 'descending';
+  return valid ? safeSetItem(CATALOG_SORT_DIRECTION_KEY, direction) : false;
 }
 
 /** @returns {boolean} Default: true */
@@ -401,14 +405,30 @@ export async function reorderCollectionBooks(collectionId, fromIndex, toIndex) {
 
 // ── Bookshelf view mode ───────────────────────────────────────────────────────
 
-export function getBookshelfViewMode() {
-  const raw = safeGetItem(BOOKSHELF_VIEW_MODE_KEY);
+function getViewMode(key, legacyKey = null) {
+  const raw = safeGetItem(key) ?? (legacyKey ? safeGetItem(legacyKey) : null);
   return raw === 'grid' ? 'grid' : 'list';
 }
 
-export function setBookshelfViewMode(mode) {
+function setViewMode(key, mode) {
   const valid = mode === 'list' || mode === 'grid';
-  return valid ? safeSetItem(BOOKSHELF_VIEW_MODE_KEY, mode) : false;
+  return valid ? safeSetItem(key, mode) : false;
+}
+
+export function getBookshelfViewMode() {
+  return getViewMode(BOOKSHELF_VIEW_MODE_KEY);
+}
+
+export function setBookshelfViewMode(mode) {
+  return setViewMode(BOOKSHELF_VIEW_MODE_KEY, mode);
+}
+
+export function getDiscoverViewMode() {
+  return getViewMode(DISCOVER_VIEW_MODE_KEY, BOOKSHELF_VIEW_MODE_KEY);
+}
+
+export function setDiscoverViewMode(mode) {
+  return setViewMode(DISCOVER_VIEW_MODE_KEY, mode);
 }
 
 /** @returns {'manual'|'rating'|'update'|'chapters'|'words'} */
@@ -469,6 +489,71 @@ export function setBookshelfActiveTab(tabId) {
     return safeSetItem(BOOKSHELF_ACTIVE_TAB_KEY, tabId);
   }
   return false;
+}
+
+const DISCOVER_PRIMARY_TABS = new Set(['search', 'rank', 'recommend', 'others']);
+const DISCOVER_DEFAULT_SECONDARY = {
+  rank: 'recommend',
+  recommend: 'realtime',
+};
+const DISCOVER_SECONDARY_TABS = {
+  rank: new Set(['recommend', 'finished', 'new', 'chasing', 'darkhorse', 'peak', 'reading']),
+  recommend: new Set(['realtime', 'guess']),
+};
+
+export function getDiscoverActiveTab() {
+  const raw = safeGetJSON(DISCOVER_ACTIVE_TAB_KEY);
+  const primary = DISCOVER_PRIMARY_TABS.has(raw?.primary) ? raw.primary : 'search';
+  const secondaryTabs = DISCOVER_SECONDARY_TABS[primary];
+  if (!secondaryTabs) {
+    return { primary, secondary: null };
+  }
+  const secondary = secondaryTabs.has(raw?.secondary)
+    ? raw.secondary
+    : DISCOVER_DEFAULT_SECONDARY[primary];
+  return { primary, secondary };
+}
+
+export function setDiscoverActiveTab({ primary, secondary = null }) {
+  if (!DISCOVER_PRIMARY_TABS.has(primary)) return false;
+  const payload = { primary, secondary };
+  if (DISCOVER_SECONDARY_TABS[primary]) {
+    if (!DISCOVER_SECONDARY_TABS[primary].has(secondary)) {
+      payload.secondary = DISCOVER_DEFAULT_SECONDARY[primary];
+    }
+  } else {
+    payload.secondary = null;
+  }
+  return safeSetJSON(DISCOVER_ACTIVE_TAB_KEY, payload);
+}
+
+function getBookFilterState(key) {
+  return normalizeBookFilterState(safeGetJSON(key));
+}
+
+function setBookFilterState(key, { filters, expanded }) {
+  const current = getBookFilterState(key);
+  const next = normalizeBookFilterState({
+    filters: filters ?? current.filters,
+    expanded: expanded ?? current.expanded,
+  });
+  return safeSetJSON(key, next);
+}
+
+export function getBookshelfFilterState() {
+  return getBookFilterState(BOOKSHELF_FILTERS_KEY);
+}
+
+export function setBookshelfFilterState(state) {
+  return setBookFilterState(BOOKSHELF_FILTERS_KEY, state);
+}
+
+export function getDiscoverFilterState() {
+  return getBookFilterState(DISCOVER_FILTERS_KEY);
+}
+
+export function setDiscoverFilterState(state) {
+  return setBookFilterState(DISCOVER_FILTERS_KEY, state);
 }
 
 /** @returns {'light'|'dark'} */

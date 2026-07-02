@@ -12,9 +12,9 @@ import {
 } from 'lucide-react';
 import SelectDropdown from '../common/SelectDropdown';
 import { BOOKSHELF_SORT_OPTIONS } from '../../utils/bookshelfSort';
-import { buildDiscoverUrl } from '../../utils/navigation';
-import { PRIMARY_TAB_OTHERS } from '../discover/constants';
+import { buildDefaultDiscoverUrl } from '../../utils/navigation';
 import { ALL_TAB } from './constants';
+import BookFilterPanel from '../common/BookFilterPanel';
 import {
   ToolbarRoot,
   TabBar,
@@ -50,12 +50,19 @@ function BookshelfToolbar({
   canReorder,
   reorderMode,
   hasSearch,
+  hasActiveFilters,
   onReorderModeToggle,
   settingsMode,
   onSettingsModeToggle,
   viewMode,
   onViewModeChange,
   navigate,
+  filterCategories,
+  bookFilters,
+  onBookFiltersChange,
+  filtersExpanded,
+  onFiltersExpandedChange,
+  conversionMode,
 }) {
   return (
     <ToolbarRoot>
@@ -92,8 +99,8 @@ function BookshelfToolbar({
             type="search"
             value={searchQuery}
             onChange={(e) => onSearchQueryChange(e.target.value)}
-            placeholder="搜尋書名或作者"
-            aria-label="搜尋書名或作者"
+            placeholder="搜尋書名、作者、簡介、標籤等"
+            aria-label="搜尋書名、作者、簡介、標籤等"
           />
           {searchQuery && (
             <SearchClearBtn
@@ -118,6 +125,15 @@ function BookshelfToolbar({
           </ToggleBtn>
         </ViewToggle>
       </SearchRow>
+
+      <BookFilterPanel
+        categories={filterCategories}
+        filters={bookFilters}
+        conversionMode={conversionMode}
+        onFiltersChange={onBookFiltersChange}
+        expanded={filtersExpanded}
+        onExpandedChange={onFiltersExpandedChange}
+      />
 
       <TabActions>
         <ToolbarRight>
@@ -148,7 +164,7 @@ function BookshelfToolbar({
                 {sortDirection === 'desc' ? <ArrowDownZA /> : <ArrowUpAZ />}
                 <BtnLabel>{sortDirection === 'desc' ? '降序' : '升序'}</BtnLabel>
               </SortTrailingBtn>
-            ) : canReorder && !hasSearch ? (
+            ) : canReorder && !hasSearch && !hasActiveFilters ? (
               <SortTrailingBtn
                 type="button"
                 $active={reorderMode}
@@ -177,7 +193,7 @@ function BookshelfToolbar({
           <ViewToggle>
             <ToggleBtn
               type="button"
-              onClick={() => navigate(buildDiscoverUrl(PRIMARY_TAB_OTHERS))}
+              onClick={() => navigate(buildDefaultDiscoverUrl())}
               title="新增書籍"
               aria-label="新增書籍"
             >

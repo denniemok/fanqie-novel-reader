@@ -12,25 +12,27 @@ export const DETAIL_CACHE_KEY = 'fanqie-detail';
 export const READING_HISTORY_KEY = 'fanqie-history';
 export const READING_HISTORY_LEGACY_KEY = 'fanqie-readingHistory';
 export const COLLECTIONS_KEY = 'fanqie-collections';
-export const BOOKSHELF_VIEW_MODE_KEY = 'fanqie-viewMode';
-export const BOOKSHELF_SORT_KEY = 'fanqie-bookshelfSort';
-export const BOOKSHELF_SORT_DIRECTION_KEY = 'fanqie-bookshelfSortDir';
-export const DISCOVER_SORT_KEY = 'fanqie-discoverSort';
-export const DISCOVER_SORT_DIRECTION_KEY = 'fanqie-discoverSortDir';
-export const BOOKSHELF_ACTIVE_TAB_KEY = 'fanqie-bookshelfActiveTab';
-export const API_BASE_KEY = 'apiBase';
-export const SORT_ORDER_KEY = 'sortOrder';
-export const CATALOG_MANAGE_MODE_KEY = 'fanqie-catalogManageMode';
+
+export const BOOKSHELF_VIEW_MODE_KEY = 'bookshelfViewMode';
+export const DISCOVER_VIEW_MODE_KEY = 'discoverViewMode';
+export const BOOKSHELF_SORT_KEY = 'bookshelfSort';
+export const BOOKSHELF_SORT_DIRECTION_KEY = 'bookshelfSortDir';
+export const DISCOVER_SORT_KEY = 'discoverSort';
+export const DISCOVER_SORT_DIRECTION_KEY = 'discoverSortDir';
+export const BOOKSHELF_ACTIVE_TAB_KEY = 'bookshelfActiveTab';
+export const DISCOVER_ACTIVE_TAB_KEY = 'discoverActiveTab';
+export const BOOKSHELF_FILTERS_KEY = 'bookshelfFilters';
+export const DISCOVER_FILTERS_KEY = 'discoverFilters';
+export const API_SERVICE_KEY = 'apiService';
+export const CATALOG_SORT_DIRECTION_KEY = 'catalogSortDir';
+export const CATALOG_MANAGE_MODE_KEY = 'catalogManageMode';
 export const FONT_SIZE_KEY = 'fontSize';
 export const FONT_FAMILY_KEY = 'fontFamily';
 export const TEXT_BRIGHTNESS_KEY = 'textBrightness';
 export const READER_BACKGROUND_KEY = 'readerBackground';
 export const TRADITIONAL_CHINESE_KEY = 'traditionalChinese';
-export const BOOK_DISPLAY_VARIANT_KEY = 'fanqie-bookDisplayVariant';
-export const THEME_KEY = 'fanqie-theme';
-
-export const API_SERVICE_LABEL = 'API 服務';
-export const API_STATUS_MENU_LABEL = 'API 狀態';
+export const BOOK_DISPLAY_VARIANT_KEY = 'bookDisplayVariant';
+export const THEME_KEY = 'theme';
 
 /** Reader background presets: { value: hex, label } */
 export const READER_BACKGROUND_OPTIONS = [
@@ -94,17 +96,16 @@ export const TEXT_BRIGHTNESS_MIN = 20;
 export const TEXT_BRIGHTNESS_MAX = 100;
 export const TEXT_BRIGHTNESS_DEFAULT = 50;
 export const TEXT_BRIGHTNESS_STEP = 5;
-export const READING_HISTORY_MAX = 100;
-export const SAMPLE_READING_HISTORY_BOOK_ID = '7598540474529352729';
+
 export const GITHUB_ISSUES_URL = 'https://github.com/denniemok/fanqie-novel-reader/issues';
 export const GITHUB_REPO_URL = 'https://github.com/denniemok/fanqie-novel-reader';
 export const GITHUB_README_URL = 'https://github.com/denniemok/fanqie-novel-reader/blob/main/README.md';
+
 export const MAX_CONCURRENT_DOWNLOADS = 5;
 export const BATCH_COOLDOWN_MS = 5000;
 export const RETRY_DELAY_MS = 5000;
-export const TOAST_DURATION_MS = 2000;
 export const REQUEST_TIMEOUT_MS = 45000;
 export const RATE_LIMIT_RPM = 60;
 export const AUTO_BAN_DURATION_MINUTES = 10;
-export const MAX_ABSTRACT_LENGTH = 180;
-export const MOBILE_ABSTRACT_LENGTH = 45;
+
+export const TOAST_DURATION_MS = 2000;

@@ -1,4 +1,4 @@
-import { API_BASE_KEY, API_OPTIONS, REQUEST_TIMEOUT_MS, RATE_LIMIT_RPM } from '../utils/constants';
+import { API_SERVICE_KEY, API_OPTIONS, REQUEST_TIMEOUT_MS, RATE_LIMIT_RPM } from '../utils/constants';
 import { httpErrorFromResponse } from '../utils/errors';
 import { safeGetItem, safeSetItem, setLastReadChapter } from '../utils/storage';
 import { directoryCache, chapterCache, detailCache } from '../utils/cache';
@@ -6,15 +6,15 @@ import { directoryCache, chapterCache, detailCache } from '../utils/cache';
 /** Backend base URL (VITE_BACKEND_URL). */
 const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL ?? '').trim().replace(/\/$/, '');
 const API_TOKEN = import.meta.env.VITE_API_TOKEN ?? '';
-const DEFAULT_API_BASE = API_OPTIONS[0].value;
+const DEFAULT_API_SERVICE = API_OPTIONS[0].value;
 
-export function getApiBase() {
-  const raw = safeGetItem(API_BASE_KEY) || DEFAULT_API_BASE;
-  return API_OPTIONS.some((o) => o.value === raw) ? raw : DEFAULT_API_BASE;
+export function getApiService() {
+  const raw = safeGetItem(API_SERVICE_KEY) ?? safeGetItem('apiBase') ?? DEFAULT_API_SERVICE;
+  return API_OPTIONS.some((o) => o.value === raw) ? raw : DEFAULT_API_SERVICE;
 }
 
-export function setApiBase(apiId) {
-  safeSetItem(API_BASE_KEY, apiId);
+export function setApiService(apiId) {
+  safeSetItem(API_SERVICE_KEY, apiId);
 }
 
 function getApiUrl(path) {
@@ -33,7 +33,7 @@ function withApiAuthHeaders(options = {}) {
 }
 
 function buildProxyUrl(action, params) {
-  const api = getApiBase();
+  const api = getApiService();
   const q = new URLSearchParams({ api, action });
   Object.entries(params || {}).forEach(([k, v]) => {
     if (v != null && v !== '') q.set(k, String(v));

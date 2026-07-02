@@ -1,8 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { CirclePlus } from 'lucide-react';
 import { IconButton } from './IconButton';
-import { buildDiscoverUrl, isDiscoverPath } from '../../utils/navigation';
-import { PRIMARY_TAB_OTHERS } from '../discover/constants';
+import { buildDefaultDiscoverUrl, isDiscoverPath } from '../../utils/navigation';
 
 export const DISCOVER_BUTTON_TITLE = '新增書籍';
 
@@ -16,7 +15,7 @@ function DiscoverButton({ title = DISCOVER_BUTTON_TITLE, disabled: disabledProp 
       type="button"
       title={title}
       disabled={disabled}
-      onClick={() => navigate(buildDiscoverUrl(PRIMARY_TAB_OTHERS))}
+      onClick={() => navigate(buildDefaultDiscoverUrl())}
     >
       <CirclePlus size={20} strokeWidth={2.5} />
     </IconButton>

@@ -47,10 +47,10 @@ export const PRIMARY_ERROR_MESSAGES = {
 
 export function resolveDiscoverRoute(tab, section) {
   const fallback = {
-    activePrimary: PRIMARY_TAB_OTHERS,
+    activePrimary: PRIMARY_TAB_SEARCH,
     activeSecondary: null,
     secondaryTabs: [],
-    redirectTab: PRIMARY_TAB_OTHERS,
+    redirectTab: PRIMARY_TAB_SEARCH,
     redirectSection: null,
   };
 

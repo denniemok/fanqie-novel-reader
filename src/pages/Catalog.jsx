@@ -8,7 +8,7 @@ import PageWrapper from '../components/common/PageWrapper';
 import { useToast } from '../contexts/ToastContext';
 import TopBar from '../components/catalog/TopBar';
 import { TopBarOffset } from '../components/common/PageContent';
-import { getLastReadChapter, getSortOrder, setSortOrder, getUncachedItemIds } from '../utils/storage';
+import { getLastReadChapter, getCatalogSortDirection, setCatalogSortDirection, getUncachedItemIds } from '../utils/storage';
 import { runBookTxtExport } from '../utils/exportBookActions';
 import { useConversionMode } from '../hooks/useConversionMode';
 import { useBookLoader } from '../hooks/useBookLoader';
@@ -28,7 +28,7 @@ function Catalog() {
   const { error, bookInfo, loadBook } = useBookLoader(bookId);
   const { startDownloadAll, stopDownloadAll, isDownloadingAll, completedDownloads } = useDownloadManager();
   const { showToast } = useToast();
-  const [sortOrder, setSortOrderState] = useState(getSortOrder);
+  const [sortOrder, setSortOrderState] = useState(getCatalogSortDirection);
   const [conversionMode] = useConversionMode();
   const [, setCatalogRefresh] = useState(0);
   const [uncachedItemIds, setUncachedItemIds] = useState([]);
@@ -92,7 +92,7 @@ function Catalog() {
 
   const handleSortChange = () => {
     const next = sortOrder === 'ascending' ? 'descending' : 'ascending';
-    setSortOrder(next);
+    setCatalogSortDirection(next);
     setSortOrderState(next);
     navigate(buildCatalogUrl(bookId));
   };

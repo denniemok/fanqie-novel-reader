@@ -7,12 +7,15 @@ import CollectionModal from '../bookshelf/CollectionModal';
 import { useToast } from '../../contexts/ToastContext';
 import { formatErrorMessage } from '../../utils/errors';
 import {
-  getBookshelfViewMode,
-  setBookshelfViewMode,
+  getDiscoverViewMode,
+  setDiscoverViewMode,
   getDiscoverSort,
   setDiscoverSort,
   getDiscoverSortDirection,
   setDiscoverSortDirection,
+  getDiscoverFilterState,
+  setDiscoverFilterState,
+  setDiscoverActiveTab,
   getCollections,
   createCollection,
   addBooksToCollection,
@@ -29,6 +32,12 @@ import {
   resolveDiscoverRoute,
   SECONDARY_TABS_BY_PRIMARY,
 } from './constants';
+import {
+  bookMatchesFilters,
+  collectCategoriesFromItems,
+  extractDiscoverBookFilterMeta,
+  hasActiveBookFilters,
+} from '../../utils/bookFilters';
 import Section from './Section';
 import EmptyHint from '../common/EmptyHint';
 import Help from './Help';
@@ -58,8 +67,9 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
     ? buildDiscoverUrl(activePrimary, activeSecondary)
     : null;
 
+  const initialFilterState = getDiscoverFilterState();
   const [refreshKey, setRefreshKey] = useState(0);
-  const [viewMode, setViewModeState] = useState(getBookshelfViewMode);
+  const [viewMode, setViewModeState] = useState(getDiscoverViewMode);
   const [sortBy, setSortByState] = useState(getDiscoverSort);
   const [sortDirection, setSortDirectionState] = useState(getDiscoverSortDirection);
   const [searchInput, setSearchInput] = useState(submittedQuery);
@@ -67,6 +77,8 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
   const [collections, setCollections] = useState([]);
   const [allBookIds, setAllBookIds] = useState([]);
   const [newCollectionName, setNewCollectionName] = useState('');
+  const [bookFilters, setBookFilters] = useState(initialFilterState.filters);
+  const [filtersExpanded, setFiltersExpanded] = useState(initialFilterState.expanded);
 
   const reloadCollectionData = useCallback(async () => {
     const [cols, history] = await Promise.all([getCollections(), getReadingHistory()]);
@@ -91,18 +103,42 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
     setSearchInput(submittedQuery);
   }, [submittedQuery]);
 
+  useEffect(() => {
+    if (redirectTo || searchRedirectTo) return;
+    if (activePrimary === PRIMARY_TAB_OTHERS) return;
+    setDiscoverActiveTab({ primary: activePrimary, secondary: activeSecondary });
+  }, [activePrimary, activeSecondary, redirectTo, searchRedirectTo]);
+
+  useEffect(() => {
+    setDiscoverFilterState({ filters: bookFilters, expanded: filtersExpanded });
+  }, [bookFilters, filtersExpanded]);
+
+  const filterCategories = useMemo(
+    () => collectCategoriesFromItems(books, (book) => extractDiscoverBookFilterMeta(book)),
+    [books]
+  );
+
+  const hasActiveFilters = hasActiveBookFilters(bookFilters);
+  const filteredBooks = useMemo(() => {
+    if (!hasActiveFilters) return books;
+    return books.filter((book) => bookMatchesFilters(extractDiscoverBookFilterMeta(book), bookFilters));
+  }, [books, bookFilters, hasActiveFilters]);
+
   const handlePrimaryChange = (id) => {
     if (id === PRIMARY_TAB_OTHERS || id === PRIMARY_TAB_SEARCH) {
+      setDiscoverActiveTab({ primary: id, secondary: null });
       navigate(buildDiscoverUrl(id));
       return;
     }
     const tabs = SECONDARY_TABS_BY_PRIMARY[id] ?? [];
     const defaultId = DEFAULT_SECONDARY_BY_PRIMARY[id];
     const keepSection = tabs.some((t) => t.id === activeSecondary) ? activeSecondary : defaultId;
+    setDiscoverActiveTab({ primary: id, secondary: keepSection });
     navigate(buildDiscoverUrl(id, keepSection));
   };
 
   const handleSecondaryChange = (id) => {
+    setDiscoverActiveTab({ primary: activePrimary, secondary: id });
     navigate(buildDiscoverUrl(activePrimary, id));
   };
 
@@ -110,11 +146,13 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
     e.preventDefault();
     const query = searchInput.trim();
     if (!query || loading || query === submittedQuery) return;
+    setDiscoverActiveTab({ primary: PRIMARY_TAB_SEARCH, secondary: null });
     navigate(buildDiscoverUrl(PRIMARY_TAB_SEARCH, null, query));
   };
 
   const handleSearchClear = () => {
     setSearchInput('');
+    setDiscoverActiveTab({ primary: PRIMARY_TAB_SEARCH, secondary: null });
     navigate(buildDiscoverUrl(PRIMARY_TAB_SEARCH));
   };
 
@@ -125,7 +163,7 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
 
   const handleViewModeChange = (mode) => {
     setViewModeState(mode);
-    setBookshelfViewMode(mode);
+    setDiscoverViewMode(mode);
   };
 
   const handleSortChange = (next) => {
@@ -192,8 +230,8 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
   }, [newCollectionName, reloadCollectionData, showToast]);
 
   const sortedBooks = useMemo(
-    () => sortDiscoverBooks(books, sortBy, sortDirection),
-    [books, sortBy, sortDirection],
+    () => sortDiscoverBooks(filteredBooks, sortBy, sortDirection),
+    [filteredBooks, sortBy, sortDirection],
   );
 
   const bookCardProps = (book) => ({
@@ -244,6 +282,12 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
         onViewModeChange={handleViewModeChange}
         onSortChange={handleSortChange}
         onSortDirectionToggle={handleSortDirectionToggle}
+        filterCategories={filterCategories}
+        bookFilters={bookFilters}
+        onBookFiltersChange={setBookFilters}
+        filtersExpanded={filtersExpanded}
+        onFiltersExpandedChange={setFiltersExpanded}
+        conversionMode={conversionMode}
       />
 
       {activePrimary === PRIMARY_TAB_OTHERS && (
@@ -267,12 +311,16 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
         <EmptyHint>{error}</EmptyHint>
       )}
 
-      {showSearchContent && submittedQuery && !loading && !error && books.length === 0 && (
+      {showSearchContent && submittedQuery && !loading && !error && filteredBooks.length === 0 && (
         <EmptyHint>找不到相關書籍</EmptyHint>
       )}
 
       {showDiscoverContent && !loading && !error && books.length === 0 && (
         <EmptyHint>暫無書籍</EmptyHint>
+      )}
+
+      {showListContent && !loading && !error && books.length > 0 && filteredBooks.length === 0 && (
+        <EmptyHint>沒有符合的書籍</EmptyHint>
       )}
 
       {showListContent && !loading && !error && sortedBooks.length > 0 && (

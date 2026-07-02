@@ -14,7 +14,6 @@ import { useDownloadManager } from '../../contexts/DownloadManager';
 import { buildCatalogUrl, ROUTES } from '../../utils/navigation';
 import { formatErrorMessage } from '../../utils/errors';
 import { fetchBookDetailAndDirectory, getCachedOrFetchDirectory } from '../../utils/api-helpers';
-import { SAMPLE_READING_HISTORY_BOOK_ID } from '../../utils/constants';
 import {
   getReadingHistory,
   deleteBooksData,
@@ -27,6 +26,8 @@ import {
   setBookshelfSortDirection,
   getBookshelfActiveTab,
   setBookshelfActiveTab,
+  getBookshelfFilterState,
+  setBookshelfFilterState,
   getCollections,
   createCollection,
   deleteCollection,
@@ -43,6 +44,11 @@ import { resolveBookDisplay } from '../../utils/bookInfo';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 import { useBookshelfSortMeta } from '../../hooks/useBookshelfSortMeta';
 import { useBookshelfSearchMeta, bookMatchesBookshelfSearch } from '../../hooks/useBookshelfSearchMeta';
+import {
+  bookMatchesFilters,
+  collectCategoriesFromItems,
+  hasActiveBookFilters,
+} from '../../utils/bookFilters';
 import { ALL_TAB } from './constants';
 import { Wrapper, ReorderHint } from './styles';
 
@@ -66,7 +72,10 @@ function Content({ conversionMode = 'tw' }) {
   const [addToCollectionBookIds, setAddToCollectionBookIds] = useState(null);
   const [newCollectionName, setNewCollectionName] = useState('');
   const [showCollectionManagement, setShowCollectionManagement] = useState(false);
+  const initialFilterState = getBookshelfFilterState();
   const [searchQuery, setSearchQuery] = useState('');
+  const [bookFilters, setBookFilters] = useState(initialFilterState.filters);
+  const [filtersExpanded, setFiltersExpanded] = useState(initialFilterState.expanded);
   const [reorderMode, setReorderMode] = useState(false);
   const [settingsMode, setSettingsMode] = useState(false);
   const [selectedBookIds, setSelectedBookIds] = useState(() => new Set());
@@ -97,17 +106,12 @@ function Content({ conversionMode = 'tw' }) {
     reloadData();
   }, [refreshKey, reloadData]);
 
-  const isSampleOnly = readingHistory.length === 0;
-  const displayHistory = isSampleOnly
-    ? [{ bookId: SAMPLE_READING_HISTORY_BOOK_ID }]
-    : readingHistory;
-
   const activeCollection = activeTab !== ALL_TAB
     ? collections.find((c) => c.id === activeTab)
     : null;
 
   const displayBooks = activeTab === ALL_TAB
-    ? displayHistory
+    ? readingHistory
     : (activeCollection?.bookIds ?? []).map((bookId) => ({ bookId }));
 
   const bookIds = useMemo(() => displayBooks.map(({ bookId }) => bookId), [displayBooks]);
@@ -123,13 +127,35 @@ function Content({ conversionMode = 'tw' }) {
   );
   const searchMetaMap = useBookshelfSearchMeta(bookIds, searchMetaRefreshKey);
 
+  const filterCategories = useMemo(
+    () => collectCategoriesFromItems(displayBooks, ({ bookId }) => searchMetaMap[bookId]),
+    [displayBooks, searchMetaMap]
+  );
+
   const hasSearch = Boolean(searchQuery.trim());
+  const hasActiveFilters = hasActiveBookFilters(bookFilters);
   const booksForDisplay = useMemo(() => {
-    if (!hasSearch) return sortedDisplayBooks;
-    return sortedDisplayBooks.filter(({ bookId }) =>
-      bookMatchesBookshelfSearch(searchMetaMap[bookId], bookId, searchQuery, conversionMode)
-    );
-  }, [sortedDisplayBooks, searchQuery, searchMetaMap, conversionMode, hasSearch]);
+    let result = sortedDisplayBooks;
+    if (hasSearch) {
+      result = result.filter(({ bookId }) =>
+        bookMatchesBookshelfSearch(searchMetaMap[bookId], bookId, searchQuery, conversionMode)
+      );
+    }
+    if (hasActiveFilters) {
+      result = result.filter(({ bookId }) =>
+        bookMatchesFilters(searchMetaMap[bookId], bookFilters)
+      );
+    }
+    return result;
+  }, [
+    sortedDisplayBooks,
+    searchQuery,
+    searchMetaMap,
+    conversionMode,
+    hasSearch,
+    hasActiveFilters,
+    bookFilters,
+  ]);
 
   const selectableBookIds = useMemo(
     () => booksForDisplay.map(({ bookId }) => bookId),
@@ -215,8 +241,12 @@ function Content({ conversionMode = 'tw' }) {
   }, [activeTab]);
 
   useEffect(() => {
-    if (hasSearch) setReorderMode(false);
-  }, [hasSearch]);
+    if (hasSearch || hasActiveFilters) setReorderMode(false);
+  }, [hasSearch, hasActiveFilters]);
+
+  useEffect(() => {
+    setBookshelfFilterState({ filters: bookFilters, expanded: filtersExpanded });
+  }, [bookFilters, filtersExpanded]);
 
   const handleHistoryReorder = useCallback(async (fromIndex, toIndex) => {
     const scrollY = window.scrollY;
@@ -515,7 +545,7 @@ function Content({ conversionMode = 'tw' }) {
     setBookshelfActiveTab(activeTab);
   }, [activeTab]);
 
-  const canReorder = sortBy === 'manual' && (activeTab !== ALL_TAB || !isSampleOnly);
+  const canReorder = sortBy === 'manual' && (activeTab !== ALL_TAB || readingHistory.length > 0);
 
   useEffect(() => {
     if (!canReorder) setReorderMode(false);
@@ -550,12 +580,19 @@ function Content({ conversionMode = 'tw' }) {
             canReorder={canReorder}
             reorderMode={reorderMode}
             hasSearch={hasSearch}
+            hasActiveFilters={hasActiveFilters}
             onReorderModeToggle={handleReorderModeToggle}
             settingsMode={settingsMode}
             onSettingsModeToggle={handleSettingsModeToggle}
             viewMode={viewMode}
             onViewModeChange={handleViewModeChange}
             navigate={navigate}
+            filterCategories={filterCategories}
+            bookFilters={bookFilters}
+            onBookFiltersChange={setBookFilters}
+            filtersExpanded={filtersExpanded}
+            onFiltersExpandedChange={setFiltersExpanded}
+            conversionMode={conversionMode}
           />
 
           {reorderMode && canReorder && (
@@ -592,7 +629,6 @@ function Content({ conversionMode = 'tw' }) {
             onBookDelete={handleBookDelete}
             onBookAddToCollection={handleAddToCollection}
             onBookDownload={handleBookDownload}
-            isSampleOnly={isSampleOnly}
           />
 
           {manageBarVisible && (

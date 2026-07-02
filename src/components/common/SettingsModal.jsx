@@ -14,7 +14,6 @@ import {
   API_OPTIONS,
   BOOK_DISPLAY_VARIANT_OPTIONS,
   ZH_CONVERSION_OPTIONS,
-  API_STATUS_MENU_LABEL,
 } from '../../utils/constants';
 import { ROUTES } from '../../utils/navigation';
 
@@ -195,7 +194,7 @@ function SettingsModal({ onClose }) {
             }}
           >
             <Activity size={16} strokeWidth={2.5} aria-hidden />
-            {API_STATUS_MENU_LABEL}
+            API 狀態
           </StatusLink>
         </Section>
 
