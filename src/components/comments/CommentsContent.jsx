@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 import { TopBarOffset } from '../layout/PageContent';
+import EmptyHint from '../ui/EmptyHint';
 import BookInfo from '../book/BookInfo';
 import CommentsActionBar from './CommentsActionBar';
 import CommentThread from './CommentThread';
@@ -35,7 +36,8 @@ function CommentStatsHeading({ commentCnt, convertedContext }) {
   return (
     <SectionTitle>
       {commentCnt > 0 && <span>共 {commentCnt} 則評論</span>}
-      {convertedContext && <span> · {convertedContext}</span>}
+      {commentCnt > 0 && convertedContext && <span> · </span>}
+      {convertedContext && <span>{convertedContext}</span>}
     </SectionTitle>
   );
 }
@@ -95,14 +97,6 @@ const PageInfo = styled.span`
   color: var(--text-color-secondary);
 `;
 
-const EmptyState = styled.p`
-  text-align: center;
-  color: var(--text-color-secondary);
-  font-size: 15px;
-  padding: 40px 24px;
-  margin: 0;
-`;
-
 function CommentsContent({
   bookId,
   bookInfo,
@@ -126,7 +120,7 @@ function CommentsContent({
       <Section>
         <CommentStatsHeading commentCnt={commentCnt} convertedContext={convertedContext} />
         {comments.length === 0 ? (
-          <EmptyState>暫無評論</EmptyState>
+          <EmptyHint>暫無評論</EmptyHint>
         ) : (
           <CommentList>
               {comments.map((item, idx) => (
