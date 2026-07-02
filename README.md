@@ -4,14 +4,14 @@
   <img src="https://img.shields.io/github/stars/denniemok/fanqie-novel-reader?style=for-the-badge&color=yellow" alt="Stars">
   <img src="https://img.shields.io/github/v/release/denniemok/fanqie-novel-reader?style=for-the-badge&color=blue" alt="Release">
   <img src="https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge" alt="License">
-  <img src="https://img.shields.io/badge/demo-fanqietc.pages.dev-orange.svg?style=for-the-badge" alt="Demo">
+  <img src="https://img.shields.io/badge/demo-fanqietc.com-orange.svg?style=for-the-badge" alt="Demo">
 </p>
 
 ### 🌟 專為繁體讀者打造的番茄小說閱讀器
 
 這是一款專為受夠廣告干擾、且追求高品質繁簡轉換的讀者所打造的極簡閱讀工具。
 
-藉由 OpenCC 詞彙級轉換，我們賦予每一行文字最道地的繁體語感；透過深度優化排版與字體，我們為同樣追求純粹的你，打造一個安靜、精緻且數據完全本地化的閱讀空間。
+藉由 OpenCC 詞彙級轉換，我們賦予每一行文字最道地的繁體語感。透過深度優化排版與字體，我們為同樣追求純粹的你，打造一個安靜、精緻且數據完全本地化的閱讀空間。
 
 ### 👉 **立即體驗**：[https://fanqietc.com](https://fanqietc.com)
 
@@ -38,44 +38,55 @@
 ## ✨ 核心優勢
 
 - **🔓 零門檻：** 無需註冊安裝，不受應用程式商店地域封鎖限制，網頁開啟即讀。
-- **🔤 專業繁簡轉換：** 提供詞彙級別精準轉換，修正生硬的字對字翻轉，尊重地域慣用語習慣。
+- **🔍 探索新書：** 內建搜尋、榜單與推薦，也可直接貼上網址或書籍 ID 開始閱讀。
+- **🔤 專業繁簡轉換：** 提供詞彙級別精準轉換，支援臺灣繁體、香港繁體與原文簡體三種模式。
 - **🌓 護眼深度優化：** 預設高品質暗黑模式，字體、背景與亮度均可微調，適合長時間沈浸閱讀。
 - **🚫 徹底零廣告：** 物理性過濾所有廣告與追蹤器，還你一個更純淨、更專注的閱讀空間。
-- **📦 下載與匯出：** 支援背景異步預載，並可將小說匯出為 TXT 格式，方便放入 Kindle、Kobo 等電子書閱讀器。
+- **📦 下載與匯出：** 支援背景異步預載，並可將小說匯出為 TXT 或 EPUB，方便放入 Kindle、Kobo 等電子書閱讀器。
+- **📡 API 狀態監控：** 即時檢測各鏡像源健康狀態，並可在設定中手動切換 API 來源。
 - **📱 PWA 支援：** 可安裝至手機桌面或電腦，享受類原生 App 的流暢操作與離線閱讀功能。
-- **💾 本地數據隱私：** 數據不經過伺服器，皆儲存在您的設備中，隱私百分之百由您掌控。
+- **💾 本地數據隱私：** 閱讀紀錄與下載章節皆儲存在您的設備中，隱私百分之百由您掌控。
 
 <br>
 
 ## 🧩 快速上手
 
-無需複雜操作，只需三步即可開始閱讀：
-1. **複製網址**：在 [番茄小說網](https://fanqienovel.com) 或 [Tomato MTL](https://tomatomtl.com) 找到喜歡的小說，複製瀏覽器網址。
-2. **直接貼上**：將網址直接貼入本工具的輸入框，點擊「開始閱讀」。
-3. **享受閱讀**：系統自動解析 ID 並載入，歷史紀錄會自動保存於本地。
+無需複雜操作，以下任一方式即可開始閱讀：
 
-> [!TIP]
-> 你也可以只輸入書籍 ID (例如 `7234567890`)，系統同樣能秒速識別。
+**方式一：探索新書**
+1. 從首頁進入「新書」頁面。
+2. 透過搜尋、榜單或推薦找到感興趣的小說，點擊即可開讀。
+
+**方式二：貼上網址或 ID**
+1. 在 [番茄小說網](https://fanqienovel.com) 或 [Tomato MTL](https://tomatomtl.com) 複製小說網址（或記下書籍 ID）。
+2. 進入「新書」→「其他」，將網址或 ID 貼入輸入框，點擊「開始閱讀」。
+
+閱讀紀錄會自動保存於書架。
 
 <br>
 
 ## 🚢 部署與開發
 
 > [!CAUTION]
-> 為確保第三方 API 的服務安全與穩定，後端與 API 調用邏輯暫不公開。敬請見諒！
+> 為確保第三方 API 的服務安全與穩定，後端代理服務暫不公開。前端可獨立構建部署，但需自行配置可用的後端位址。
 
-本專案基於 **Vite + React** 構建。
+本專案基於 **Vite + React 18** 構建，需要 **Node.js ≥ 16**。
 
 ```bash
-# 本地開發
+# 安裝依賴
 npm install
-npm run dev # 開啟 http://localhost:5173 即可
 
-# 構建生產版本 (靜態檔案位於 dist/)
+# 複製環境變數範本並填入後端位址
+cp .env.example .env
+
+# 本地開發（預設 http://localhost:5173）
+npm run dev
+
+# 構建生產版本（靜態檔案位於 dist/）
 npm run build
 ```
 
-**技術細節**：受 [fanqienovel-book](https://github.com/kailous/fanqienovel-book) 啟發重寫，應用會透過後端中轉請求調用 [番茄小說 API](https://github.com/POf-L/Fanqie-novel-Downloader) 進行資料檢索與處理。
+**技術細節**：受 [fanqienovel-book](https://github.com/kailous/fanqienovel-book) 啟發重寫。前端透過後端代理中轉請求，調用多個番茄小說 API 鏡像進行資料檢索與處理。繁簡轉換由 [OpenCC](https://github.com/BYVoid/OpenCC) 在前端完成。
 
 <br>
 
@@ -83,12 +94,18 @@ npm run build
 
 ```
 src/
-├── components/         # UI 元件 (book, catalog, chapter, etc.)
-├── contexts/           # 狀態管理 (下載, Toast)
-├── hooks/              # 自訂 Hooks
-├── pages/              # 頁面元件
-├── services/           # API 請求
-└── utils/              # 工具函式
+├── components/         # UI 元件
+│   ├── bookshelf/      # 書架與收藏
+│   ├── catalog/        # 章節目錄
+│   ├── chapter/        # 閱讀器
+│   ├── discover/       # 新書探索（搜尋、榜單、推薦）
+│   ├── settings/       # 設定面板
+│   └── …
+├── contexts/           # React Context（主題、下載、轉換模式等）
+├── hooks/              # 自訂 Hooks（api、book、discover 等）
+├── pages/              # 路由頁面
+├── services/           # API 與探索服務
+└── utils/              # 工具函式（匯出、快取、繁簡轉換等）
 ```
 
 <br>
