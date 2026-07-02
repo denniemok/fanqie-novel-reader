@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { GripHorizontal, Loader2, Check } from 'lucide-react';
 import { useBookLoader } from '../../hooks/useBookLoader';
 import { useErrorToast } from '../../hooks/useErrorToast';
 import { useConvertedText } from '../../hooks/useConvertedText';
+import { resolveBookDisplay } from '../../utils/bookInfo';
+import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 import { shimmerStyle } from '../../utils/styled/animations';
 import { getCoverMetaEntries } from '../../utils/coverMetaLines';
 import { CardLoadingOverlay } from '../common/CardActionButton';
@@ -263,12 +265,12 @@ function GridCard({
   });
   const isRefreshing = hookRefreshing || bulkRefreshing;
   useErrorToast(error);
+  const { variant } = useBookDisplayVariant();
 
   const bookInfoData = bookInfo?.book_info || bookInfo || {};
+  const { book_name, thumb_url } = resolveBookDisplay(bookInfoData, variant, bookId);
   const {
-    book_name,
     author,
-    thumb_url,
     word_number,
     score,
     last_publish_time,
@@ -281,6 +283,10 @@ function GridCard({
   const convertedCategory = useConvertedText(category, conversionMode);
   const chapter_count = bookInfo?.chapter_count ?? null;
   const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [thumb_url, variant]);
 
   const coverMetaLines = getCoverMetaEntries(sortBy, {
     score,

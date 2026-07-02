@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Modal from './Modal';
 import { truncateText, MAX_ABSTRACT_LENGTH, MOBILE_ABSTRACT_LENGTH } from '../../utils/text';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
+import { resolveBookDisplay } from '../../utils/bookInfo';
+import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 
 const InfoWrapper = styled.div`
   display: flex;
@@ -372,10 +374,16 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
   const [showFullAbstract, setShowFullAbstract] = useState(false);
   const [imgError, setImgError] = useState(false);
   const isMobile = useMediaQuery('(max-width: 480px)');
+  const { variant: displayVariant } = useBookDisplayVariant();
   
   const bookInfoData = bookInfo?.book_info || bookInfo || {};
-  const { book_name, author, thumb_url, abstract, tags, score, category, sub_info, word_number, creation_status, last_publish_time } = bookInfoData;
+  const { book_name, thumb_url } = resolveBookDisplay(bookInfoData, displayVariant);
+  const { author, abstract, tags, score, category, sub_info, word_number, creation_status, last_publish_time } = bookInfoData;
   const chapter_count = bookInfo?.chapter_count ?? null;
+
+  useEffect(() => {
+    setImgError(false);
+  }, [thumb_url, displayVariant]);
 
   const convertedAbstract = useConvertedText(abstract, conversionMode);
   const convertedBookName = useConvertedText(book_name, conversionMode);

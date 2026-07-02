@@ -16,12 +16,37 @@ function formatWordNumber(val) {
   return n >= 10000 ? `${(n / 10000).toFixed(1)}萬` : String(n);
 }
 
+function pickFirstNonEmpty(...values) {
+  return values.find((value) => value != null && value !== '') ?? null;
+}
+
+/** Resolve display title and cover from raw book fields for the chosen variant. */
+export function resolveBookDisplay(bookInfo, variant = 'new', bookId = null) {
+  const data = bookInfo?.book_info || bookInfo || {};
+  const id = bookId || data.book_id || bookInfo?.book_id || null;
+  const nameFallback = id ? `書籍 ${id.slice(0, 8)}` : null;
+
+  if (variant === 'old') {
+    return {
+      book_name: pickFirstNonEmpty(data.original_book_name, data.book_name, nameFallback),
+      thumb_url: pickFirstNonEmpty(data.audio_thumb_uri, data.thumb_url),
+    };
+  }
+
+  return {
+    book_name: pickFirstNonEmpty(data.book_name, data.original_book_name, nameFallback),
+    thumb_url: pickFirstNonEmpty(data.thumb_url, data.audio_thumb_uri),
+  };
+}
+
 function normalizeBookMetaFields(bookInfo, bookId) {
   return {
-    book_name: bookInfo.book_name || bookInfo.original_book_name || `書籍 ${(bookId || '').slice(0, 8)}`,
+    book_name: bookInfo.book_name || null,
+    original_book_name: bookInfo.original_book_name || null,
     author: bookInfo.author || '未知作者',
     abstract: bookInfo.abstract || null,
-    thumb_url: bookInfo.thumb_url || bookInfo.audio_thumb_uri || null,
+    thumb_url: bookInfo.thumb_url || null,
+    audio_thumb_uri: bookInfo.audio_thumb_uri || null,
     category: bookInfo.category || null,
     score: (bookInfo.score === '0') ? null : (bookInfo.score || null),
     tags: bookInfo.tags || null,

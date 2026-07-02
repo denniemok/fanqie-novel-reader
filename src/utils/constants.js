@@ -26,6 +26,7 @@ export const FONT_FAMILY_KEY = 'fontFamily';
 export const TEXT_BRIGHTNESS_KEY = 'textBrightness';
 export const READER_BACKGROUND_KEY = 'readerBackground';
 export const TRADITIONAL_CHINESE_KEY = 'traditionalChinese';
+export const BOOK_DISPLAY_VARIANT_KEY = 'fanqie-bookDisplayVariant';
 export const THEME_KEY = 'fanqie-theme';
 
 /** Reader background presets: { value: hex, label } */
@@ -49,6 +50,12 @@ export const ZH_CONVERSION_OPTIONS = [
   { value: 'original', label: '原文簡體' },
   { value: 'tw', label: '臺灣繁體' },
   { value: 'hk', label: '香港繁體' },
+];
+
+/** Book metadata display: new (current) vs old (original) title and cover */
+export const BOOK_DISPLAY_VARIANT_OPTIONS = [
+  { value: 'new', label: '最新書名及封面' },
+  { value: 'old', label: '原有書名及封面' },
 ];
 
 /** API sources: { value: opaque ID (used with proxy), label: display name } - real URLs live in proxy only */

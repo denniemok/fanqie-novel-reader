@@ -18,6 +18,7 @@ import {
   FONT_FAMILY_KEY,
   CHINESE_FONTS,
   TRADITIONAL_CHINESE_KEY,
+  BOOK_DISPLAY_VARIANT_KEY,
   TEXT_BRIGHTNESS_KEY,
   TEXT_BRIGHTNESS_MIN,
   TEXT_BRIGHTNESS_MAX,
@@ -155,6 +156,31 @@ export async function setLastReadChapter(bookId, itemId) {
   return saveReadingHistory(history.slice(0, READING_HISTORY_MAX));
 }
 
+/** Add books to reading history (「全部」) without requiring a chapter read. */
+export async function addBooksToReadingHistory(bookIds) {
+  const bids = [...new Set((Array.isArray(bookIds) ? bookIds : [bookIds]).map(String).filter(Boolean))];
+  if (!bids.length) return false;
+  const history = (await getReadingHistory()).map((e) => ({ ...e }));
+  const now = Date.now();
+  for (const bid of bids) {
+    const idx = history.findIndex((e) => e.bookId === bid);
+    if (idx >= 0) {
+      history[idx] = { ...history[idx], lastReadAt: now };
+    } else {
+      history.unshift({ bookId: bid, itemId: null, lastReadAt: now });
+    }
+  }
+  return saveReadingHistory(history.slice(0, READING_HISTORY_MAX));
+}
+
+/** Remove books from reading history only; cached data is kept. */
+export async function removeBooksFromReadingHistory(bookIds) {
+  const bidSet = new Set((Array.isArray(bookIds) ? bookIds : [bookIds]).map(String).filter(Boolean));
+  if (!bidSet.size) return false;
+  const history = (await getReadingHistory()).filter((e) => !bidSet.has(e.bookId));
+  return saveReadingHistory(history);
+}
+
 /** Move entry from one index to another; order is user-controlled, not time-based. */
 export async function reorderReadingHistory(fromIndex, toIndex) {
   const history = (await getReadingHistory()).map((e) => ({ ...e }));
@@ -224,6 +250,17 @@ export function getConversionMode() {
 export function setConversionMode(mode) {
   const valid = mode === 'original' || mode === 'tw' || mode === 'hk';
   return valid ? safeSetItem(TRADITIONAL_CHINESE_KEY, mode) : false;
+}
+
+/** @returns {'new'|'old'} Default: 'new' */
+export function getBookDisplayVariant() {
+  const raw = safeGetItem(BOOK_DISPLAY_VARIANT_KEY);
+  return raw === 'old' ? 'old' : 'new';
+}
+
+export function setBookDisplayVariant(variant) {
+  const valid = variant === 'new' || variant === 'old';
+  return valid ? safeSetItem(BOOK_DISPLAY_VARIANT_KEY, variant) : false;
 }
 
 /** @returns {'ascending'|'descending'} Default: 'ascending' */

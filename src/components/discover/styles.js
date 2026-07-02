@@ -119,10 +119,9 @@ export const SecondaryTab = styled(Tab)`
 
 export const ListCard = styled.div`
   display: flex;
+  flex-direction: column;
   width: 100%;
   box-sizing: border-box;
-  padding: 20px;
-  gap: 20px;
   border-radius: var(--border-radius-sm);
   background: var(--card-surface);
   border: var(--retro-border-width) solid var(--border-color);
@@ -130,11 +129,7 @@ export const ListCard = styled.div`
   transition: var(--transition-default);
   overflow: hidden;
   box-shadow: var(--retro-shadow);
-
-  @media (max-width: 480px) {
-    padding: 16px;
-    gap: 16px;
-  }
+  position: relative;
 
   &:hover {
     border-color: var(--accent-color);
@@ -147,6 +142,44 @@ export const ListCard = styled.div`
     transform: translate(1px, 1px);
     box-shadow: none;
   }
+`;
+
+export const ListCardBody = styled.div`
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  gap: 20px;
+  flex: 1;
+  min-width: 0;
+
+  @media (max-width: 480px) {
+    padding: 16px;
+    gap: 16px;
+  }
+`;
+
+export const ListCardActionOverlay = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 11;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  max-width: calc(100% - 20px);
+  pointer-events: auto;
+`;
+
+export const ListCardActionFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-top: 1px solid var(--border-color);
+  background: var(--background-color);
+  z-index: 11;
 `;
 
 export const ListSkeletonCard = styled.div`

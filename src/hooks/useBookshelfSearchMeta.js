@@ -4,8 +4,9 @@ import { maybeConvert } from '../utils/zh-convert';
 
 export function extractBookshelfSearchMeta(detail) {
   const d = detail || {};
+  const titles = [d.book_name, d.original_book_name].filter(Boolean);
   return {
-    title: d.book_name || d.original_book_name || '',
+    title: titles.join(' '),
     author: d.author || '',
   };
 }

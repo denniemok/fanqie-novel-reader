@@ -1,8 +1,11 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams, useSearchParams, Navigate } from 'react-router-dom';
 import { buildCatalogUrl, buildDiscoverUrl } from '../../utils/navigation';
 import { sortDiscoverBooks } from '../../utils/bookshelfSort';
 import { GridLayout, ListLayout } from '../bookshelf/styles';
+import CollectionModal from '../bookshelf/CollectionModal';
+import { useToast } from '../../contexts/ToastContext';
+import { formatErrorMessage } from '../../utils/errors';
 import {
   getBookshelfViewMode,
   setBookshelfViewMode,
@@ -10,6 +13,13 @@ import {
   setDiscoverSort,
   getDiscoverSortDirection,
   setDiscoverSortDirection,
+  getCollections,
+  createCollection,
+  addBooksToCollection,
+  removeBooksFromCollection,
+  getReadingHistory,
+  addBooksToReadingHistory,
+  removeBooksFromReadingHistory,
 } from '../../utils/storage';
 import { useDiscoverBookList } from '../../hooks/useDiscoverBookList';
 import {
@@ -31,6 +41,7 @@ import { OthersPanel } from './styles';
 
 function DiscoverBooks({ conversionMode = 'tw' }) {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const { tab, section } = useParams();
   const [searchParams] = useSearchParams();
   const {
@@ -52,6 +63,20 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
   const [sortBy, setSortByState] = useState(getDiscoverSort);
   const [sortDirection, setSortDirectionState] = useState(getDiscoverSortDirection);
   const [searchInput, setSearchInput] = useState(submittedQuery);
+  const [addToCollectionBookIds, setAddToCollectionBookIds] = useState(null);
+  const [collections, setCollections] = useState([]);
+  const [allBookIds, setAllBookIds] = useState([]);
+  const [newCollectionName, setNewCollectionName] = useState('');
+
+  const reloadCollectionData = useCallback(async () => {
+    const [cols, history] = await Promise.all([getCollections(), getReadingHistory()]);
+    setCollections(cols);
+    setAllBookIds(history.map((e) => e.bookId));
+  }, []);
+
+  useEffect(() => {
+    void reloadCollectionData();
+  }, [reloadCollectionData]);
 
   const skipFetch = Boolean(redirectTo || searchRedirectTo);
   const { books, loading, error } = useDiscoverBookList({
@@ -114,6 +139,58 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
     setDiscoverSortDirection(next);
   };
 
+  const handleAddToCollection = useCallback((bookId) => {
+    const id = String(bookId);
+    setAddToCollectionBookIds([id]);
+    setNewCollectionName('');
+    const inAnyCollection = collections.some((col) => col.bookIds.includes(id));
+    if (inAnyCollection) {
+      void addBooksToReadingHistory([id]).then(reloadCollectionData);
+    }
+  }, [collections, reloadCollectionData]);
+
+  const handleToggleBooksInCollection = useCallback(async (collectionId, bookIds, shouldInclude) => {
+    const ids = (Array.isArray(bookIds) ? bookIds : [bookIds]).map(String);
+    try {
+      if (shouldInclude) {
+        await Promise.all([
+          addBooksToCollection(collectionId, ids),
+          addBooksToReadingHistory(ids),
+        ]);
+      } else {
+        await removeBooksFromCollection(collectionId, ids);
+      }
+      await reloadCollectionData();
+    } catch (err) {
+      showToast(formatErrorMessage(err, '更新收藏夾失敗，請稍後再試。'));
+    }
+  }, [reloadCollectionData, showToast]);
+
+  const handleToggleAll = useCallback(async (bookIds, shouldInclude) => {
+    const ids = (Array.isArray(bookIds) ? bookIds : [bookIds]).map(String);
+    try {
+      if (shouldInclude) {
+        await addBooksToReadingHistory(ids);
+      } else {
+        await removeBooksFromReadingHistory(ids);
+      }
+      await reloadCollectionData();
+    } catch (err) {
+      showToast(formatErrorMessage(err, '更新「全部」失敗，請稍後再試。'));
+    }
+  }, [reloadCollectionData, showToast]);
+
+  const handleCreateCollectionFromModal = useCallback(async () => {
+    if (!newCollectionName.trim()) return;
+    try {
+      await createCollection(newCollectionName.trim());
+      await reloadCollectionData();
+      setNewCollectionName('');
+    } catch (err) {
+      showToast(formatErrorMessage(err, '建立收藏夾失敗，請稍後再試。'));
+    }
+  }, [newCollectionName, reloadCollectionData, showToast]);
+
   const sortedBooks = useMemo(
     () => sortDiscoverBooks(books, sortBy, sortDirection),
     [books, sortBy, sortDirection],
@@ -124,6 +201,11 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
     conversionMode,
     sortBy,
     onClick: () => navigate(buildCatalogUrl(book.book_id)),
+  });
+
+  const bookListCardProps = (book) => ({
+    ...bookCardProps(book),
+    onAddToCollection: handleAddToCollection,
   });
 
   if (redirectTo) {
@@ -197,7 +279,7 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
         viewMode === 'list' ? (
           <ListLayout>
             {sortedBooks.map((book) => (
-              <DiscoverBookListCard key={book.book_id} {...bookCardProps(book)} />
+              <DiscoverBookListCard key={book.book_id} {...bookListCardProps(book)} />
             ))}
           </ListLayout>
         ) : (
@@ -207,6 +289,21 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
             ))}
           </GridLayout>
         )
+      )}
+
+      {addToCollectionBookIds && (
+        <CollectionModal
+          bookIds={addToCollectionBookIds}
+          collections={collections}
+          newCollectionName={newCollectionName}
+          onNewCollectionNameChange={setNewCollectionName}
+          onClose={() => setAddToCollectionBookIds(null)}
+          onToggleBooks={handleToggleBooksInCollection}
+          onCreateCollection={handleCreateCollectionFromModal}
+          showAllOption
+          allBookIds={allBookIds}
+          onToggleAll={handleToggleAll}
+        />
       )}
     </Section>
   );

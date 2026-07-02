@@ -5,7 +5,8 @@ import { Loader2, Download as DownloadIcon } from 'lucide-react';
 import { useDownloadManager } from '../../contexts/DownloadManager';
 import { useToast } from '../../contexts/ToastContext';
 import { detailCache } from '../../utils/cache';
-import { isChapterCached } from '../../utils/storage';
+import { resolveBookDisplay } from '../../utils/bookInfo';
+import { isChapterCached, getBookDisplayVariant } from '../../utils/storage';
 import { buildCatalogUrl } from '../../utils/navigation';
 import { runBookTxtExport } from '../../utils/exportBookActions';
 import { useConvertedText } from '../../hooks/useConvertedText';
@@ -179,7 +180,8 @@ function Progress({ conversionMode = 'tw' }) {
     let cancelled = false;
     detailCache.get(downloadAllBookId).then((detail) => {
       if (!cancelled) {
-        setBookTitle(detail?.book_name || detail?.original_book_name || downloadAllBookId);
+        const { book_name: title } = resolveBookDisplay(detail, getBookDisplayVariant(), downloadAllBookId);
+        setBookTitle(title || downloadAllBookId);
       }
     });
     return () => {

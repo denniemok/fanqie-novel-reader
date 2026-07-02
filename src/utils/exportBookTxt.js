@@ -4,7 +4,8 @@ import { maybeConvert } from './zh-convert';
 import { getChapterTitle } from './chapter-helpers';
 import { addBlankLine } from './text';
 import { sortChaptersByNumber } from './sorting';
-import { getConversionMode } from './storage';
+import { getConversionMode, getBookDisplayVariant } from './storage';
+import { resolveBookDisplay } from './bookInfo';
 
 /** Shown when export runs but no chapters are cached locally. */
 export const EXPORT_NO_CACHED_CHAPTERS_MSG = '沒有已下載的章節，請先下載後再匯出。';
@@ -24,9 +25,11 @@ export async function exportBookToTxt({ bookId, bookInfo, itemDataList }) {
   if (!bookId || !bookInfo || !itemDataList?.length) return { exportedCount: 0 };
 
   const conversionMode = getConversionMode();
+  const displayVariant = getBookDisplayVariant();
 
   const bookInfoData = bookInfo?.book_info || bookInfo;
-  const bookName = maybeConvert(bookInfoData.book_name || bookInfoData.original_book_name, conversionMode);
+  const { book_name: bookNameRaw } = resolveBookDisplay(bookInfoData, displayVariant, bookId);
+  const bookName = maybeConvert(bookNameRaw, conversionMode);
   const author = maybeConvert(bookInfoData.author, conversionMode);
   const abstract = maybeConvert(bookInfoData.abstract, conversionMode);
 

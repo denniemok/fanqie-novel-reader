@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useConvertedText } from '../../hooks/useConvertedText';
-import { normalizeDiscoverBookInfo } from '../../utils/bookInfo';
+import { normalizeDiscoverBookInfo, resolveBookDisplay } from '../../utils/bookInfo';
+import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 import { getCoverMetaEntries } from '../../utils/coverMetaLines';
 import { cardKeyDownHandler } from '../../utils/cardInteraction';
 import {
@@ -17,11 +18,17 @@ import {
 
 function DiscoverBookCard({ book, conversionMode, onClick, sortBy = 'default' }) {
   const info = normalizeDiscoverBookInfo(book);
-  const convertedName = useConvertedText(info.book_name, conversionMode);
+  const { variant } = useBookDisplayVariant();
+  const { book_name, thumb_url } = resolveBookDisplay(info, variant, book?.book_id);
+  const convertedName = useConvertedText(book_name, conversionMode);
   const convertedAuthor = useConvertedText(info.author, conversionMode);
   const convertedCategory = useConvertedText(info.category, conversionMode);
   const convertedWordCount = useConvertedText(info.word_number, conversionMode);
   const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [thumb_url, variant]);
 
   const coverMetaLines = getCoverMetaEntries(sortBy, {
     score: info.score,
@@ -40,8 +47,8 @@ function DiscoverBookCard({ book, conversionMode, onClick, sortBy = 'default' })
       onKeyDown={cardKeyDownHandler(onClick)}
     >
       <CoverWrapper>
-        {info.thumb_url && !imgError ? (
-          <CoverImg src={info.thumb_url} alt="" loading="lazy" onError={() => setImgError(true)} />
+        {thumb_url && !imgError ? (
+          <CoverImg src={thumb_url} alt="" loading="lazy" onError={() => setImgError(true)} />
         ) : (
           <CoverPlaceholder>無封面</CoverPlaceholder>
         )}

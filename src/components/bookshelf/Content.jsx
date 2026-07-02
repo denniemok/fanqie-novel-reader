@@ -39,6 +39,8 @@ import {
 } from '../../utils/storage';
 import { sortBookshelfItems } from '../../utils/bookshelfSort';
 import { maybeConvert } from '../../utils/zh-convert';
+import { resolveBookDisplay } from '../../utils/bookInfo';
+import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 import { useBookshelfSortMeta } from '../../hooks/useBookshelfSortMeta';
 import { useBookshelfSearchMeta, bookMatchesBookshelfSearch } from '../../hooks/useBookshelfSearchMeta';
 import { ALL_TAB } from './constants';
@@ -50,6 +52,7 @@ function Content({ conversionMode = 'tw' }) {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { startDownloadAll } = useDownloadManager();
+  const { variant } = useBookDisplayVariant();
 
   const [activeTab, setActiveTab] = useState(getBookshelfActiveTab);
   const [viewMode, setViewModeState] = useState(getBookshelfViewMode);
@@ -289,7 +292,7 @@ function Content({ conversionMode = 'tw' }) {
 
   const handleDeleteBook = useCallback((e, bookId, bookInfo) => {
     e.stopPropagation();
-    const bookName = bookInfo?.book_info?.book_name;
+    const { book_name: bookName } = resolveBookDisplay(bookInfo, variant, bookId);
     const convertedName = maybeConvert(bookName, conversionMode) || bookId;
     setConfirmDialog({
       title: '刪除書籍',
@@ -306,12 +309,12 @@ function Content({ conversionMode = 'tw' }) {
         setRefreshKey((k) => k + 1);
       },
     });
-  }, [conversionMode, clearBookRefreshErrors]);
+  }, [conversionMode, variant, clearBookRefreshErrors]);
 
   const handleRemoveFromCollection = useCallback((e, bookId, bookInfo) => {
     e.stopPropagation();
     if (!activeCollection) return;
-    const bookName = bookInfo?.book_info?.book_name;
+    const { book_name: bookName } = resolveBookDisplay(bookInfo, variant, bookId);
     const convertedName = maybeConvert(bookName, conversionMode) || bookId;
     setConfirmDialog({
       title: '移除書籍',
@@ -328,7 +331,7 @@ function Content({ conversionMode = 'tw' }) {
         await reloadDataKeepingScroll();
       },
     });
-  }, [activeCollection, activeTab, conversionMode, clearBookRefreshErrors, reloadDataKeepingScroll]);
+  }, [activeCollection, activeTab, conversionMode, variant, clearBookRefreshErrors, reloadDataKeepingScroll]);
 
   const handleBookDelete = activeTab === ALL_TAB ? handleDeleteBook : handleRemoveFromCollection;
 

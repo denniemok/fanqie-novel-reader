@@ -9,9 +9,12 @@ import CatalogButton from '../common/CatalogButton';
 import ThemeToggle from '../common/ThemeToggle';
 import ApiDropdown from '../common/ApiDropdown';
 import LangDropdown from '../common/LangDropdown';
+import BookVariantDropdown from '../common/BookVariantDropdown';
 import { IconButton } from '../common/IconButton';
 import IconDropdown from '../common/IconDropdown';
 import { FONT_SIZE_MIN, FONT_SIZE_MAX, TEXT_BRIGHTNESS_MIN, TEXT_BRIGHTNESS_MAX, CHINESE_FONTS, READER_BACKGROUND_OPTIONS } from '../../utils/constants';
+import { resolveBookDisplay } from '../../utils/bookInfo';
+import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 
 const TopBarWrapper = styled.div`
   display: flex;
@@ -113,9 +116,11 @@ const ProgressText = styled.div`
 `;
 
 function TopBar({ chapterData, bookInfo, bookId, itemId, fontSize, onFontSizeChange, fontFamily, onFontFamilyChange, textBrightness, onTextBrightnessChange, readerBackground, onReaderBackgroundChange, conversionMode = 'tw', onConversionModeChange, onRefresh }) {
+  const { variant, setVariant } = useBookDisplayVariant();
   const novelData = chapterData?.novel_data;
   const convertedTitle = useConvertedText(novelData?.title, conversionMode);
-  const convertedBookName = useConvertedText(bookInfo?.book_info?.book_name, conversionMode);
+  const { book_name: displayBookName } = resolveBookDisplay(bookInfo, variant, bookId);
+  const convertedBookName = useConvertedText(displayBookName, conversionMode);
 
   if (!chapterData) return null;
 
@@ -197,6 +202,7 @@ function TopBar({ chapterData, bookInfo, bookId, itemId, fontSize, onFontSizeCha
               />
             )}
             <ApiDropdown />
+            <BookVariantDropdown value={variant} onChange={setVariant} />
             {onConversionModeChange && (
               <LangDropdown
                 value={conversionMode}

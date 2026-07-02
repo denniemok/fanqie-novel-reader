@@ -21,13 +21,14 @@ const CollectionOption = styled.button`
   color: var(--text-color);
   font-size: 13px;
   font-family: inherit;
-  cursor: pointer;
+  cursor: ${(p) => (p.$locked ? 'default' : 'pointer')};
   text-align: left;
   transition: all 0.1s steps(2);
+  opacity: ${(p) => (p.$locked ? 0.92 : 1)};
 
   &:hover {
-    border-color: var(--accent-color);
-    background: var(--hover-background-color);
+    border-color: ${(p) => (p.$locked ? (p.$checked ? 'var(--accent-color)' : 'var(--border-color)') : 'var(--accent-color)')};
+    background: ${(p) => (p.$locked ? (p.$checked ? 'rgba(212, 165, 116, 0.15)' : 'var(--background-color)') : 'var(--hover-background-color)')};
   }
 
   .check {
@@ -55,10 +56,19 @@ const MultiCollectionName = styled.div`
   color: var(--text-color);
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   box-shadow: inset -1px 0 0 var(--border-color);
+
+  .check {
+    width: 16px;
+    height: 16px;
+    color: var(--accent-color);
+    flex-shrink: 0;
+  }
 `;
 
 const MultiActionGroup = styled.div`
@@ -119,11 +129,18 @@ function CollectionModal({
   onClose,
   onToggleBooks,
   onCreateCollection,
+  showAllOption = false,
+  allBookIds = [],
+  onToggleAll,
 }) {
   const ids = (Array.isArray(bookIds) ? bookIds : [bookIds]).map(String);
   const isMulti = ids.length > 1;
   const title = isMulti ? `加入收藏夾（${ids.length} 本）` : '加入收藏夾';
   const [multiAction, setMultiAction] = useState({});
+  const allLocked = showAllOption && ids.some((id) =>
+    collections.some((col) => col.bookIds.includes(id))
+  );
+  const allChecked = allLocked || allBookIds.includes(ids[0]);
 
   useEffect(() => {
     setMultiAction({});
@@ -144,14 +161,87 @@ function CollectionModal({
     setMultiAction((prev) => ({ ...prev, [col.id]: 'remove' }));
   };
 
+  const handleAllClick = async () => {
+    if (allLocked) return;
+    const currentlyIn = allBookIds.includes(ids[0]);
+    await onToggleAll?.(ids, !currentlyIn);
+  };
+
+  const handleMultiAllAdd = async () => {
+    await onToggleAll?.(ids, true);
+    setMultiAction((prev) => ({ ...prev, __all__: 'add' }));
+  };
+
+  const handleMultiAllRemove = async () => {
+    if (allLocked) return;
+    await onToggleAll?.(ids, false);
+    setMultiAction((prev) => ({ ...prev, __all__: 'remove' }));
+  };
+
+  const allOption = showAllOption ? (
+    isMulti ? (
+      allLocked ? (
+        <MultiCollectionRow key="__all__">
+          <MultiCollectionName title="全部">
+            <span>全部</span>
+            <Check className="check" />
+          </MultiCollectionName>
+        </MultiCollectionRow>
+      ) : (
+        <MultiCollectionRow key="__all__">
+          <MultiCollectionName title="全部">全部</MultiCollectionName>
+          <MultiActionGroup>
+            <MultiActionBtn
+              type="button"
+              $tone="add"
+              $active={multiAction.__all__ === 'add'}
+              onClick={handleMultiAllAdd}
+              title="加入「全部」"
+              aria-label="將所選書籍加入「全部」"
+              aria-pressed={multiAction.__all__ === 'add'}
+            >
+              <Plus />
+            </MultiActionBtn>
+            <MultiActionBtn
+              type="button"
+              $tone="remove"
+              $active={multiAction.__all__ === 'remove'}
+              onClick={handleMultiAllRemove}
+              title="從「全部」移除"
+              aria-label="將所選書籍從「全部」移除"
+              aria-pressed={multiAction.__all__ === 'remove'}
+            >
+              <Minus />
+            </MultiActionBtn>
+          </MultiActionGroup>
+        </MultiCollectionRow>
+      )
+    ) : (
+      <CollectionOption
+        key="__all__"
+        type="button"
+        $checked={allChecked}
+        $locked={allLocked}
+        onClick={allLocked ? undefined : handleAllClick}
+        disabled={allLocked}
+        aria-disabled={allLocked}
+      >
+        全部
+        {allChecked && <Check className="check" />}
+      </CollectionOption>
+    )
+  ) : null;
+
   return (
     <Modal onClose={onClose}>
       <ModalTitleBar title={title} onClose={onClose} />
       <ModalBody>
-        {collections.length === 0 ? (
+        {collections.length === 0 && !showAllOption ? (
           <EmptyHint>尚無收藏夾，請先建立一個</EmptyHint>
         ) : (
-          collections.map((col) => {
+          <>
+            {allOption}
+            {collections.map((col) => {
             if (isMulti) {
               const action = multiAction[col.id];
               return (
@@ -196,7 +286,8 @@ function CollectionModal({
                 {checked && <Check className="check" />}
               </CollectionOption>
             );
-          })
+          })}
+          </>
         )}
       </ModalBody>
       <ModalFooterRow>

@@ -1,13 +1,44 @@
+import { FolderInput } from 'lucide-react';
 import BookInfo from '../common/BookInfo';
+import { CardActionButton } from '../common/CardActionButton';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { normalizeDiscoverBookInfo } from '../../utils/bookInfo';
 import { cardKeyDownHandler } from '../../utils/cardInteraction';
-import { ListCard } from './styles';
+import {
+  ListCard,
+  ListCardBody,
+  ListCardActionOverlay,
+  ListCardActionFooter,
+} from './styles';
 
 function toDiscoverBookInfo(book) {
   return { book_info: normalizeDiscoverBookInfo(book) };
 }
 
-function DiscoverBookListCard({ book, conversionMode, onClick }) {
+function DiscoverBookListCard({ book, conversionMode, onClick, onAddToCollection }) {
+  const isMobile = useMediaQuery('(max-width: 480px)');
+  const bookId = String(book.book_id);
+
+  const actionButton = onAddToCollection ? (
+    <CardActionButton
+      type="button"
+      $variant="collection"
+      onClick={(e) => {
+        e.stopPropagation();
+        onAddToCollection(bookId);
+      }}
+      title="加入收藏夾"
+      aria-label="加入收藏夾"
+    >
+      <FolderInput />
+    </CardActionButton>
+  ) : null;
+
+  const actionHandlers = {
+    onClick: (e) => e.stopPropagation(),
+    onTouchStart: (e) => e.stopPropagation(),
+  };
+
   return (
     <ListCard
       onClick={onClick}
@@ -15,12 +46,24 @@ function DiscoverBookListCard({ book, conversionMode, onClick }) {
       tabIndex={0}
       onKeyDown={cardKeyDownHandler(onClick)}
     >
-      <BookInfo
-        bookInfo={toDiscoverBookInfo(book)}
-        conversionMode={conversionMode}
-        variant="compact"
-        showChapterCount={false}
-      />
+      {actionButton && !isMobile && (
+        <ListCardActionOverlay {...actionHandlers}>
+          {actionButton}
+        </ListCardActionOverlay>
+      )}
+      <ListCardBody>
+        <BookInfo
+          bookInfo={toDiscoverBookInfo(book)}
+          conversionMode={conversionMode}
+          variant="compact"
+          showChapterCount={false}
+        />
+      </ListCardBody>
+      {actionButton && isMobile && (
+        <ListCardActionFooter {...actionHandlers}>
+          {actionButton}
+        </ListCardActionFooter>
+      )}
     </ListCard>
   );
 }
