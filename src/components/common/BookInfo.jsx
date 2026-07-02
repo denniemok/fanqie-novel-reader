@@ -57,8 +57,8 @@ const CoverWrapper = styled.div`
   align-items: center;
 
   img {
-    width: 120px;
-    height: 160px;
+    width: 116px;
+    height: 155px;
     object-fit: cover;
     border-radius: 0;
     border: 1px solid var(--border-color);
@@ -76,8 +76,8 @@ const CoverWrapper = styled.div`
 
   @media (max-width: 480px) {
     img {
-      width: 80px;
-      height: 107px;
+      width: 110px;
+      height: 147px;
     }
   }
 
@@ -102,10 +102,10 @@ const CoverWrapper = styled.div`
       box-shadow: var(--retro-shadow);
     }
 
-    @media (max-width: 374px) {
+    @media (max-width: 480px) {
       img {
-        width: 72px;
-        height: 96px;
+        width: 96px;
+        height: 128px;
       }
     }
   }
@@ -121,15 +121,15 @@ const CoverMeta = styled.div`
   .variant-compact & {
     width: 100px;
 
-    @media (max-width: 374px) {
-      width: 72px;
+    @media (max-width: 480px) {
+      width: 96px;
     }
   }
 `;
 
 const CoverPlaceholder = styled.div`
-  width: 120px;
-  height: 160px;
+  width: 116px;
+  height: 155px;
   background-color: var(--cover-bg);
   border: 1px solid var(--border-color);
   box-shadow: var(--retro-shadow);
@@ -140,8 +140,8 @@ const CoverPlaceholder = styled.div`
   color: var(--text-color-secondary);
 
   @media (max-width: 480px) {
-    width: 80px;
-    height: 107px;
+    width: 110px;
+    height: 147px;
   }
 
   .variant-card & {
@@ -158,9 +158,9 @@ const CoverPlaceholder = styled.div`
     width: 100px;
     height: 134px;
 
-    @media (max-width: 374px) {
-      width: 72px;
-      height: 96px;
+    @media (max-width: 480px) {
+      width: 96px;
+      height: 128px;
     }
   }
 `;
@@ -215,8 +215,8 @@ const TitleBlock = styled.div`
     text-transform: uppercase;
     white-space: nowrap;
 
-    @media (max-width: 374px) {
-      font-size: 16px;
+    @media (max-width: 480px) {
+      font-size: 18px;
     }
   }
 

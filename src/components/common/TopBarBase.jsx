@@ -56,11 +56,6 @@ const SiteTitle = styled(Link)`
     border-color: var(--accent-color);
     transform: rotate(-1deg);
   }
-
-  @media (max-width: 374px) {
-    font-size: 15px;
-    padding: 5px 8px;
-  }
 `;
 
 const TitleSep = styled.span`
@@ -80,10 +75,6 @@ const PageTitleLabel = styled.span`
   text-overflow: ellipsis;
   min-width: 0;
   flex: 1 1 auto;
-
-  @media (max-width: 374px) {
-    font-size: 13px;
-  }
 `;
 
 function TopBarBase({ pageTitle, children }) {

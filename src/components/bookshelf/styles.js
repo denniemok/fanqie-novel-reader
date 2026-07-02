@@ -47,12 +47,6 @@ export const Tab = styled.button`
     background: ${(p) => (p.$active ? 'var(--accent-hover)' : 'var(--hover-background-color)')};
     color: ${(p) => (p.$active ? 'var(--text-on-accent)' : 'var(--text-color)')};
   }
-
-  @media (max-width: 374px) {
-    padding: 10px 12px;
-    font-size: 13px;
-    max-width: 140px;
-  }
 `;
 
 export const TabInner = styled.span`
@@ -195,10 +189,6 @@ export const ToolbarRight = styled.div`
   justify-content: flex-end;
   flex: 1 1 100%;
   max-width: 100%;
-
-  @media (max-width: 374px) {
-    gap: 4px;
-  }
 `;
 
 export const SortUnit = styled.div`

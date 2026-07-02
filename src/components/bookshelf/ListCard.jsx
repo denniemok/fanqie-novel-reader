@@ -35,8 +35,8 @@ const SkeletonCover = styled.div`
   ${shimmerStyle}
 
   @media (max-width: 480px) {
-    width: 80px;
-    height: 107px;
+    width: 96px;
+    height: 128px;
   }
 `;
 

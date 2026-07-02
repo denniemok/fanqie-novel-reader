@@ -109,12 +109,6 @@ export const SecondaryTab = styled(Tab)`
   letter-spacing: 0.03em;
   max-width: 160px;
   border-radius: 0;
-
-  @media (max-width: 374px) {
-    padding: 0 10px;
-    font-size: 12px;
-    max-width: 120px;
-  }
 `;
 
 export const ListCard = styled.div`
@@ -208,8 +202,8 @@ export const ListSkeletonCover = styled.div`
   ${shimmerStyle}
 
   @media (max-width: 480px) {
-    width: 80px;
-    height: 107px;
+    width: 96px;
+    height: 128px;
   }
 `;
 
@@ -338,10 +332,6 @@ export const Info = styled.div`
   gap: 3px;
   min-height: 62px;
   box-sizing: border-box;
-
-  @media (max-width: 480px) {
-    min-height: 58px;
-  }
 `;
 
 export const Title = styled.div`
@@ -355,11 +345,6 @@ export const Title = styled.div`
   overflow: hidden;
   line-height: 1.35;
   min-height: calc(13px * 1.35 * 2);
-
-  @media (max-width: 480px) {
-    font-size: 12px;
-    min-height: calc(12px * 1.35 * 2);
-  }
 `;
 
 export const Author = styled.div`

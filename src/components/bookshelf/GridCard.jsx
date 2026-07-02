@@ -185,10 +185,6 @@ const Info = styled.div`
   gap: 3px;
   min-height: 62px;
   box-sizing: border-box;
-
-  @media (max-width: 480px) {
-    min-height: 58px;
-  }
 `;
 
 const Title = styled.div`
@@ -202,11 +198,6 @@ const Title = styled.div`
   overflow: hidden;
   line-height: 1.35;
   min-height: calc(13px * 1.35 * 2);
-
-  @media (max-width: 480px) {
-    font-size: 12px;
-    min-height: calc(12px * 1.35 * 2);
-  }
 `;
 
 const Author = styled.div`
