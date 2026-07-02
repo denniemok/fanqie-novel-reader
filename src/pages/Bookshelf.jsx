@@ -1,7 +1,7 @@
 import { useSearchParams, Navigate } from 'react-router-dom';
-import NavPageLayout from '../components/common/NavPageLayout';
-import NavTopBar from '../components/common/NavTopBar';
-import Content from '../components/bookshelf/Content';
+import NavPageLayout from '../components/layout/NavPageLayout';
+import NavTopBar from '../components/layout/NavTopBar';
+import BookshelfContent from '../components/bookshelf/BookshelfContent';
 import { useConversionMode } from '../hooks/useConversionMode';
 import { buildCatalogUrl } from '../utils/navigation';
 
@@ -17,7 +17,7 @@ function Bookshelf() {
   return (
     <NavPageLayout>
       <NavTopBar pageTitle="書架" />
-      <Content conversionMode={conversionMode} />
+      <BookshelfContent conversionMode={conversionMode} />
     </NavPageLayout>
   );
 }

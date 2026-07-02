@@ -1,10 +1,10 @@
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import { Minus, Plus, Sun, Moon, Type, Palette, RefreshCw } from 'lucide-react';
-import { ModalOverlay } from '../common/ModalBase';
-import { IconButton } from '../common/IconButton';
-import IconDropdown from '../common/IconDropdown';
-import CatalogButton from '../common/CatalogButton';
+import { ModalOverlay } from '../ui/ModalBase';
+import { IconButton } from '../ui/IconButton';
+import IconDropdown from '../ui/IconDropdown';
+import CatalogButton from '../navigation/CatalogButton';
 import {
   FONT_SIZE_MIN,
   FONT_SIZE_MAX,

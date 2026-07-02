@@ -1,15 +1,15 @@
 import { useEffect, useCallback, useState } from 'react';
 import { useSearchParams, Navigate, useNavigate } from 'react-router-dom';
-import TopBar from '../components/chapter/TopBar';
+import ChapterTopBar from '../components/chapter/ChapterTopBar';
 import BottomBar from '../components/chapter/BottomBar';
 import Reader from '../components/chapter/Reader';
 import ReaderControlsPanel from '../components/chapter/ReaderControlsPanel';
-import Error from '../components/common/Error';
-import Loading from '../components/common/Loading';
-import PageWrapper from '../components/common/PageWrapper';
+import Error from '../components/ui/Error';
+import Loading from '../components/ui/Loading';
+import PageWrapper from '../components/layout/PageWrapper';
 import { useConversionMode } from '../hooks/useConversionMode';
 import { useFontSize, useFontFamily, useTextBrightness, useReaderBackground } from '../hooks/useTextSettings';
-import { useChapterLoader } from '../hooks/useChapterLoader';
+import { useChapterLoader } from '../hooks/book/useChapterLoader';
 import { buildCatalogUrl, ROUTES } from '../utils/navigation';
 import { useErrorToast } from '../hooks/useErrorToast';
 
@@ -57,7 +57,7 @@ function Chapter() {
         <>
           {chapterData && (
             <>
-              <TopBar
+              <ChapterTopBar
                 chapterData={chapterData}
                 bookInfo={bookInfo}
                 bookId={bookId}

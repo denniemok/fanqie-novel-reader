@@ -1,8 +1,8 @@
 import { FolderInput } from 'lucide-react';
-import BookInfo from '../common/BookInfo';
-import { CardActionButton } from '../common/CardActionButton';
+import BookInfo from '../book/BookInfo';
+import { CardActionButton } from '../book/CardActionButton';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { normalizeDiscoverBookPayload } from '../../utils/bookInfo';
+import { normalizeDiscoverBookPayload } from '../../utils/book/bookInfo';
 import { cardKeyDownHandler } from '../../utils/cardInteraction';
 import {
   ListCard,

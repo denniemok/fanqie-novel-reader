@@ -9,7 +9,7 @@ const API_TOKEN = import.meta.env.VITE_API_TOKEN ?? '';
 const DEFAULT_API_SERVICE = API_OPTIONS[0].value;
 
 export function getApiService() {
-  const raw = safeGetItem(API_SERVICE_KEY) ?? safeGetItem('apiBase') ?? DEFAULT_API_SERVICE;
+  const raw = safeGetItem(API_SERVICE_KEY) ?? DEFAULT_API_SERVICE;
   return API_OPTIONS.some((o) => o.value === raw) ? raw : DEFAULT_API_SERVICE;
 }
 

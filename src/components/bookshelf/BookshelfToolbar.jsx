@@ -10,11 +10,11 @@ import {
   Search,
   X,
 } from 'lucide-react';
-import SelectDropdown from '../common/SelectDropdown';
-import { BOOKSHELF_SORT_OPTIONS } from '../../utils/bookshelfSort';
+import SelectDropdown from '../ui/SelectDropdown';
+import { BOOKSHELF_SORT_OPTIONS } from '../../utils/book/bookshelfSort';
 import { buildDefaultDiscoverUrl } from '../../utils/navigation';
 import { ALL_TAB } from './constants';
-import BookFilterPanel from '../common/BookFilterPanel';
+import BookFilterPanel from '../book/BookFilterPanel';
 import {
   ToolbarRoot,
   TabBar,

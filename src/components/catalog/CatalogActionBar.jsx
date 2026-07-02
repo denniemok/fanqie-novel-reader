@@ -1,6 +1,6 @@
 import { Bookmark, Download, FileText, MessageCircle, RefreshCw } from 'lucide-react';
-import BookActionBar from '../common/BookActionBar';
-import LabeledIconButton from '../common/LabeledIconButton';
+import BookActionBar from '../book/BookActionBar';
+import LabeledIconButton from '../ui/LabeledIconButton';
 import { buildChapterUrl, buildCommentsUrl } from '../../utils/navigation';
 
 function CatalogActionBar({

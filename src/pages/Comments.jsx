@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Navigate, useNavigate } from 'react-router-dom';
 import { fetchComments } from '../services/api';
-import { useBookLoader } from '../hooks/useBookLoader';
+import { useBookLoader } from '../hooks/book/useBookLoader';
 import { buildCatalogUrl, buildCommentsUrl, ROUTES } from '../utils/navigation';
 import { formatErrorMessage } from '../utils/errors';
-import Error from '../components/common/Error';
-import Loading from '../components/common/Loading';
-import PageWrapper from '../components/common/PageWrapper';
-import NavTopBar from '../components/common/NavTopBar';
-import Content from '../components/comments/Content';
+import Error from '../components/ui/Error';
+import Loading from '../components/ui/Loading';
+import PageWrapper from '../components/layout/PageWrapper';
+import NavTopBar from '../components/layout/NavTopBar';
+import CommentsContent from '../components/comments/CommentsContent';
 import { useConversionMode } from '../hooks/useConversionMode';
 import { useConvertedText } from '../hooks/useConvertedText';
 import { useErrorToast } from '../hooks/useErrorToast';
@@ -85,7 +85,7 @@ function Comments() {
       ) : (
         <>
           <NavTopBar pageTitle="評論" />
-          <Content
+          <CommentsContent
             bookId={bookId}
             bookInfo={bookInfo}
             comments={comments}

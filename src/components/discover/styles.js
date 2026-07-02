@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { shimmerStyle } from '../../utils/styled/animations';
 import { SearchBar, SearchInput, TabBar, Tab, TOOLBAR_CONTROL_HEIGHT } from '../bookshelf/styles';
-import { IconButton } from '../common/IconButton';
+import { IconButton } from '../ui/IconButton';
 
 export const SearchForm = styled.form`
   display: flex;

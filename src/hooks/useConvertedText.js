@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { maybeConvert } from '../utils/zh-convert';
+import { maybeConvert } from '../utils/text/zh-convert';
 
 /** @param {'original'|'tw'|'hk'} [mode] */
 export function useConvertedText(text, mode) {

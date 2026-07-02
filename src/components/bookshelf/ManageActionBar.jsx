@@ -8,7 +8,7 @@ import {
   RefreshCw,
   Loader2,
 } from 'lucide-react';
-import { CardSpinningIcon } from '../common/CardActionButton';
+import { CardSpinningIcon } from '../book/CardActionButton';
 import { ALL_TAB } from './constants';
 import {
   ManageActionBar as ManageActionBarRoot,
@@ -31,6 +31,8 @@ function ManageActionBar({
   onBulkDelete,
   isRefreshing,
 }) {
+  const bulkDeleteLabel = activeTab === ALL_TAB ? '刪除所選書籍' : '從收藏夾移除';
+
   return (
     <ManageActionBarRoot>
       <ManageActionCount>{selectedCount} 已選</ManageActionCount>
@@ -104,8 +106,8 @@ function ManageActionBar({
           $variant="delete"
           disabled={selectedCount === 0}
           onClick={onBulkDelete}
-          title={activeTab === ALL_TAB ? '刪除所選書籍' : '從收藏夾移除'}
-          aria-label={activeTab === ALL_TAB ? '刪除所選書籍' : '從收藏夾移除'}
+          title={bulkDeleteLabel}
+          aria-label={bulkDeleteLabel}
         >
           <Trash2 />
         </ManageBarButton>

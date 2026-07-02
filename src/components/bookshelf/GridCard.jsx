@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { GripHorizontal, Loader2, Check } from 'lucide-react';
-import { useBookLoader } from '../../hooks/useBookLoader';
+import { useBookLoader } from '../../hooks/book/useBookLoader';
 import { useErrorToast } from '../../hooks/useErrorToast';
 import { useConvertedText } from '../../hooks/useConvertedText';
-import { resolveBookDisplay } from '../../utils/bookInfo';
+import { resolveBookDisplay } from '../../utils/book/bookInfo';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 import { shimmerStyle } from '../../utils/styled/animations';
 import { getCoverMetaEntries } from '../../utils/coverMetaLines';
-import { CardLoadingOverlay } from '../common/CardActionButton';
+import { CardLoadingOverlay } from '../book/CardActionButton';
 import BookRefreshError from './BookRefreshError';
 
 const SkeletonCard = styled.div`

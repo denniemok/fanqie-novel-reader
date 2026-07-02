@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { maybeConvert } from '../../utils/zh-convert';
+import { maybeConvert } from '../../utils/text/zh-convert';
 import { READER_BACKGROUND_OPTIONS, FONT_SIZE_DEFAULT, TEXT_BRIGHTNESS_DEFAULT } from '../../utils/constants';
 import { minViewportHeight } from '../../utils/styled/viewport';
 

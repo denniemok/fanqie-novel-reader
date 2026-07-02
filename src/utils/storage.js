@@ -30,7 +30,7 @@ import {
   READER_BACKGROUND_OPTIONS,
   THEME_KEY,
 } from './constants';
-import { normalizeBookFilterState } from './bookFilters';
+import { normalizeBookFilterState } from './book/bookFilters';
 import { directoryCache, chapterCache, detailCache, getStoreItem, setStoreItem } from './cache';
 
 export function safeGetItem(key) {
@@ -248,7 +248,7 @@ export function getConversionMode() {
   const raw = safeGetItem(TRADITIONAL_CHINESE_KEY);
   if (raw == null) return 'tw';
   if (raw === 'original' || raw === 'tw' || raw === 'hk') return raw;
-  return raw === '1' ? 'tw' : 'original'; // backward compat
+  return 'tw';
 }
 
 export function setConversionMode(mode) {
@@ -269,7 +269,7 @@ export function setBookDisplayVariant(variant) {
 
 /** @returns {'ascending'|'descending'} Default: 'ascending' */
 export function getCatalogSortDirection() {
-  const raw = safeGetItem(CATALOG_SORT_DIRECTION_KEY) ?? safeGetItem('sortOrder');
+  const raw = safeGetItem(CATALOG_SORT_DIRECTION_KEY);
   return raw === 'descending' ? 'descending' : 'ascending';
 }
 
@@ -405,8 +405,8 @@ export async function reorderCollectionBooks(collectionId, fromIndex, toIndex) {
 
 // ── Bookshelf view mode ───────────────────────────────────────────────────────
 
-function getViewMode(key, legacyKey = null) {
-  const raw = safeGetItem(key) ?? (legacyKey ? safeGetItem(legacyKey) : null);
+function getViewMode(key) {
+  const raw = safeGetItem(key);
   return raw === 'grid' ? 'grid' : 'list';
 }
 
@@ -424,7 +424,7 @@ export function setBookshelfViewMode(mode) {
 }
 
 export function getDiscoverViewMode() {
-  return getViewMode(DISCOVER_VIEW_MODE_KEY, BOOKSHELF_VIEW_MODE_KEY);
+  return getViewMode(DISCOVER_VIEW_MODE_KEY);
 }
 
 export function setDiscoverViewMode(mode) {

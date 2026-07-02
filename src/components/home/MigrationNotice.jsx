@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { CANONICAL_HOSTNAME, CANONICAL_SITE_URL } from '../../utils/constants';
 import { isLegacyOrigin } from '../../utils/dataMigration';
 import { ROUTES } from '../../utils/navigation';
-import { GrayButton } from '../common/GrayButton';
+import { GrayButton } from '../ui/GrayButton';
 import { HomeNotice, HomeNoticeLabel } from './HomeNotice';
 
 const Message = styled.p`

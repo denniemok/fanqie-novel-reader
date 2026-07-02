@@ -1,9 +1,9 @@
 import { List, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import BookActionBar from '../common/BookActionBar';
-import LabeledIconButton from '../common/LabeledIconButton';
+import BookActionBar from '../book/BookActionBar';
+import LabeledIconButton from '../ui/LabeledIconButton';
 import { buildCatalogUrl } from '../../utils/navigation';
-import { CATALOG_BUTTON_TITLE } from '../common/CatalogButton';
+import { CATALOG_BUTTON_TITLE } from '../navigation/CatalogButton';
 
 function CommentsActionBar({ bookId, onRefresh }) {
   const navigate = useNavigate();

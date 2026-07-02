@@ -1,23 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Navigate, useNavigate } from 'react-router-dom';
-import Menu from '../components/catalog/Menu';
-import BookInfo from '../components/common/BookInfo';
-import Error from '../components/common/Error';
-import Loading from '../components/common/Loading';
-import PageWrapper from '../components/common/PageWrapper';
+import CatalogChapterList from '../components/catalog/CatalogChapterList';
+import BookInfo from '../components/book/BookInfo';
+import Error from '../components/ui/Error';
+import Loading from '../components/ui/Loading';
+import PageWrapper from '../components/layout/PageWrapper';
 import { useToast } from '../contexts/ToastContext';
-import NavTopBar from '../components/common/NavTopBar';
+import NavTopBar from '../components/layout/NavTopBar';
 import CatalogActionBar from '../components/catalog/CatalogActionBar';
-import { TopBarOffset } from '../components/common/PageContent';
+import { TopBarOffset } from '../components/layout/PageContent';
 import { getLastReadChapter, getCatalogSortDirection, setCatalogSortDirection, getUncachedItemIds } from '../utils/storage';
 import { useConversionMode } from '../hooks/useConversionMode';
 import { useBookDisplayVariant } from '../contexts/BookDisplayVariantContext';
-import { useBookLoader } from '../hooks/useBookLoader';
+import { useBookLoader } from '../hooks/book/useBookLoader';
 import { useDownloadManager } from '../contexts/DownloadManager';
-import { CHAPTERS_PER_PAGE, getTotalPages } from '../utils/catalogPagination';
+import { CHAPTERS_PER_PAGE, getTotalPages } from '../utils/book/catalogPagination';
 import { buildCatalogUrl, ROUTES } from '../utils/navigation';
 import DownloadAllConfirmModal from '../components/catalog/DownloadAllConfirmModal';
-import ExportBookModal from '../components/common/ExportBookModal';
+import ExportBookModalHost from '../components/export/ExportBookModalHost';
 import { useErrorToast } from '../hooks/useErrorToast';
 
 function Catalog() {
@@ -130,7 +130,7 @@ function Catalog() {
             lastReadItemId={lastReadItemId}
           />
           {bookInfo.item_data_list && (
-            <Menu
+            <CatalogChapterList
               sortOrder={sortOrder}
               itemDataList={bookInfo.item_data_list}
               bookId={bookId}
@@ -156,17 +156,16 @@ function Catalog() {
           onClose={() => setDownloadAllConfirmOpen(false)}
         />
       )}
-      {exportBookOpen && (
-        <ExportBookModal
-          bookId={bookId}
-          bookInfo={bookInfo}
-          defaultSortOrder={sortOrder}
-          defaultConversionMode={conversionMode}
-          defaultDisplayVariant={displayVariant}
-          showToast={showToast}
-          onClose={() => setExportBookOpen(false)}
-        />
-      )}
+      <ExportBookModalHost
+        open={exportBookOpen}
+        bookId={bookId}
+        bookInfo={bookInfo}
+        defaultSortOrder={sortOrder}
+        defaultConversionMode={conversionMode}
+        defaultDisplayVariant={displayVariant}
+        showToast={showToast}
+        onClose={() => setExportBookOpen(false)}
+      />
     </PageWrapper>
   );
 }

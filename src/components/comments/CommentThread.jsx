@@ -1,6 +1,6 @@
 import { MessageCircle, Star, ThumbsUp } from 'lucide-react';
 import styled from 'styled-components';
-import { maybeConvert } from '../../utils/zh-convert';
+import { maybeConvert } from '../../utils/text/zh-convert';
 import { getHiddenReplyCount, organizeReplies } from '../../utils/commentReplies';
 
 const ThreadItem = styled.li`

@@ -1,5 +1,5 @@
-import NavPageLayout from '../components/common/NavPageLayout';
-import NavTopBar from '../components/common/NavTopBar';
+import NavPageLayout from '../components/layout/NavPageLayout';
+import NavTopBar from '../components/layout/NavTopBar';
 import ExportContent from '../components/migrate/ExportContent';
 
 function Export() {

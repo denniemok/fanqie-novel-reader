@@ -1,12 +1,18 @@
-import React from 'react';
-import styled, { css } from 'styled-components';
-import { GripVertical, Loader2, Check, RefreshCw, Trash2, FolderInput, Download, FileText } from 'lucide-react';
-import BookInfo from '../common/BookInfo';
-import { useBookLoader } from '../../hooks/useBookLoader';
+import styled from 'styled-components';
+import { GripVertical, Loader2, Check } from 'lucide-react';
+import BookInfo from '../book/BookInfo';
+import { useBookLoader } from '../../hooks/book/useBookLoader';
 import { useErrorToast } from '../../hooks/useErrorToast';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { shimmerStyle } from '../../utils/styled/animations';
-import { CardActionButton, CardSpinningIcon, CardLoadingOverlay } from '../common/CardActionButton';
+import { CardLoadingOverlay } from '../book/CardActionButton';
+import { BookQuickActions } from '../book/BookQuickActions';
+import {
+  CardActionBarScroll,
+  CardActionOverlay,
+  CardActionFooter,
+  cardActionBarHandlers,
+} from '../layout/CardActionBarLayout';
 import BookRefreshError from './BookRefreshError';
 
 const SkeletonCard = styled.div`
@@ -164,48 +170,6 @@ const DragHandle = styled.div`
   }
 `;
 
-const actionBarStyles = css`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  z-index: 11;
-  pointer-events: auto;
-  overflow: visible;
-`;
-
-const ActionBarScroll = styled.div`
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 4px;
-  align-items: center;
-  justify-content: flex-end;
-  max-width: 100%;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  padding: 4px 5px 6px 4px;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const ActionButtonsOverlay = styled.div`
-  ${actionBarStyles}
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  max-width: calc(100% - 20px);
-`;
-
-const ActionFooter = styled.div`
-  ${actionBarStyles}
-  flex-shrink: 0;
-  padding: 6px 10px 6px;
-  border-top: 1px solid var(--border-color);
-  background: var(--background-color);
-`;
-
 const SelectionBadge = styled.div`
   position: absolute;
   top: 10px;
@@ -228,76 +192,6 @@ const SelectionBadge = styled.div`
     opacity: ${(p) => (p.$selected ? 1 : 0)};
   }
 `;
-
-function ListCardActions({
-  bookId,
-  bookInfo,
-  isAllTab,
-  isRefreshing,
-  onAddToCollection,
-  onDownload,
-  onExport,
-  onRefreshClick,
-  refetch,
-  onDeleteClick,
-}) {
-  return (
-    <>
-      {onAddToCollection && (
-        <CardActionButton
-          type="button"
-          $variant="collection"
-          onClick={(e) => { e.stopPropagation(); onAddToCollection(bookId); }}
-          title="加入收藏夾"
-          aria-label="加入收藏夾"
-        >
-          <FolderInput />
-        </CardActionButton>
-      )}
-      {onDownload && (
-        <CardActionButton
-          type="button"
-          $variant="download"
-          onClick={(e) => { e.stopPropagation(); onDownload(bookId); }}
-          title="下載全部"
-          aria-label="下載全部"
-        >
-          <Download />
-        </CardActionButton>
-      )}
-      {onExport && (
-        <CardActionButton
-          type="button"
-          $variant="export"
-          onClick={(e) => { e.stopPropagation(); onExport(bookId); }}
-          title="匯出書籍"
-          aria-label="匯出書籍"
-        >
-          <FileText />
-        </CardActionButton>
-      )}
-      <CardActionButton
-        type="button"
-        $variant="refresh"
-        disabled={isRefreshing}
-        onClick={(e) => { e.stopPropagation(); (onRefreshClick ?? refetch)(e, bookId); }}
-        title="刷新目錄與書籍資料"
-        aria-label="刷新目錄與書籍資料"
-      >
-        {isRefreshing ? <CardSpinningIcon><Loader2 size={18} /></CardSpinningIcon> : <RefreshCw />}
-      </CardActionButton>
-      <CardActionButton
-        type="button"
-        $variant="delete"
-        onClick={(e) => { e.stopPropagation(); onDeleteClick?.(e, bookId, bookInfo); }}
-        title={isAllTab ? '刪除此書的本地資料' : '從收藏夾移除'}
-        aria-label={isAllTab ? '刪除此書的本地資料' : '從收藏夾移除'}
-      >
-        <Trash2 />
-      </CardActionButton>
-    </>
-  );
-}
 
 function ListCard({
   bookId,
@@ -370,10 +264,6 @@ function ListCard({
     refetch,
     onDeleteClick,
   };
-  const actionBarHandlers = {
-    onClick: (e) => e.stopPropagation(),
-    onTouchStart: (e) => e.stopPropagation(),
-  };
 
   return (
     <Card
@@ -400,11 +290,11 @@ function ListCard({
           </SelectionBadge>
         )}
         {showItemActions && !isMobile && (
-          <ActionButtonsOverlay {...actionBarHandlers}>
-            <ActionBarScroll>
-              <ListCardActions {...actionProps} />
-            </ActionBarScroll>
-          </ActionButtonsOverlay>
+          <CardActionOverlay {...cardActionBarHandlers}>
+            <CardActionBarScroll>
+              <BookQuickActions {...actionProps} />
+            </CardActionBarScroll>
+          </CardActionOverlay>
         )}
         <CardBody>
           <BookInfo
@@ -415,11 +305,11 @@ function ListCard({
         </CardBody>
       </CardMainRow>
       {showItemActions && isMobile && (
-        <ActionFooter {...actionBarHandlers}>
-          <ActionBarScroll>
-            <ListCardActions {...actionProps} />
-          </ActionBarScroll>
-        </ActionFooter>
+        <CardActionFooter {...cardActionBarHandlers}>
+          <CardActionBarScroll>
+            <BookQuickActions {...actionProps} />
+          </CardActionBarScroll>
+        </CardActionFooter>
       )}
       <BookRefreshError message={refreshError} />
     </Card>

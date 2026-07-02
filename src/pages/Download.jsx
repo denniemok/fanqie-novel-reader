@@ -1,6 +1,6 @@
-import NavPageLayout from '../components/common/NavPageLayout';
-import NavTopBar from '../components/common/NavTopBar';
-import Content from '../components/download/Content';
+import NavPageLayout from '../components/layout/NavPageLayout';
+import NavTopBar from '../components/layout/NavTopBar';
+import DownloadContent from '../components/download/DownloadContent';
 import { useConversionMode } from '../hooks/useConversionMode';
 
 function Download() {
@@ -9,7 +9,7 @@ function Download() {
   return (
     <NavPageLayout>
       <NavTopBar pageTitle="下載" />
-      <Content conversionMode={conversionMode} />
+      <DownloadContent conversionMode={conversionMode} />
     </NavPageLayout>
   );
 }

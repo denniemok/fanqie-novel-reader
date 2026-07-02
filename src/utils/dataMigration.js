@@ -29,14 +29,12 @@ import {
   READING_HISTORY_LEGACY_KEY,
 } from './constants';
 import { getAllStoreEntries, importStoreEntries } from './cache';
-import { triggerFileDownload } from './downloadFile';
+import { triggerFileDownload } from './export/downloadFile';
 import { safeGetItem, safeSetItem } from './storage';
 
 const LOCAL_STORAGE_KEYS = [
   API_SERVICE_KEY,
-  'apiBase',
   CATALOG_SORT_DIRECTION_KEY,
-  'sortOrder',
   CATALOG_MANAGE_MODE_KEY,
   FONT_SIZE_KEY,
   FONT_FAMILY_KEY,

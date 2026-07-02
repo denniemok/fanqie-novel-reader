@@ -1,10 +1,10 @@
-import NavPageLayout from '../components/common/NavPageLayout';
-import NavTopBar from '../components/common/NavTopBar';
-import PageWrapper from '../components/common/PageWrapper';
-import Loading from '../components/common/Loading';
-import Error from '../components/common/Error';
-import Content from '../components/status/Content';
-import { useApiStatusStore } from '../hooks/useApiStatus';
+import NavPageLayout from '../components/layout/NavPageLayout';
+import NavTopBar from '../components/layout/NavTopBar';
+import PageWrapper from '../components/layout/PageWrapper';
+import Loading from '../components/ui/Loading';
+import Error from '../components/ui/Error';
+import StatusContent from '../components/status/StatusContent';
+import { useApiStatusStore } from '../hooks/api/useApiStatus';
 
 function Status() {
   const { data, error, loading } = useApiStatusStore();
@@ -28,7 +28,7 @@ function Status() {
   return (
     <NavPageLayout>
       <NavTopBar pageTitle="API 狀態" />
-      <Content />
+      <StatusContent />
     </NavPageLayout>
   );
 }

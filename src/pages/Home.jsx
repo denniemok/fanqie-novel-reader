@@ -1,7 +1,7 @@
 import { useSearchParams, Navigate } from 'react-router-dom';
-import NavPageLayout from '../components/common/NavPageLayout';
-import Content from '../components/home/Content';
-import Header from '../components/home/Header';
+import NavPageLayout from '../components/layout/NavPageLayout';
+import HomeContent from '../components/home/HomeContent';
+import HomeHeader from '../components/home/HomeHeader';
 import { buildCatalogUrl } from '../utils/navigation';
 
 function Home() {
@@ -14,8 +14,8 @@ function Home() {
 
   return (
     <NavPageLayout>
-      <Header />
-      <Content />
+      <HomeHeader />
+      <HomeContent />
     </NavPageLayout>
   );
 }

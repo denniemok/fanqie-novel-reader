@@ -1,9 +1,9 @@
-import NavPageLayout from '../components/common/NavPageLayout';
-import NavTopBar from '../components/common/NavTopBar';
-import PageWrapper from '../components/common/PageWrapper';
-import Loading from '../components/common/Loading';
-import Error from '../components/common/Error';
-import Content from '../components/announcement/Content';
+import NavPageLayout from '../components/layout/NavPageLayout';
+import NavTopBar from '../components/layout/NavTopBar';
+import PageWrapper from '../components/layout/PageWrapper';
+import Loading from '../components/ui/Loading';
+import Error from '../components/ui/Error';
+import AnnouncementsContent from '../components/announcements/AnnouncementsContent';
 import { useAnnouncements } from '../hooks/useAnnouncements';
 
 function Announcements() {
@@ -28,7 +28,7 @@ function Announcements() {
   return (
     <NavPageLayout>
       <NavTopBar pageTitle="公告" />
-      <Content announcements={announcements ?? []} />
+      <AnnouncementsContent announcements={announcements ?? []} />
     </NavPageLayout>
   );
 }

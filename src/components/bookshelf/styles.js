@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import PageContent from '../common/PageContent';
-import { CardActionButton } from '../common/CardActionButton';
+import PageContent from '../layout/PageContent';
+import { CardActionButton } from '../book/CardActionButton';
 import { toolbarRetroUnit } from '../../utils/styled/retro';
 
 export const TOOLBAR_CONTROL_HEIGHT = '44px';

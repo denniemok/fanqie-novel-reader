@@ -1,6 +1,6 @@
-import NavPageLayout from '../components/common/NavPageLayout';
-import NavTopBar from '../components/common/NavTopBar';
-import Content from '../components/discover/Content';
+import NavPageLayout from '../components/layout/NavPageLayout';
+import NavTopBar from '../components/layout/NavTopBar';
+import DiscoverContent from '../components/discover/DiscoverContent';
 import { useConversionMode } from '../hooks/useConversionMode';
 
 function Discover() {
@@ -9,7 +9,7 @@ function Discover() {
   return (
     <NavPageLayout>
       <NavTopBar pageTitle="新書" />
-      <Content conversionMode={conversionMode} />
+      <DiscoverContent conversionMode={conversionMode} />
     </NavPageLayout>
   );
 }

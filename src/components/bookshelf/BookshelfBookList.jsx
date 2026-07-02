@@ -1,4 +1,4 @@
-import EmptyHint from '../common/EmptyHint';
+import EmptyHint from '../ui/EmptyHint';
 import GridCard from './GridCard';
 import ListCard from './ListCard';
 import SortableBooks from './SortableBooks';
@@ -51,13 +51,17 @@ function BookshelfBookList({
     bookId,
     onClick: () => onBookClick(bookId),
     conversionMode,
-    sortBy,
     selectionMode,
     isSelected: selectedBookIds.has(bookId),
     onToggleSelect: () => onToggleBookSelection(bookId),
     bulkRefreshing: refreshingBookIds.has(bookId),
     refreshError: bookRefreshErrors[bookId],
     bookDataVersion: bookDataVersions[bookId] || 0,
+  });
+
+  const gridCardProps = (bookId) => ({
+    ...bookCardProps(bookId),
+    sortBy,
   });
 
   const listCardProps = (bookId) => ({
@@ -112,7 +116,7 @@ function BookshelfBookList({
         onReorder={onReorder}
         renderItem={({ bookId }, sortable) => (
           <GridCard
-            {...bookCardProps(bookId)}
+            {...gridCardProps(bookId)}
             dragHandleProps={sortable.dragHandleProps}
             isDragging={sortable.isDragging}
             canClick={sortable.canClick}
@@ -126,7 +130,7 @@ function BookshelfBookList({
   return (
     <GridLayout key={`grid-${activeTab}-${renderTick}`}>
       {booksForDisplay.map(({ bookId }) => (
-        <GridCard key={bookId} {...bookCardProps(bookId)} />
+        <GridCard key={bookId} {...gridCardProps(bookId)} />
       ))}
     </GridLayout>
   );

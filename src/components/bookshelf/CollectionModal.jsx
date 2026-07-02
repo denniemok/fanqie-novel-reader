@@ -5,11 +5,11 @@ import {
   Modal,
   ModalTitleBar,
   ModalBody,
-  ModalFooterRow,
+  ModalFooter,
   ModalInput,
   ModalPrimaryButton,
-} from '../common/ModalBase';
-import EmptyHint from '../common/EmptyHint';
+} from '../ui/ModalBase';
+import EmptyHint from '../ui/EmptyHint';
 
 const CollectionOption = styled.button`
   display: flex;
@@ -290,7 +290,7 @@ function CollectionModal({
           </>
         )}
       </ModalBody>
-      <ModalFooterRow>
+      <ModalFooter $stretch>
         <ModalInput
           value={newCollectionName}
           onChange={(e) => onNewCollectionNameChange(e.target.value)}
@@ -300,7 +300,7 @@ function CollectionModal({
         <ModalPrimaryButton type="button" onClick={onCreateCollection}>
           建立
         </ModalPrimaryButton>
-      </ModalFooterRow>
+      </ModalFooter>
     </Modal>
   );
 }

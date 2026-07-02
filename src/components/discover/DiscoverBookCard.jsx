@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useConvertedText } from '../../hooks/useConvertedText';
-import { normalizeDiscoverBookInfo, resolveBookDisplay } from '../../utils/bookInfo';
+import { normalizeDiscoverBookInfo, resolveBookDisplay } from '../../utils/book/bookInfo';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 import { getCoverMetaEntries } from '../../utils/coverMetaLines';
 import { cardKeyDownHandler } from '../../utils/cardInteraction';

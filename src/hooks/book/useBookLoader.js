@@ -1,0 +1,108 @@
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useToast } from '../../contexts/ToastContext';
+import { fetchBookDetailAndDirectory } from '../../utils/api-helpers';
+import { fetchBookDetail } from '../../services/api';
+import { normalizeBookInfo, normalizeDetailOnly } from '../../utils/book/bookInfo';
+import { formatErrorMessage } from '../../utils/errors';
+
+function handleBookError(err, setError) {
+  if (err.name === 'AbortError') return;
+  console.error('獲取書籍資訊失敗：', err);
+  setError(
+    formatErrorMessage(err, '獲取書籍資訊失敗，請檢查 bookId 是否正確，或者稍後再試。')
+  );
+}
+
+function applyDirectoryLoadResult({ merged, partialLoadMessage }, bookId, setBookInfo, showToast) {
+  setBookInfo(normalizeBookInfo(merged, bookId));
+  if (partialLoadMessage) showToast(partialLoadMessage);
+}
+
+export function useBookLoader(bookId, { detailOnly = false, bookDataVersion = 0 } = {}) {
+  const { showToast } = useToast();
+  const [error, setError] = useState(null);
+  const [bookInfo, setBookInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const refetchAbortRef = useRef(null);
+
+  const loadBook = useCallback((forceRefresh = false, signal) => {
+    if (!bookId || detailOnly) return;
+
+    if (forceRefresh) {
+      setError(null);
+      setBookInfo(null);
+    }
+
+    fetchBookDetailAndDirectory(bookId, { forceRefresh, signal })
+      .then((result) => applyDirectoryLoadResult(result, bookId, setBookInfo, showToast))
+      .catch((err) => handleBookError(err, setError));
+  }, [bookId, detailOnly, showToast]);
+
+  useEffect(() => {
+    if (!bookId || detailOnly) return;
+    const controller = new AbortController();
+    loadBook(false, controller.signal);
+    return () => controller.abort();
+  }, [bookId, detailOnly, loadBook]);
+
+  const refetch = useCallback(() => {
+    if (!bookId || !detailOnly) return;
+    refetchAbortRef.current?.abort();
+    const controller = new AbortController();
+    refetchAbortRef.current = controller;
+    setIsRefreshing(true);
+    setError(null);
+    fetchBookDetailAndDirectory(bookId, { forceRefresh: true, signal: controller.signal })
+      .then((result) => {
+        applyDirectoryLoadResult(result, bookId, setBookInfo, showToast);
+        if (refetchAbortRef.current === controller) refetchAbortRef.current = null;
+        setIsRefreshing(false);
+      })
+      .catch((err) => {
+        handleBookError(err, setError);
+        if (err.name !== 'AbortError') {
+          if (refetchAbortRef.current === controller) refetchAbortRef.current = null;
+          setIsRefreshing(false);
+        }
+      });
+  }, [bookId, detailOnly, showToast]);
+
+  useEffect(() => {
+    return () => refetchAbortRef.current?.abort();
+  }, []);
+
+  useEffect(() => {
+    if (!detailOnly || !bookId) {
+      setIsLoading(false);
+      return;
+    }
+    setError(null);
+    setIsLoading(true);
+    const controller = new AbortController();
+    fetchBookDetail(bookId, { signal: controller.signal })
+      .then((detail) => {
+        setBookInfo(normalizeDetailOnly(detail, bookId));
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        if (err.name !== 'AbortError') setIsLoading(false);
+        handleBookError(err, setError);
+      });
+    return () => controller.abort();
+  }, [detailOnly, bookId]);
+
+  useEffect(() => {
+    if (!detailOnly || !bookId || bookDataVersion === 0) return undefined;
+
+    const controller = new AbortController();
+    fetchBookDetail(bookId, { signal: controller.signal })
+      .then((detail) => setBookInfo(normalizeDetailOnly(detail, bookId)))
+      .catch((err) => {
+        if (err.name !== 'AbortError') handleBookError(err, setError);
+      });
+    return () => controller.abort();
+  }, [bookDataVersion, detailOnly, bookId]);
+
+  return { error, bookInfo, isLoading, loadBook, refetch, isRefreshing };
+}

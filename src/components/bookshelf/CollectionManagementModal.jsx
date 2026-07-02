@@ -6,14 +6,14 @@ import {
   ModalTitleBar,
   ModalBody,
   ModalScrollRegion,
-  ModalFooterRow,
+  ModalFooter,
   ModalInput,
   ModalPrimaryButton,
   ModalText,
-} from '../common/ModalBase';
-import ConfirmModal from '../common/ConfirmModal';
+} from '../ui/ModalBase';
+import ConfirmModal from '../ui/ConfirmModal';
 import SortableBooks from './SortableBooks';
-import EmptyHint from '../common/EmptyHint';
+import EmptyHint from '../ui/EmptyHint';
 
 const Hint = styled.p`
   margin: 0 0 8px;
@@ -265,7 +265,7 @@ function CollectionManagementModal({
             </ModalScrollRegion>
           )}
         </ModalBody>
-        <ModalFooterRow>
+        <ModalFooter $stretch>
           <ModalInput
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
@@ -275,7 +275,7 @@ function CollectionManagementModal({
           <ModalPrimaryButton type="button" onClick={handleCreate}>
             建立
           </ModalPrimaryButton>
-        </ModalFooterRow>
+        </ModalFooter>
       </Modal>
 
       {deleteTarget && (

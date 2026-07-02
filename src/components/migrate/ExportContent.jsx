@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import PageContent from '../common/PageContent';
-import { GrayButton } from '../common/GrayButton';
-import HostCodeList from '../common/HostCodeList';
+import PageContent from '../layout/PageContent';
+import { GrayButton } from '../ui/GrayButton';
+import HostCodeList from '../settings/HostCodeList';
 import { useToast } from '../../contexts/ToastContext';
 import {
   CANONICAL_IMPORT_URL,

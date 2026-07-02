@@ -1,5 +1,5 @@
 import { SlidersHorizontal } from 'lucide-react';
-import { IconButton } from '../common/IconButton';
+import { IconButton } from '../ui/IconButton';
 
 export const READER_SETTINGS_BUTTON_TITLE = '閱讀設定';
 

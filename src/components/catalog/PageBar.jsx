@@ -1,6 +1,6 @@
 import { ArrowDownZA, ArrowUpAZ, ChevronLeft, ChevronRight, ListChecks } from 'lucide-react';
 import styled from 'styled-components';
-import SelectDropdown from '../common/SelectDropdown';
+import SelectDropdown from '../ui/SelectDropdown';
 import { retroGlassControlBase, retroGlassControlHover, catalogInsetBarSurface, catalogDashedDividerBottom, catalogDashedDividerTop } from '../../utils/styled/retro';
 import { DropdownOptionLine } from '../../utils/styled/dropdown';
 
@@ -133,8 +133,6 @@ function PageBar({
   manageMode = false,
   onManageModeToggle,
 }) {
-  const showPagination = pageOptions.length > 1;
-
   const manageButton = onManageModeToggle && (
     <NavButton
       type="button"
@@ -162,29 +160,20 @@ function PageBar({
   return (
     <Bar>
       <PaginationGroup>
-        {showPagination ? (
-          <>
-            <NavButton type="button" title="上一頁" onClick={onPagePrev} disabled={!canGoPrev}>
-              <ChevronLeft size={18} />
-            </NavButton>
-            {manageButton}
-            <PageDropdown
-              pageOptions={pageOptions}
-              currentPage={currentPage}
-              onPageSelect={onPageSelect}
-              openUpward={menuOpensUp}
-            />
-            {sortButton}
-            <NavButton type="button" title="下一頁" onClick={onPageNext} disabled={!canGoNext}>
-              <ChevronRight size={18} />
-            </NavButton>
-          </>
-        ) : (
-          <>
-            {manageButton}
-            {sortButton}
-          </>
-        )}
+        <NavButton type="button" title="上一頁" onClick={onPagePrev} disabled={!canGoPrev}>
+          <ChevronLeft size={18} />
+        </NavButton>
+        {manageButton}
+        <PageDropdown
+          pageOptions={pageOptions}
+          currentPage={currentPage}
+          onPageSelect={onPageSelect}
+          openUpward={menuOpensUp}
+        />
+        {sortButton}
+        <NavButton type="button" title="下一頁" onClick={onPageNext} disabled={!canGoNext}>
+          <ChevronRight size={18} />
+        </NavButton>
       </PaginationGroup>
     </Bar>
   );

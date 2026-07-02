@@ -7,7 +7,7 @@ import {
   ModalFooter,
   ModalPrimaryButton,
   ModalSecondaryButton,
-} from '../common/ModalBase';
+} from '../ui/ModalBase';
 
 function DownloadAllConfirmModal({ chapterCount, onStay, onGoToDownloadPage, onClose }) {
   return (

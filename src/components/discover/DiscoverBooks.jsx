@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams, useSearchParams, Navigate } from 'react-router-dom';
 import { buildCatalogUrl, buildDiscoverUrl } from '../../utils/navigation';
-import { sortDiscoverBooks } from '../../utils/bookshelfSort';
+import { sortDiscoverBooks } from '../../utils/book/bookshelfSort';
 import { GridLayout, ListLayout } from '../bookshelf/styles';
 import CollectionModal from '../bookshelf/CollectionModal';
 import { useToast } from '../../contexts/ToastContext';
@@ -24,7 +24,7 @@ import {
   addBooksToReadingHistory,
   removeBooksFromReadingHistory,
 } from '../../utils/storage';
-import { useDiscoverBookList } from '../../hooks/useDiscoverBookList';
+import { useDiscoverBookList } from '../../hooks/discover/useDiscoverBookList';
 import {
   DEFAULT_SECONDARY_BY_PRIMARY,
   PRIMARY_TAB_OTHERS,
@@ -37,11 +37,11 @@ import {
   collectCategoriesFromItems,
   extractDiscoverBookFilterMeta,
   hasActiveBookFilters,
-} from '../../utils/bookFilters';
-import Section from './Section';
-import EmptyHint from '../common/EmptyHint';
-import Help from './Help';
-import Form from './Form';
+} from '../../utils/book/bookFilters';
+import DiscoverSection from './DiscoverSection';
+import EmptyHint from '../ui/EmptyHint';
+import DiscoverHelp from './DiscoverHelp';
+import DiscoverBookIdForm from './DiscoverBookIdForm';
 import DiscoverToolbar from './DiscoverToolbar';
 import DiscoverBookCard from './DiscoverBookCard';
 import DiscoverBookListCard from './DiscoverBookListCard';
@@ -259,7 +259,7 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
   const showDiscoverContent = showListContent && !showSearchContent;
 
   return (
-    <Section>
+    <DiscoverSection>
       <DiscoverToolbar
         activePrimary={activePrimary}
         activeSecondary={activeSecondary}
@@ -292,8 +292,8 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
 
       {activePrimary === PRIMARY_TAB_OTHERS && (
         <OthersPanel>
-          <Form embedded autoFocus />
-          <Help embedded />
+          <DiscoverBookIdForm embedded autoFocus />
+          <DiscoverHelp embedded />
         </OthersPanel>
       )}
 
@@ -353,7 +353,7 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
           onToggleAll={handleToggleAll}
         />
       )}
-    </Section>
+    </DiscoverSection>
   );
 }
 
