@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 import { TopBarOffset } from '../common/PageContent';
 import BookInfo from '../common/BookInfo';
+import CommentsActionBar from './CommentsActionBar';
 import CommentThread from './CommentThread';
 
 const Section = styled.div`
@@ -10,11 +11,6 @@ const Section = styled.div`
   @media (max-width: 480px) {
     padding: 20px 16px 16px;
   }
-`;
-
-const CommentStats = styled.div`
-  font-size: 14px;
-  color: var(--text-color-secondary);
 `;
 
 const SectionTitle = styled.h1`
@@ -32,6 +28,17 @@ const SectionTitle = styled.h1`
     margin-bottom: 20px;
   }
 `;
+
+function CommentStatsHeading({ commentCnt, convertedContext }) {
+  if (!(commentCnt > 0 || convertedContext)) return null;
+
+  return (
+    <SectionTitle>
+      {commentCnt > 0 && <span>共 {commentCnt} 則評論</span>}
+      {convertedContext && <span> · {convertedContext}</span>}
+    </SectionTitle>
+  );
+}
 
 const CommentList = styled.ul`
   list-style: none;
@@ -97,16 +104,17 @@ const EmptyState = styled.p`
 `;
 
 function Content({
+  bookId,
   bookInfo,
   comments,
   commentCnt,
-  context,
   convertedContext,
   page,
   canGoPrev,
   canGoNext,
   onPrevPage,
   onNextPage,
+  onRefresh,
   conversionMode,
 }) {
   return (
@@ -114,27 +122,13 @@ function Content({
       {bookInfo && (
         <BookInfo bookInfo={bookInfo} conversionMode={conversionMode} />
       )}
+      <CommentsActionBar bookId={bookId} onRefresh={onRefresh} />
       <Section>
-        <SectionTitle>
-          評論
-          {(commentCnt > 0 || context) && (
-            <CommentStats>
-              {commentCnt > 0 && <span>共 {commentCnt} 則評論</span>}
-              {context && <span> · {convertedContext}</span>}
-            </CommentStats>
-          )}
-        </SectionTitle>
+        <CommentStatsHeading commentCnt={commentCnt} convertedContext={convertedContext} />
         {comments.length === 0 ? (
           <EmptyState>暫無評論</EmptyState>
         ) : (
-          <>
-            {!bookInfo && (commentCnt > 0 || context) && (
-              <CommentStats style={{ marginBottom: 16 }}>
-                {commentCnt > 0 && <span>共 {commentCnt} 則評論</span>}
-                {context && <span> · {convertedContext}</span>}
-              </CommentStats>
-            )}
-            <CommentList>
+          <CommentList>
               {comments.map((item, idx) => (
                 <CommentThread
                   key={item.comment_id ?? idx}
@@ -142,8 +136,7 @@ function Content({
                   conversionMode={conversionMode}
                 />
               ))}
-            </CommentList>
-          </>
+          </CommentList>
         )}
         <Pagination>
           <PaginationButton

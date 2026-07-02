@@ -94,7 +94,7 @@ export const FONT_SIZE_DEFAULT = 32;
 export const FONT_SIZE_STEP = 2;
 export const TEXT_BRIGHTNESS_MIN = 20;
 export const TEXT_BRIGHTNESS_MAX = 100;
-export const TEXT_BRIGHTNESS_DEFAULT = 50;
+export const TEXT_BRIGHTNESS_DEFAULT = 80;
 export const TEXT_BRIGHTNESS_STEP = 5;
 
 export const GITHUB_ISSUES_URL = 'https://github.com/denniemok/fanqie-novel-reader/issues';

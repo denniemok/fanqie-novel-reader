@@ -7,6 +7,7 @@ import Loading from '../components/common/Loading';
 import PageWrapper from '../components/common/PageWrapper';
 import { useToast } from '../contexts/ToastContext';
 import TopBar from '../components/catalog/TopBar';
+import CatalogActionBar from '../components/catalog/CatalogActionBar';
 import { TopBarOffset } from '../components/common/PageContent';
 import { getLastReadChapter, getCatalogSortDirection, setCatalogSortDirection, getUncachedItemIds } from '../utils/storage';
 import { runBookTxtExport } from '../utils/exportBookActions';
@@ -111,22 +112,20 @@ function Catalog() {
 
   return (
     <PageWrapper>
-      {bookInfo && (
-        <TopBar
-          bookId={bookId}
-          navigate={navigate}
-          hasUncachedChapters={hasUncachedChapters}
-          uncachedItemIds={uncachedItemIds}
-          downloadingAll={downloadingAll}
-          onDownloadAll={handleDownloadAll}
-          onRefresh={() => loadBook(true)}
-          onExportTxt={handleExportTxt}
-          lastReadItemId={lastReadItemId}
-        />
-      )}
+      {bookInfo && <TopBar />}
       {bookInfo ? (
         <TopBarOffset>
           <BookInfo bookInfo={bookInfo} conversionMode={conversionMode} />
+          <CatalogActionBar
+            bookId={bookId}
+            navigate={navigate}
+            hasUncachedChapters={hasUncachedChapters}
+            downloadingAll={downloadingAll}
+            onDownloadAll={handleDownloadAll}
+            onRefresh={() => loadBook(true)}
+            onExportTxt={handleExportTxt}
+            lastReadItemId={lastReadItemId}
+          />
           {bookInfo.item_data_list && (
             <Menu
               sortOrder={sortOrder}

@@ -1,22 +1,9 @@
 import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { ToolItem, ToolLabel } from './LabeledIconButton';
 import { IconButton } from './IconButton';
 import styled from 'styled-components';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-
-const ToolItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-`;
-
-const ToolLabel = styled.span`
-  font-size: 11px;
-  color: var(--text-color-secondary);
-  text-align: center;
-  line-height: 1.2;
-`;
 
 const RightActions = styled.div`
   display: flex;

@@ -97,3 +97,25 @@ export const retroTagCardStyles = css`
   ${retroDashedCardStyles}
   ${retroTagStyles}
 `;
+
+export const catalogPanelShell = css`
+  border-radius: var(--border-radius-sm);
+  border: var(--retro-border-width) solid color-mix(in srgb, var(--border-color) 75%, transparent);
+  box-shadow: var(--retro-shadow);
+  background: var(--catalog-glass-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  overflow: hidden;
+`;
+
+export const catalogInsetBarSurface = css`
+  background: color-mix(in srgb, var(--background-color2) 35%, transparent);
+`;
+
+export const catalogDashedDividerBottom = css`
+  border-bottom: 1px dashed color-mix(in srgb, var(--border-color) 80%, transparent);
+`;
+
+export const catalogDashedDividerTop = css`
+  border-top: 1px dashed color-mix(in srgb, var(--border-color) 80%, transparent);
+`;

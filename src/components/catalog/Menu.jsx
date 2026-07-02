@@ -10,6 +10,7 @@ import { buildChapterUrl } from '../../utils/navigation';
 import { getChapterTitle } from '../../utils/chapter-helpers';
 import Status from './Status';
 import PageBar from './PageBar';
+import { catalogPanelShell } from '../../utils/styled/retro';
 import {
   CHAPTERS_PER_PAGE,
   getPaginatedChapters,
@@ -30,13 +31,7 @@ const DisabledLinkSpan = styled.span`
 
 const CatalogPanel = styled.section`
   margin: 12px 6px 12px;
-  border-radius: var(--border-radius-sm);
-  border: var(--retro-border-width) solid color-mix(in srgb, var(--border-color) 75%, transparent);
-  box-shadow: var(--retro-shadow);
-  background: var(--catalog-glass-bg);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  overflow: hidden;
+  ${catalogPanelShell}
 `;
 
 const MenuList = styled.ul`
@@ -159,7 +154,7 @@ function Menu({
 
   return (
     <CatalogPanel>
-      <PageBar {...pageBarProps} showManageToggle />
+      <PageBar {...pageBarProps} />
       <MenuList>
         {paginatedItems.map((item) => (
           <MenuItem key={item.item_id}>

@@ -1,7 +1,7 @@
 import { ArrowDownZA, ArrowUpAZ, ChevronLeft, ChevronRight, ListChecks } from 'lucide-react';
 import styled from 'styled-components';
 import SelectDropdown from '../common/SelectDropdown';
-import { retroGlassControlBase, retroGlassControlHover } from '../../utils/styled/retro';
+import { retroGlassControlBase, retroGlassControlHover, catalogInsetBarSurface, catalogDashedDividerBottom, catalogDashedDividerTop } from '../../utils/styled/retro';
 import { DropdownOptionLine } from '../../utils/styled/dropdown';
 
 const Bar = styled.div`
@@ -9,12 +9,12 @@ const Bar = styled.div`
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border-bottom: 1px dashed color-mix(in srgb, var(--border-color) 80%, transparent);
-  background: color-mix(in srgb, var(--background-color2) 35%, transparent);
+  ${catalogInsetBarSurface}
+  ${catalogDashedDividerBottom}
 
   &:last-child {
     border-bottom: none;
-    border-top: 1px dashed color-mix(in srgb, var(--border-color) 80%, transparent);
+    ${catalogDashedDividerTop}
   }
 `;
 
@@ -132,11 +132,10 @@ function PageBar({
   menuOpensUp = false,
   manageMode = false,
   onManageModeToggle,
-  showManageToggle = false,
 }) {
   const showPagination = pageOptions.length > 1;
 
-  const manageButton = showManageToggle && onManageModeToggle && (
+  const manageButton = onManageModeToggle && (
     <NavButton
       type="button"
       title={manageMode ? '退出管理' : '管理章節'}

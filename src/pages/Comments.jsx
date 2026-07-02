@@ -84,21 +84,19 @@ function Comments() {
         <Loading onAbort={() => navigate(buildCatalogUrl(bookId))} />
       ) : (
         <>
-          <TopBar
-            bookId={bookId}
-            onRefresh={handleRefresh}
-          />
+          <TopBar />
           <Content
+            bookId={bookId}
             bookInfo={bookInfo}
             comments={comments}
             commentCnt={commentCnt}
-            context={context}
             convertedContext={convertedContext}
             page={page}
             canGoPrev={canGoPrev}
             canGoNext={canGoNext}
             onPrevPage={handlePrevPage}
             onNextPage={handleNextPage}
+            onRefresh={handleRefresh}
             conversionMode={conversionMode}
           />
         </>
