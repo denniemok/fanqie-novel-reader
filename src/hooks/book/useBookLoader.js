@@ -13,7 +13,8 @@ function handleBookError(err, setError) {
   );
 }
 
-function applyDirectoryLoadResult({ merged, partialLoadMessage }, bookId, setBookInfo, showToast) {
+function applyDirectoryLoadResult({ merged, partialLoadMessage }, bookId, setBookInfo, setError, showToast) {
+  setError(null);
   setBookInfo(normalizeBookInfo(merged, bookId));
   if (partialLoadMessage) showToast(partialLoadMessage);
 }
@@ -29,18 +30,19 @@ export function useBookLoader(bookId, { detailOnly = false, bookDataVersion = 0 
   const loadBook = useCallback((forceRefresh = false, signal) => {
     if (!bookId || detailOnly) return;
 
+    setError(null);
     if (forceRefresh) {
-      setError(null);
       setBookInfo(null);
     }
 
     fetchBookDetailAndDirectory(bookId, { forceRefresh, signal })
-      .then((result) => applyDirectoryLoadResult(result, bookId, setBookInfo, showToast))
+      .then((result) => applyDirectoryLoadResult(result, bookId, setBookInfo, setError, showToast))
       .catch((err) => handleBookError(err, setError));
   }, [bookId, detailOnly, showToast]);
 
   useEffect(() => {
     if (!bookId || detailOnly) return;
+    setBookInfo(null);
     const controller = new AbortController();
     loadBook(false, controller.signal);
     return () => controller.abort();
@@ -55,7 +57,7 @@ export function useBookLoader(bookId, { detailOnly = false, bookDataVersion = 0 
     setError(null);
     fetchBookDetailAndDirectory(bookId, { forceRefresh: true, signal: controller.signal })
       .then((result) => {
-        applyDirectoryLoadResult(result, bookId, setBookInfo, showToast);
+        applyDirectoryLoadResult(result, bookId, setBookInfo, setError, showToast);
         if (refetchAbortRef.current === controller) refetchAbortRef.current = null;
         setIsRefreshing(false);
       })

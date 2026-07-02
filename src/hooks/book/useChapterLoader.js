@@ -13,9 +13,12 @@ export function useChapterLoader(itemId, bookId) {
   const [bookInfo, setBookInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const userFetchAbortRef = useRef(null);
+  const requestIdRef = useRef(0);
 
   const loadChapter = useCallback((forceRefresh = false, signal) => {
     if (!itemId) return;
+
+    const requestId = ++requestIdRef.current;
 
     const effectiveSignal = signal ?? (() => {
       userFetchAbortRef.current?.abort();
@@ -48,6 +51,7 @@ export function useChapterLoader(itemId, bookId) {
 
     loadPromise
       .then(({ chapterData: data, bookInfo: info, partialLoadMessage }) => {
+        if (requestId !== requestIdRef.current) return;
         setChapterData(data);
         setBookInfo(info);
         if (partialLoadMessage) showToast(partialLoadMessage);
@@ -58,6 +62,7 @@ export function useChapterLoader(itemId, bookId) {
       })
       .catch((err) => {
         if (err.name === 'AbortError') return;
+        if (requestId !== requestIdRef.current) return;
         console.error('獲取章節內容失敗:', itemId, err);
         setError(
           formatErrorMessage(err, '獲取章節內容失敗，來到沒有內容的荒原，請返回目錄重試！')
@@ -72,9 +77,13 @@ export function useChapterLoader(itemId, bookId) {
 
   useEffect(() => {
     if (!itemId) return;
+    userFetchAbortRef.current?.abort();
     const controller = new AbortController();
     loadChapter(false, controller.signal);
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+      userFetchAbortRef.current?.abort();
+    };
   }, [itemId, loadChapter]);
 
   return {
