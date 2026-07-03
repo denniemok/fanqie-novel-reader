@@ -30,24 +30,31 @@ export const FONT_SIZE_KEY = 'fontSize';
 export const FONT_FAMILY_KEY = 'fontFamily';
 export const TEXT_BRIGHTNESS_KEY = 'textBrightness';
 export const READER_BACKGROUND_KEY = 'readerBackground';
+export const READER_CUSTOM_BG_KEY = 'readerCustomBg';
+export const READER_CUSTOM_TEXT_KEY = 'readerCustomText';
 export const TRADITIONAL_CHINESE_KEY = 'traditionalChinese';
 export const BOOK_DISPLAY_VARIANT_KEY = 'bookDisplayVariant';
 export const THEME_KEY = 'theme';
 
-/** Reader background presets: { value: hex, label } */
+export const READER_BACKGROUND_CUSTOM = 'custom';
+export const READER_CUSTOM_BG_DEFAULT = '#f0e9e4';
+export const READER_CUSTOM_TEXT_DEFAULT = '#1a1a1a';
+
+/** Reader background presets: { value: hex | 'custom', label, textColor? } */
 export const READER_BACKGROUND_OPTIONS = [
-  { value: '#e8dce4', label: '淡粉', textColor: '#4a3d48' },
-  { value: '#e4e0e8', label: '薰衣草', textColor: '#443d50' },
-  { value: '#d4ccc8', label: '薄暮', textColor: '#3a3438' },
-  { value: '#f0e9e4', label: '暖紙', textColor: '#4a3d48' },
+  { value: '#e8dce4', label: '淡粉', textColor: '#1a1a1a' },
+  { value: '#e4e0e8', label: '薰衣草', textColor: '#1a1a1a' },
+  { value: '#d4ccc8', label: '薄暮', textColor: '#1a1a1a' },
+  { value: '#f0e9e4', label: '暖紙', textColor: '#1a1a1a' },
   { value: '#fffef5', label: '米白', textColor: '#1a1a1a' },
   { value: '#ffffff', label: '純白', textColor: '#1a1a1a' },
   { value: '#e0e0e0', label: '淺灰', textColor: '#1a1a1a' },
   { value: '#ede5d0', label: '米黃', textColor: '#1a1a1a' },
   { value: '#c0d0c0', label: '青綠', textColor: '#1a1a1a' },
-  { value: '#2c2630', label: '深夜', textColor: '#ddd0d8' },
-  { value: '#1a1a1a', label: '灰黑', textColor: '#b8b8b0' },
-  { value: '#0a0a0a', label: '深黑', textColor: '#b8b8b0' },
+  { value: '#2c2630', label: '深夜', textColor: '#e0e0e0' },
+  { value: '#1a1a1a', label: '灰黑', textColor: '#e0e0e0' },
+  { value: '#0a0a0a', label: '深黑', textColor: '#e0e0e0' },
+  { value: READER_BACKGROUND_CUSTOM, label: '自訂' },
 ];
 
 /** Chinese conversion modes: { value, label } */
@@ -100,7 +107,7 @@ export const FONT_SIZE_DEFAULT = 32;
 export const FONT_SIZE_STEP = 2;
 export const TEXT_BRIGHTNESS_MIN = 20;
 export const TEXT_BRIGHTNESS_MAX = 100;
-export const TEXT_BRIGHTNESS_DEFAULT = 80;
+export const TEXT_BRIGHTNESS_DEFAULT = 90;
 export const TEXT_BRIGHTNESS_STEP = 5;
 
 export const GITHUB_ISSUES_URL = 'https://github.com/denniemok/fanqie-novel-reader/issues';

@@ -12,6 +12,7 @@ import {
   TEXT_BRIGHTNESS_MAX,
   CHINESE_FONTS,
   READER_BACKGROUND_OPTIONS,
+  READER_BACKGROUND_CUSTOM,
 } from '../../utils/constants';
 import { catalogPanelShell } from '../../utils/styled/retro';
 import { thinScrollbarStyles } from '../../utils/styled/scrollbars';
@@ -63,6 +64,47 @@ const Section = styled.div`
   }
 `;
 
+const ColorPickerLabel = styled.label`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+`;
+
+const ColorSwatch = styled.span`
+  display: block;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--border-radius-sm);
+  background-color: ${(p) => p.$color};
+  border: var(--retro-border-width) solid var(--border-color);
+  box-shadow: var(--retro-shadow);
+  transition: var(--transition-default);
+  pointer-events: none;
+
+  ${ColorPickerLabel}:hover &,
+  ${ColorPickerLabel}:focus-within & {
+    border-color: var(--accent-color);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--retro-shadow-hover);
+  }
+`;
+
+const ColorInput = styled.input`
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translateX(-50%);
+  opacity: 0;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+`;
+
 function ReaderControlsPanel({
   open,
   onClose,
@@ -76,8 +118,13 @@ function ReaderControlsPanel({
   onTextBrightnessChange,
   readerBackground,
   onReaderBackgroundChange,
+  readerCustomBg,
+  readerCustomText,
+  onCustomBgChange,
+  onCustomTextChange,
 }) {
   const hasActions = onRefresh || bookId;
+  const isCustom = readerBackground === READER_BACKGROUND_CUSTOM;
 
   if (!open) return null;
 
@@ -149,6 +196,28 @@ function ReaderControlsPanel({
             />
           )}
         </Section>
+        {isCustom && onCustomBgChange && onCustomTextChange && (
+          <Section>
+            <ColorPickerLabel title="背景顏色">
+              <ColorSwatch $color={readerCustomBg} aria-hidden="true" />
+              <ColorInput
+                type="color"
+                value={readerCustomBg}
+                onChange={(e) => onCustomBgChange(e.target.value)}
+                aria-label="自訂背景顏色"
+              />
+            </ColorPickerLabel>
+            <ColorPickerLabel title="文字顏色">
+              <ColorSwatch $color={readerCustomText} aria-hidden="true" />
+              <ColorInput
+                type="color"
+                value={readerCustomText}
+                onChange={(e) => onCustomTextChange(e.target.value)}
+                aria-label="自訂文字顏色"
+              />
+            </ColorPickerLabel>
+          </Section>
+        )}
         {hasActions && (
           <Section>
             {onRefresh && (

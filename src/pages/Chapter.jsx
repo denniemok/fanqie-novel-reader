@@ -23,7 +23,16 @@ function Chapter() {
   const [fontSize, handleFontSizeChange] = useFontSize();
   const [fontFamily, handleFontFamilyChange] = useFontFamily();
   const [textBrightness, handleTextBrightnessChange] = useTextBrightness();
-  const [readerBackground, handleReaderBackgroundChange] = useReaderBackground();
+  const {
+    readerBackground,
+    readerBackgroundColor,
+    readerTextColor,
+    readerCustomBg,
+    readerCustomText,
+    handleReaderBackgroundChange,
+    handleCustomBgChange,
+    handleCustomTextChange,
+  } = useReaderBackground();
   const [conversionMode] = useConversionMode();
   const [readerControlsOpen, setReaderControlsOpen] = useState(false);
 
@@ -50,7 +59,7 @@ function Chapter() {
   }
 
   return (
-    <PageWrapper $withBottomPadding={false} $backgroundColor={loading ? undefined : readerBackground}>
+    <PageWrapper $withBottomPadding={false} $backgroundColor={loading ? undefined : readerBackgroundColor}>
       {loading ? (
         <Loading onAbort={() => navigate(bookId ? buildCatalogUrl(bookId) : '/')} />
       ) : (
@@ -79,8 +88,20 @@ function Chapter() {
                 onTextBrightnessChange={handleTextBrightnessChange}
                 readerBackground={readerBackground}
                 onReaderBackgroundChange={handleReaderBackgroundChange}
+                readerCustomBg={readerCustomBg}
+                readerCustomText={readerCustomText}
+                onCustomBgChange={handleCustomBgChange}
+                onCustomTextChange={handleCustomTextChange}
               />
-              <Reader chapterData={chapterData} fontSize={fontSize} fontFamily={fontFamily} textBrightness={textBrightness} readerBackground={readerBackground} conversionMode={conversionMode} />
+              <Reader
+                chapterData={chapterData}
+                fontSize={fontSize}
+                fontFamily={fontFamily}
+                textBrightness={textBrightness}
+                readerBackground={readerBackgroundColor}
+                readerTextColor={readerTextColor}
+                conversionMode={conversionMode}
+              />
               <BottomBar chapterData={chapterData} bookId={bookId} />
             </>
           )}

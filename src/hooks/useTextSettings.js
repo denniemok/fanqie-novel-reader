@@ -8,6 +8,8 @@ import {
   setTextBrightness,
   getReaderBackground,
   setReaderBackground,
+  getReaderCustomColors,
+  setReaderCustomColors,
 } from '../utils/storage';
 import {
   FONT_SIZE_MIN,
@@ -17,6 +19,7 @@ import {
   TEXT_BRIGHTNESS_MAX,
   TEXT_BRIGHTNESS_STEP,
 } from '../utils/constants';
+import { resolveReaderColors } from '../utils/readerColors';
 
 export function useFontSize() {
   const [fontSize, setFontSizeState] = useState(getFontSize);
@@ -61,11 +64,37 @@ export function useTextBrightness() {
 
 export function useReaderBackground() {
   const [readerBackground, setReaderBackgroundState] = useState(getReaderBackground);
+  const [customColors, setCustomColorsState] = useState(getReaderCustomColors);
+  const { background: readerBackgroundColor, textColor: readerTextColor } = resolveReaderColors(
+    readerBackground,
+    customColors,
+  );
 
   const handleReaderBackgroundChange = (value) => {
     setReaderBackground(value);
     setReaderBackgroundState(value);
   };
 
-  return [readerBackground, handleReaderBackgroundChange];
+  const handleCustomBgChange = (bg) => {
+    const next = { ...customColors, bg };
+    setReaderCustomColors({ bg });
+    setCustomColorsState(next);
+  };
+
+  const handleCustomTextChange = (text) => {
+    const next = { ...customColors, text };
+    setReaderCustomColors({ text });
+    setCustomColorsState(next);
+  };
+
+  return {
+    readerBackground,
+    readerBackgroundColor,
+    readerTextColor,
+    readerCustomBg: customColors.bg,
+    readerCustomText: customColors.text,
+    handleReaderBackgroundChange,
+    handleCustomBgChange,
+    handleCustomTextChange,
+  };
 }

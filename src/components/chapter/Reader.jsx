@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { maybeConvert } from '../../utils/text/zh-convert';
-import { READER_BACKGROUND_OPTIONS, FONT_SIZE_DEFAULT, TEXT_BRIGHTNESS_DEFAULT } from '../../utils/constants';
+import { FONT_SIZE_DEFAULT, TEXT_BRIGHTNESS_DEFAULT } from '../../utils/constants';
 import { minViewportHeight } from '../../utils/styled/viewport';
 
 const ReaderWrapper = styled.div`
@@ -34,20 +34,32 @@ const ReaderWrapper = styled.div`
   }
 `;
 
-function Reader({ chapterData, fontSize = FONT_SIZE_DEFAULT, fontFamily = "'Noto Serif TC', 'Noto Serif SC', sans-serif", textBrightness = TEXT_BRIGHTNESS_DEFAULT, readerBackground, conversionMode = 'tw' }) {
-  const textColor = READER_BACKGROUND_OPTIONS.find((o) => o.value === readerBackground)?.textColor;
+function Reader({
+  chapterData,
+  fontSize = FONT_SIZE_DEFAULT,
+  fontFamily = "'Noto Serif TC', 'Noto Serif SC', sans-serif",
+  textBrightness = TEXT_BRIGHTNESS_DEFAULT,
+  readerBackground,
+  readerTextColor,
+  conversionMode = 'tw',
+}) {
   if (!chapterData || !chapterData.content) return null;
 
   const convertedContent = maybeConvert(chapterData.content, conversionMode);
 
-  // Split content by newlines and wrap in <p> tags for better semantics and styling
   const paragraphs = convertedContent
     .split('\n')
-    .map(p => p.trim())
-    .filter(p => p.length > 0);
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);
 
   return (
-    <ReaderWrapper $fontSize={fontSize} $fontFamily={fontFamily} $textBrightness={textBrightness} $textColor={textColor} $readerBackground={readerBackground}>
+    <ReaderWrapper
+      $fontSize={fontSize}
+      $fontFamily={fontFamily}
+      $textBrightness={textBrightness}
+      $textColor={readerTextColor}
+      $readerBackground={readerBackground}
+    >
       {paragraphs.map((text, index) => (
         <p key={index}>{text}</p>
       ))}

@@ -28,8 +28,13 @@ import {
   TEXT_BRIGHTNESS_DEFAULT,
   READER_BACKGROUND_KEY,
   READER_BACKGROUND_OPTIONS,
+  READER_CUSTOM_BG_KEY,
+  READER_CUSTOM_TEXT_KEY,
+  READER_CUSTOM_BG_DEFAULT,
+  READER_CUSTOM_TEXT_DEFAULT,
   THEME_KEY,
 } from './constants';
+import { isValidHexColor, isValidReaderBackground } from './readerColors';
 import { normalizeBookFilterState } from './book/bookFilters';
 import { directoryCache, chapterCache, detailCache, getStoreItem, setStoreItem } from './cache';
 
@@ -234,13 +239,27 @@ export function setTextBrightness(value) {
 
 export function getReaderBackground() {
   const raw = safeGetItem(READER_BACKGROUND_KEY);
-  const valid = READER_BACKGROUND_OPTIONS.some((o) => o.value === raw);
-  return valid ? raw : READER_BACKGROUND_OPTIONS[0].value;
+  return isValidReaderBackground(raw) ? raw : READER_BACKGROUND_OPTIONS[0].value;
 }
 
 export function setReaderBackground(value) {
-  const valid = READER_BACKGROUND_OPTIONS.some((o) => o.value === value);
-  return valid ? safeSetItem(READER_BACKGROUND_KEY, value) : false;
+  return isValidReaderBackground(value) ? safeSetItem(READER_BACKGROUND_KEY, value) : false;
+}
+
+export function getReaderCustomColors() {
+  const rawBg = safeGetItem(READER_CUSTOM_BG_KEY);
+  const rawText = safeGetItem(READER_CUSTOM_TEXT_KEY);
+  return {
+    bg: isValidHexColor(rawBg) ? rawBg : READER_CUSTOM_BG_DEFAULT,
+    text: isValidHexColor(rawText) ? rawText : READER_CUSTOM_TEXT_DEFAULT,
+  };
+}
+
+export function setReaderCustomColors({ bg, text }) {
+  let ok = true;
+  if (bg != null) ok = isValidHexColor(bg) && safeSetItem(READER_CUSTOM_BG_KEY, bg) && ok;
+  if (text != null) ok = isValidHexColor(text) && safeSetItem(READER_CUSTOM_TEXT_KEY, text) && ok;
+  return ok;
 }
 
 /** @returns {'original'|'tw'|'hk'} Default: 'tw' */
