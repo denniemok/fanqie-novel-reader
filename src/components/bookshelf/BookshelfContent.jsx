@@ -75,7 +75,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
   const [bookFilters, setBookFilters] = useState(initialFilterState.filters);
   const [filtersExpanded, setFiltersExpanded] = useState(initialFilterState.expanded);
   const [reorderMode, setReorderMode] = useState(false);
-  const [settingsMode, setSettingsMode] = useState(false);
+  const [manageMode, setManageMode] = useState(false);
   const [selectedBookIds, setSelectedBookIds] = useState(() => new Set());
   const [confirmDialog, setConfirmDialog] = useState(null);
   const [exportBookId, setExportBookId] = useState(null);
@@ -87,7 +87,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
     clearBookRefreshErrors,
     handleBookRefresh,
     handleBulkRefresh,
-    resetRefreshingOnSettingsExit,
+    resetRefreshingOnManageExit,
   } = useBookRefresh();
 
   const reloadData = useCallback(async () => {
@@ -193,18 +193,18 @@ function BookshelfContent({ conversionMode = 'tw' }) {
   const handleReorderModeToggle = () => {
     setReorderMode((v) => {
       const next = !v;
-      if (next) setSettingsMode(false);
+      if (next) setManageMode(false);
       return next;
     });
   };
 
-  const handleSettingsModeToggle = () => {
-    if (!settingsMode) {
+  const handleManageModeToggle = () => {
+    if (!manageMode) {
       setReorderMode(false);
     } else {
       setSelectedBookIds(new Set());
     }
-    setSettingsMode((v) => !v);
+    setManageMode((v) => !v);
   };
 
   const toggleBookSelection = useCallback((bookId) => {
@@ -225,11 +225,20 @@ function BookshelfContent({ conversionMode = 'tw' }) {
   }, []);
 
   useEffect(() => {
-    if (!settingsMode) {
+    if (!manageMode) {
       setSelectedBookIds(new Set());
-      resetRefreshingOnSettingsExit();
+      resetRefreshingOnManageExit();
     }
-  }, [settingsMode, resetRefreshingOnSettingsExit]);
+  }, [manageMode, resetRefreshingOnManageExit]);
+
+  useEffect(() => {
+    if (!manageMode) return;
+    setSelectedBookIds((prev) => {
+      const selectable = new Set(selectableBookIds);
+      const pruned = new Set([...prev].filter((id) => selectable.has(id)));
+      return pruned.size === prev.size ? prev : pruned;
+    });
+  }, [manageMode, selectableBookIds]);
 
   useEffect(() => {
     setSelectedBookIds(new Set());
@@ -304,10 +313,14 @@ function BookshelfContent({ conversionMode = 'tw' }) {
       onConfirm: async () => {
         await deleteBooksData([bookId]);
         clearBookRefreshErrors(bookId);
-        setRefreshKey((k) => k + 1);
+        if (activeTab === ALL_TAB) {
+          setRefreshKey((k) => k + 1);
+        } else {
+          await reloadDataKeepingScroll();
+        }
       },
     });
-  }, [conversionMode, variant, clearBookRefreshErrors]);
+  }, [activeTab, conversionMode, variant, clearBookRefreshErrors, reloadDataKeepingScroll]);
 
   const handleRemoveFromCollection = useCallback((e, bookId, bookInfo) => {
     e.stopPropagation();
@@ -318,7 +331,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
       title: '移除書籍',
       message: (
         <ModalText>
-          確定要從「<strong>{activeCollection.name}</strong>」移除 <strong>{convertedName}</strong> 嗎？
+          確定要從「<strong>{activeCollection.name}</strong>」收藏中移除 <strong>{convertedName}</strong> 嗎？
         </ModalText>
       ),
       confirmLabel: '移除',
@@ -397,13 +410,34 @@ function BookshelfContent({ conversionMode = 'tw' }) {
       title: '移除書籍',
       message: (
         <ModalText>
-          確定要從「<strong>{activeCollection.name}</strong>」移除已選的 <strong>{ids.length}</strong> 本書籍嗎？
+          確定要從「<strong>{activeCollection.name}</strong>」收藏中移除已選的 <strong>{ids.length}</strong> 本書籍嗎？
         </ModalText>
       ),
       confirmLabel: '移除',
       errorMessage: '移除書籍失敗，請稍後再試。',
       onConfirm: async () => {
         await removeBooksFromCollection(activeTab, ids);
+        clearBookRefreshErrors(ids);
+        setSelectedBookIds(new Set());
+        await reloadDataKeepingScroll();
+      },
+    });
+  };
+
+  const handleBulkDeleteLocalData = () => {
+    if (selectedBookIds.size === 0) return;
+    const ids = Array.from(selectedBookIds);
+    setConfirmDialog({
+      title: '刪除書籍',
+      message: (
+        <ModalText>
+          確定要刪除已選的 <strong>{ids.length}</strong> 本書籍的所有本地資料嗎？此操作無法復原。
+        </ModalText>
+      ),
+      confirmLabel: '刪除',
+      errorMessage: '刪除書籍失敗，請稍後再試。',
+      onConfirm: async () => {
+        await deleteBooksData(ids);
         clearBookRefreshErrors(ids);
         setSelectedBookIds(new Set());
         await reloadDataKeepingScroll();
@@ -469,7 +503,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
   }, [canReorder]);
 
   const handleReorder = activeTab === ALL_TAB ? handleHistoryReorder : handleCollectionReorder;
-  const manageBarVisible = settingsMode && !reorderMode;
+  const manageBarVisible = manageMode && !reorderMode;
 
   return (
     <Wrapper
@@ -499,8 +533,8 @@ function BookshelfContent({ conversionMode = 'tw' }) {
             hasSearch={hasSearch}
             hasActiveFilters={hasActiveFilters}
             onReorderModeToggle={handleReorderModeToggle}
-            settingsMode={settingsMode}
-            onSettingsModeToggle={handleSettingsModeToggle}
+            manageMode={manageMode}
+            onManageModeToggle={handleManageModeToggle}
             viewMode={viewMode}
             onViewModeChange={handleViewModeChange}
             navigate={navigate}
@@ -520,7 +554,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
             </ReorderHint>
           )}
 
-          {settingsMode && !reorderMode && (
+          {manageMode && !reorderMode && (
             <ReorderHint>點擊書籍以選取，使用底部工具列進行管理，完成後再次點擊「管理」退出</ReorderHint>
           )}
 
@@ -531,7 +565,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
             viewMode={viewMode}
             canReorder={canReorder}
             reorderMode={reorderMode}
-            settingsMode={settingsMode}
+            manageMode={manageMode}
             conversionMode={conversionMode}
             sortBy={sortBy}
             selectedBookIds={selectedBookIds}
@@ -544,6 +578,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
             onReorder={handleReorder}
             onBookRefresh={handleBookRefresh}
             onBookDelete={handleBookDelete}
+            onBookDeleteLocalData={handleDeleteBook}
             onBookAddToCollection={handleAddToCollection}
             onBookDownload={handleBookDownload}
             onBookExport={handleBookExport}
@@ -562,6 +597,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
               onGoToExport={handleGoToExport}
               onBulkRefresh={onBulkRefresh}
               onBulkDelete={handleBulkDelete}
+              onBulkDeleteLocalData={handleBulkDeleteLocalData}
               isRefreshing={refreshingBookIds.size > 0}
             />
           )}

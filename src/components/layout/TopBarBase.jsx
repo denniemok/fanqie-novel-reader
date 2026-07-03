@@ -2,8 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import SettingsButton from '../settings/SettingsButton';
-import BackButton from '../navigation/BackButton';
-import ForwardButton from '../navigation/ForwardButton';
 import ActionBar from './ActionBar';
 import { ROUTES } from '../../utils/navigation';
 
@@ -91,15 +89,7 @@ function TopBarBase({ pageTitle, children }) {
           </>
         )}
       </TitleGroup>
-      <ActionBar
-        pinnedStart={
-          <>
-            <BackButton />
-            <ForwardButton />
-          </>
-        }
-        pinnedEnd={<SettingsButton />}
-      >
+      <ActionBar pinnedEnd={<SettingsButton />}>
         {children}
       </ActionBar>
     </TopBarWrapper>

@@ -1,5 +1,9 @@
 import styled, { css } from 'styled-components';
 
+/** Viewports at or below this width use the card action footer instead of the overlay. */
+export const CARD_ACTION_FOOTER_MAX_WIDTH = '768px';
+export const CARD_ACTION_FOOTER_MEDIA_QUERY = `(max-width: ${CARD_ACTION_FOOTER_MAX_WIDTH})`;
+
 const actionBarStyles = css`
   display: flex;
   align-items: center;

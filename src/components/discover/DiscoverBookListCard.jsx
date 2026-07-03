@@ -5,10 +5,10 @@ import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { normalizeDiscoverBookPayload } from '../../utils/book/bookInfo';
 import { cardKeyDownHandler } from '../../utils/cardInteraction';
 import {
-  ListCard,
-  ListCardBody,
-  ListCardActionOverlay,
-  ListCardActionFooter,
+  DiscoverListCard,
+  DiscoverListCardBody,
+  DiscoverListCardActionOverlay,
+  DiscoverListCardActionFooter,
 } from './styles';
 
 function DiscoverBookListCard({ book, conversionMode, onClick, onAddToCollection }) {
@@ -36,30 +36,30 @@ function DiscoverBookListCard({ book, conversionMode, onClick, onAddToCollection
   };
 
   return (
-    <ListCard
+    <DiscoverListCard
       onClick={onClick}
       role="button"
       tabIndex={0}
       onKeyDown={cardKeyDownHandler(onClick)}
     >
       {actionButton && !isMobile && (
-        <ListCardActionOverlay {...actionHandlers}>
+        <DiscoverListCardActionOverlay {...actionHandlers}>
           {actionButton}
-        </ListCardActionOverlay>
+        </DiscoverListCardActionOverlay>
       )}
-      <ListCardBody>
+      <DiscoverListCardBody>
         <BookInfo
           bookInfo={normalizeDiscoverBookPayload(book)}
           conversionMode={conversionMode}
           variant="compact"
         />
-      </ListCardBody>
+      </DiscoverListCardBody>
       {actionButton && isMobile && (
-        <ListCardActionFooter {...actionHandlers}>
+        <DiscoverListCardActionFooter {...actionHandlers}>
           {actionButton}
-        </ListCardActionFooter>
+        </DiscoverListCardActionFooter>
       )}
-    </ListCard>
+    </DiscoverListCard>
   );
 }
 

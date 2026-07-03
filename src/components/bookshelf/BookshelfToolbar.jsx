@@ -52,8 +52,8 @@ function BookshelfToolbar({
   hasSearch,
   hasActiveFilters,
   onReorderModeToggle,
-  settingsMode,
-  onSettingsModeToggle,
+  manageMode,
+  onManageModeToggle,
   viewMode,
   onViewModeChange,
   navigate,
@@ -180,11 +180,11 @@ function BookshelfToolbar({
           </SortUnit>
           <ViewToggle>
             <ToggleBtn
-              $active={settingsMode}
-              onClick={onSettingsModeToggle}
+              $active={manageMode}
+              onClick={onManageModeToggle}
               title="管理書籍"
               aria-label="管理書籍"
-              aria-pressed={settingsMode}
+              aria-pressed={manageMode}
             >
               <ListChecks />
               <BtnLabel>管理</BtnLabel>

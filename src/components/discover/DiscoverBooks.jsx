@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams, useSearchParams, Navigate } from 'react-router-dom';
 import { buildCatalogUrl, buildDiscoverUrl } from '../../utils/navigation';
 import { sortDiscoverBooks } from '../../utils/book/bookshelfSort';
-import { GridLayout, ListLayout } from '../bookshelf/styles';
 import CollectionModal from '../bookshelf/CollectionModal';
 import { useToast } from '../../contexts/ToastContext';
 import { formatErrorMessage } from '../../utils/errors';
@@ -43,8 +42,7 @@ import EmptyHint from '../ui/EmptyHint';
 import DiscoverHelp from './DiscoverHelp';
 import DiscoverBookIdForm from './DiscoverBookIdForm';
 import DiscoverToolbar from './DiscoverToolbar';
-import DiscoverBookCard from './DiscoverBookCard';
-import DiscoverBookListCard from './DiscoverBookListCard';
+import DiscoverBookList from './DiscoverBookList';
 import DiscoverBookSkeletons from './DiscoverBookSkeletons';
 import { OthersPanel } from './styles';
 
@@ -234,7 +232,7 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
     [filteredBooks, sortBy, sortDirection],
   );
 
-  const bookCardProps = (book) => ({
+  const baseBookCardProps = (book) => ({
     book,
     conversionMode,
     sortBy,
@@ -242,7 +240,7 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
   });
 
   const bookListCardProps = (book) => ({
-    ...bookCardProps(book),
+    ...baseBookCardProps(book),
     onAddToCollection: handleAddToCollection,
   });
 
@@ -324,19 +322,12 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
       )}
 
       {showListContent && !loading && !error && sortedBooks.length > 0 && (
-        viewMode === 'list' ? (
-          <ListLayout>
-            {sortedBooks.map((book) => (
-              <DiscoverBookListCard key={book.book_id} {...bookListCardProps(book)} />
-            ))}
-          </ListLayout>
-        ) : (
-          <GridLayout>
-            {sortedBooks.map((book) => (
-              <DiscoverBookCard key={book.book_id} {...bookCardProps(book)} />
-            ))}
-          </GridLayout>
-        )
+        <DiscoverBookList
+          viewMode={viewMode}
+          sortedBooks={sortedBooks}
+          baseBookCardProps={baseBookCardProps}
+          bookListCardProps={bookListCardProps}
+        />
       )}
 
       {addToCollectionBookIds && (

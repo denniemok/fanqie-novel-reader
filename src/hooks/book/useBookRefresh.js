@@ -119,7 +119,7 @@ export function useBookRefresh() {
     }
   }, [refreshingBookIds, applyRefreshOutcome]);
 
-  const resetRefreshingOnSettingsExit = useCallback(() => {
+  const resetRefreshingOnManageExit = useCallback(() => {
     setRefreshingBookIds(new Set());
   }, []);
 
@@ -130,6 +130,6 @@ export function useBookRefresh() {
     clearBookRefreshErrors,
     handleBookRefresh,
     handleBulkRefresh,
-    resetRefreshingOnSettingsExit,
+    resetRefreshingOnManageExit,
   };
 }

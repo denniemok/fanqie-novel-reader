@@ -58,6 +58,7 @@
     transparent 70%
   );
   --selection-bg: rgba(201, 128, 154, 0.28);
+  --page-bg-photo: url('/bg-light.webp');
   --card-surface: linear-gradient(
     155deg,
     var(--background-color2) 0%,
@@ -111,6 +112,7 @@
     transparent 70%
   );
   --selection-bg: rgba(232, 138, 170, 0.35);
+  --page-bg-photo: url('/bg-dark.webp');
   --card-surface: linear-gradient(
     155deg,
     var(--background-color2) 0%,
@@ -118,17 +120,27 @@
   );
 }
 
-[data-theme="dark"] body {
+html::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  background-color: var(--background-color);
   background-image:
     var(--bg-wash-accent),
-    radial-gradient(ellipse 70% 45% at 15% 8%, rgba(232, 138, 170, 0.1) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 35% at 88% 92%, rgba(140, 120, 150, 0.1) 0%, transparent 50%),
-    radial-gradient(circle, rgba(120, 100, 110, 0.08) 1px, transparent 1px),
+    radial-gradient(ellipse 70% 45% at 15% 8%, rgba(201, 128, 154, 0.1) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 35% at 88% 92%, rgba(180, 160, 175, 0.08) 0%, transparent 50%),
+    radial-gradient(circle, rgba(160, 140, 130, 0.05) 1px, transparent 1px),
     var(--bg-wash-vignette),
     var(--bg-wash-linear),
-    url('/bg-dark.webp');
+    var(--page-bg-photo);
   background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, cover, cover, cover;
   background-position: center, center, center, center, center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat, no-repeat, no-repeat, no-repeat;
+  transition: background-color 0.4s ease;
 }
 
 *, *::before, *::after {
@@ -137,6 +149,7 @@
 
 html {
   overflow-x: hidden;
+  background-color: var(--background-color);
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
@@ -174,8 +187,10 @@ html {
 body {
   margin: 0;
   padding: 0;
+  position: relative;
+  z-index: 1;
   font-family: var(--ui-font-family);
-  background-color: var(--background-color);
+  background-color: transparent;
   color: var(--text-color);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
@@ -186,18 +201,7 @@ body {
   overscroll-behavior-y: none;
   min-height: 100vh;
   min-height: 100dvh;
-  background-image:
-    var(--bg-wash-accent),
-    radial-gradient(ellipse 70% 45% at 15% 8%, rgba(201, 128, 154, 0.1) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 35% at 88% 92%, rgba(180, 160, 175, 0.08) 0%, transparent 50%),
-    radial-gradient(circle, rgba(160, 140, 130, 0.05) 1px, transparent 1px),
-    var(--bg-wash-vignette),
-    var(--bg-wash-linear),
-    url('/bg-light.webp');
-  background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, cover, cover, cover;
-  background-position: center, center, center, center, center, center, center;
-  background-attachment: fixed;
-  transition: background-color 0.4s ease, color 0.4s ease;
+  transition: color 0.4s ease;
 }
 
 ::selection {
@@ -229,11 +233,7 @@ button, a {
 
 /* Tall narrow portrait (phones + tablets): anchor bg image to the left */
 @media (orientation: portrait) {
-  body {
-    background-position: center, center, center, center, center, center, left center;
-  }
-
-  [data-theme="dark"] body {
+  html::before {
     background-position: center, center, center, center, center, center, left center;
   }
 }

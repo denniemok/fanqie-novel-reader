@@ -1,6 +1,6 @@
 import EmptyHint from '../ui/EmptyHint';
-import GridCard from './GridCard';
-import ListCard from './ListCard';
+import BookshelfGridCard from './BookshelfGridCard';
+import BookshelfListCard from './BookshelfListCard';
 import SortableBooks from './SortableBooks';
 import { ALL_TAB } from './constants';
 import { GridLayout, ListLayout } from './styles';
@@ -12,7 +12,7 @@ function BookshelfBookList({
   viewMode,
   canReorder,
   reorderMode,
-  settingsMode,
+  manageMode,
   conversionMode,
   sortBy,
   selectedBookIds,
@@ -25,6 +25,7 @@ function BookshelfBookList({
   onReorder,
   onBookRefresh,
   onBookDelete,
+  onBookDeleteLocalData,
   onBookAddToCollection,
   onBookDownload,
   onBookExport,
@@ -43,7 +44,7 @@ function BookshelfBookList({
     return <EmptyHint>沒有符合的書籍</EmptyHint>;
   }
 
-  const selectionMode = settingsMode && !reorderMode;
+  const selectionMode = manageMode && !reorderMode;
   const showListActions = !selectionMode && !reorderMode;
   const isAllTab = activeTab === ALL_TAB;
 
@@ -69,6 +70,7 @@ function BookshelfBookList({
     showActions: showListActions,
     onRefreshClick: onBookRefresh,
     onDeleteClick: onBookDelete,
+    onDeleteLocalDataClick: isAllTab ? undefined : onBookDeleteLocalData,
     onAddToCollection: onBookAddToCollection,
     onDownload: onBookDownload,
     onExport: onBookExport,
@@ -85,7 +87,7 @@ function BookshelfBookList({
           getKey={({ bookId }) => bookId}
           onReorder={onReorder}
           renderItem={({ bookId }, sortable) => (
-            <ListCard
+            <BookshelfListCard
               {...listCardProps(bookId)}
               dragHandleProps={sortable.dragHandleProps}
               isDragging={sortable.isDragging}
@@ -100,7 +102,7 @@ function BookshelfBookList({
     return (
       <ListLayout key={`list-${activeTab}-${renderTick}`}>
         {booksForDisplay.map(({ bookId }) => (
-          <ListCard key={bookId} {...listCardProps(bookId)} />
+          <BookshelfListCard key={bookId} {...listCardProps(bookId)} />
         ))}
       </ListLayout>
     );
@@ -115,7 +117,7 @@ function BookshelfBookList({
         getKey={({ bookId }) => bookId}
         onReorder={onReorder}
         renderItem={({ bookId }, sortable) => (
-          <GridCard
+            <BookshelfGridCard
             {...gridCardProps(bookId)}
             dragHandleProps={sortable.dragHandleProps}
             isDragging={sortable.isDragging}
@@ -130,7 +132,7 @@ function BookshelfBookList({
   return (
     <GridLayout key={`grid-${activeTab}-${renderTick}`}>
       {booksForDisplay.map(({ bookId }) => (
-        <GridCard key={bookId} {...gridCardProps(bookId)} />
+            <BookshelfGridCard key={bookId} {...gridCardProps(bookId)} />
       ))}
     </GridLayout>
   );

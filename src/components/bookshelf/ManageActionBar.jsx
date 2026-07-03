@@ -2,6 +2,7 @@ import {
   SquareCheckBig,
   SquareX,
   FolderInput,
+  FolderMinus,
   Trash2,
   Download,
   FileText,
@@ -9,6 +10,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { CardSpinningIcon } from '../book/CardActionButton';
+import { getDeleteLocalDataLabel, getRemoveFromCollectionLabel } from '../book/BookQuickActions';
 import { ALL_TAB } from './constants';
 import {
   ManageActionBar as ManageActionBarRoot,
@@ -29,9 +31,12 @@ function ManageActionBar({
   onGoToExport,
   onBulkRefresh,
   onBulkDelete,
+  onBulkDeleteLocalData,
   isRefreshing,
 }) {
-  const bulkDeleteLabel = activeTab === ALL_TAB ? '刪除所選書籍' : '從收藏夾移除';
+  const isAllTab = activeTab === ALL_TAB;
+  const bulkDeleteLabel = isAllTab ? '刪除所選書籍' : getRemoveFromCollectionLabel();
+  const bulkDeleteLocalDataLabel = getDeleteLocalDataLabel();
 
   return (
     <ManageActionBarRoot>
@@ -101,15 +106,27 @@ function ManageActionBar({
             <RefreshCw />
           )}
         </ManageBarButton>
+        {!isAllTab && onBulkDeleteLocalData && (
+          <ManageBarButton
+            type="button"
+            $variant="delete"
+            disabled={selectedCount === 0}
+            onClick={onBulkDeleteLocalData}
+            title={bulkDeleteLocalDataLabel}
+            aria-label={bulkDeleteLocalDataLabel}
+          >
+            <Trash2 />
+          </ManageBarButton>
+        )}
         <ManageBarButton
           type="button"
-          $variant="delete"
+          $variant={isAllTab ? 'delete' : 'collection'}
           disabled={selectedCount === 0}
           onClick={onBulkDelete}
           title={bulkDeleteLabel}
           aria-label={bulkDeleteLabel}
         >
-          <Trash2 />
+          {isAllTab ? <Trash2 /> : <FolderMinus />}
         </ManageBarButton>
       </ManageActionButtons>
     </ManageActionBarRoot>

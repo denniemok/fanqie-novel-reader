@@ -12,6 +12,7 @@ import {
   CardActionOverlay,
   CardActionFooter,
   cardActionBarHandlers,
+  CARD_ACTION_FOOTER_MEDIA_QUERY,
 } from '../layout/CardActionBarLayout';
 import BookRefreshError from './BookRefreshError';
 
@@ -193,11 +194,12 @@ const SelectionBadge = styled.div`
   }
 `;
 
-function ListCard({
+function BookshelfListCard({
   bookId,
   onClick,
   onRefreshClick,
   onDeleteClick,
+  onDeleteLocalDataClick,
   onAddToCollection,
   onDownload,
   onExport,
@@ -220,7 +222,7 @@ function ListCard({
     bookDataVersion,
   });
   const isRefreshing = hookRefreshing || bulkRefreshing;
-  const isMobile = useMediaQuery('(max-width: 480px)');
+  const useActionFooter = useMediaQuery(CARD_ACTION_FOOTER_MEDIA_QUERY);
   useErrorToast(error);
 
   if (!bookInfo) {
@@ -263,6 +265,7 @@ function ListCard({
     onRefreshClick,
     refetch,
     onDeleteClick,
+    onDeleteLocalDataClick,
   };
 
   return (
@@ -289,7 +292,7 @@ function ListCard({
             <Check />
           </SelectionBadge>
         )}
-        {showItemActions && !isMobile && (
+        {showItemActions && !useActionFooter && (
           <CardActionOverlay {...cardActionBarHandlers}>
             <CardActionBarScroll>
               <BookQuickActions {...actionProps} />
@@ -304,7 +307,7 @@ function ListCard({
           />
         </CardBody>
       </CardMainRow>
-      {showItemActions && isMobile && (
+      {showItemActions && useActionFooter && (
         <CardActionFooter {...cardActionBarHandlers}>
           <CardActionBarScroll>
             <BookQuickActions {...actionProps} />
@@ -316,4 +319,4 @@ function ListCard({
   );
 }
 
-export default ListCard;
+export default BookshelfListCard;

@@ -234,7 +234,7 @@ const SelectionBadge = styled.div`
   }
 `;
 
-function GridCard({
+function BookshelfGridCard({
   bookId,
   onClick,
   conversionMode,
@@ -366,4 +366,4 @@ function GridCard({
   );
 }
 
-export default GridCard;
+export default BookshelfGridCard;

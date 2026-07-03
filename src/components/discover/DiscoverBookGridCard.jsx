@@ -6,7 +6,7 @@ import { getCoverMetaEntries } from '../../utils/coverMetaLines';
 import { cardKeyDownHandler } from '../../utils/cardInteraction';
 import {
   Author,
-  Card,
+  DiscoverGridCard,
   CoverImg,
   CoverMetaLine,
   CoverMetaOverlayBottom,
@@ -16,7 +16,7 @@ import {
   Title,
 } from './styles';
 
-function DiscoverBookCard({ book, conversionMode, onClick, sortBy = 'default' }) {
+function DiscoverBookGridCard({ book, conversionMode, onClick, sortBy = 'default' }) {
   const info = normalizeDiscoverBookInfo(book);
   const { variant } = useBookDisplayVariant();
   const { book_name, thumb_url } = resolveBookDisplay(info, variant, book?.book_id);
@@ -40,7 +40,7 @@ function DiscoverBookCard({ book, conversionMode, onClick, sortBy = 'default' })
   });
 
   return (
-    <Card
+    <DiscoverGridCard
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -64,8 +64,8 @@ function DiscoverBookCard({ book, conversionMode, onClick, sortBy = 'default' })
         <Title>{convertedName || book.book_id}</Title>
         <Author>{convertedAuthor || '\u00A0'}</Author>
       </Info>
-    </Card>
+    </DiscoverGridCard>
   );
 }
 
-export default DiscoverBookCard;
+export default DiscoverBookGridCard;

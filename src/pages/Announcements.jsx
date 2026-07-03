@@ -1,9 +1,10 @@
 import NavPageLayout from '../components/layout/NavPageLayout';
 import NavTopBar from '../components/layout/NavTopBar';
 import PageWrapper from '../components/layout/PageWrapper';
+import PageContent from '../components/layout/PageContent';
 import Loading from '../components/ui/Loading';
 import Error from '../components/ui/Error';
-import AnnouncementsContent from '../components/announcements/AnnouncementsContent';
+import NoticeBoard from '../components/announcements/NoticeBoard';
 import { useAnnouncements } from '../hooks/useAnnouncements';
 
 function Announcements() {
@@ -28,7 +29,9 @@ function Announcements() {
   return (
     <NavPageLayout>
       <NavTopBar pageTitle="公告" />
-      <AnnouncementsContent announcements={announcements ?? []} />
+      <PageContent $paddingBottom={48} $paddingBottomMobile={32}>
+        <NoticeBoard announcements={announcements ?? []} />
+      </PageContent>
     </NavPageLayout>
   );
 }

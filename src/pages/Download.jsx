@@ -1,6 +1,8 @@
 import NavPageLayout from '../components/layout/NavPageLayout';
 import NavTopBar from '../components/layout/NavTopBar';
-import DownloadContent from '../components/download/DownloadContent';
+import PageContent from '../components/layout/PageContent';
+import DownloadProgress from '../components/download/DownloadProgress';
+import DownloadGuide from '../components/download/DownloadGuide';
 import { useConversionMode } from '../hooks/useConversionMode';
 
 function Download() {
@@ -9,7 +11,10 @@ function Download() {
   return (
     <NavPageLayout>
       <NavTopBar pageTitle="下載" />
-      <DownloadContent conversionMode={conversionMode} />
+      <PageContent $paddingBottom={48} $paddingBottomMobile={32}>
+        <DownloadProgress conversionMode={conversionMode} />
+        <DownloadGuide />
+      </PageContent>
     </NavPageLayout>
   );
 }

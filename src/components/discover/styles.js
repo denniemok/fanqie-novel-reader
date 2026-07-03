@@ -111,7 +111,7 @@ export const SecondaryTab = styled(Tab)`
   border-radius: 0;
 `;
 
-export const ListCard = styled.div`
+export const DiscoverListCard = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -138,7 +138,7 @@ export const ListCard = styled.div`
   }
 `;
 
-export const ListCardBody = styled.div`
+export const DiscoverListCardBody = styled.div`
   display: flex;
   width: 100%;
   box-sizing: border-box;
@@ -153,7 +153,7 @@ export const ListCardBody = styled.div`
   }
 `;
 
-export const ListCardActionOverlay = styled.div`
+export const DiscoverListCardActionOverlay = styled.div`
   position: absolute;
   top: 10px;
   right: 10px;
@@ -165,7 +165,7 @@ export const ListCardActionOverlay = styled.div`
   pointer-events: auto;
 `;
 
-export const ListCardActionFooter = styled.div`
+export const DiscoverListCardActionFooter = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -176,7 +176,7 @@ export const ListCardActionFooter = styled.div`
   z-index: 11;
 `;
 
-export const ListSkeletonCard = styled.div`
+export const DiscoverListSkeletonCard = styled.div`
   display: flex;
   width: 100%;
   box-sizing: border-box;
@@ -222,7 +222,7 @@ export const OthersPanel = styled.div`
   gap: 24px;
 `;
 
-export const Card = styled.div`
+export const DiscoverGridCard = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -357,7 +357,7 @@ export const Author = styled.div`
   min-height: 11px;
 `;
 
-export const SkeletonCard = styled.div`
+export const DiscoverGridSkeletonCard = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;

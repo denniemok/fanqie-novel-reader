@@ -1,8 +1,16 @@
-import { FolderInput, Download, FileText, RefreshCw, Trash2, Loader2 } from 'lucide-react';
+import { FolderInput, FolderMinus, Download, FileText, RefreshCw, Trash2, Loader2 } from 'lucide-react';
 import { CardActionButton, CardSpinningIcon } from './CardActionButton';
 
+export function getDeleteLocalDataLabel() {
+  return '刪除此書的本地資料';
+}
+
+export function getRemoveFromCollectionLabel() {
+  return '從收藏夾移除';
+}
+
 export function getDeleteActionLabel(isAllTab) {
-  return isAllTab ? '刪除此書的本地資料' : '從收藏夾移除';
+  return isAllTab ? getDeleteLocalDataLabel() : getRemoveFromCollectionLabel();
 }
 
 /**
@@ -25,6 +33,7 @@ export function BookQuickActions({
   onRefreshClick,
   refetch,
   onDeleteClick,
+  onDeleteLocalDataClick,
 }) {
   const wrapClick = (handler) => {
     if (!handler) return undefined;
@@ -36,6 +45,7 @@ export function BookQuickActions({
   };
 
   const deleteLabel = getDeleteActionLabel(isAllTab);
+  const deleteLocalDataLabel = getDeleteLocalDataLabel();
 
   return (
     <>
@@ -86,14 +96,25 @@ export function BookQuickActions({
           <RefreshCw />
         )}
       </ButtonComponent>
+      {!isAllTab && onDeleteLocalDataClick && (
+        <ButtonComponent
+          type="button"
+          $variant="delete"
+          onClick={wrapClick((e) => onDeleteLocalDataClick(e, bookId, bookInfo))}
+          title={deleteLocalDataLabel}
+          aria-label={deleteLocalDataLabel}
+        >
+          <Trash2 />
+        </ButtonComponent>
+      )}
       <ButtonComponent
         type="button"
-        $variant="delete"
+        $variant={isAllTab ? 'delete' : 'collection'}
         onClick={wrapClick((e) => onDeleteClick?.(e, bookId, bookInfo))}
         title={deleteLabel}
         aria-label={deleteLabel}
       >
-        <Trash2 />
+        {isAllTab ? <Trash2 /> : <FolderMinus />}
       </ButtonComponent>
     </>
   );

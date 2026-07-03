@@ -1,9 +1,9 @@
 import { GridLayout, ListLayout } from '../bookshelf/styles';
 import {
-  ListSkeletonCard,
+  DiscoverListSkeletonCard,
   ListSkeletonCover,
   ListSkeletonText,
-  SkeletonCard,
+  DiscoverGridSkeletonCard,
   SkeletonCover,
   SkeletonLine,
   SkeletonText,
@@ -14,7 +14,7 @@ function DiscoverBookSkeletons({ viewMode }) {
     return (
       <ListLayout>
         {Array.from({ length: 6 }, (_, i) => (
-          <ListSkeletonCard key={i}>
+          <DiscoverListSkeletonCard key={i}>
             <ListSkeletonCover />
             <ListSkeletonText>
               <SkeletonLine $height="22px" $width="70%" />
@@ -22,7 +22,7 @@ function DiscoverBookSkeletons({ viewMode }) {
               <SkeletonLine $height="13px" $width="90%" />
               <SkeletonLine $height="13px" $width="75%" />
             </ListSkeletonText>
-          </ListSkeletonCard>
+          </DiscoverListSkeletonCard>
         ))}
       </ListLayout>
     );
@@ -31,13 +31,13 @@ function DiscoverBookSkeletons({ viewMode }) {
   return (
     <GridLayout>
       {Array.from({ length: 8 }, (_, i) => (
-        <SkeletonCard key={i}>
+        <DiscoverGridSkeletonCard key={i}>
           <SkeletonCover />
           <SkeletonText>
             <SkeletonLine $height="13px" $width="90%" />
             <SkeletonLine $height="11px" $width="60%" />
           </SkeletonText>
-        </SkeletonCard>
+        </DiscoverGridSkeletonCard>
       ))}
     </GridLayout>
   );

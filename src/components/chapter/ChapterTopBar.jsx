@@ -2,8 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import ActionBar from '../layout/ActionBar';
-import BackButton from '../navigation/BackButton';
-import ForwardButton from '../navigation/ForwardButton';
 import NavButtons from '../navigation/NavButtons';
 import SettingsButton from '../settings/SettingsButton';
 import ReaderSettingsButton from './ReaderSettingsButton';
@@ -150,12 +148,6 @@ function ChapterTopBar({
           {bookInfo && <h3>{convertedBookName}</h3>}
         </TitleBlock>
         <ActionBar
-          pinnedStart={
-            <>
-              <BackButton />
-              <ForwardButton />
-            </>
-          }
           pinnedEnd={(
             <PinnedEndGroup>
               <ReaderSettingsButton
