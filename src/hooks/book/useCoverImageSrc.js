@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { convertHeicCoverUrl, isHeicCoverUrl } from '../utils/book/coverUrl';
+import { convertHeicCoverUrl, isHeicCoverUrl } from '../../utils/book/coverUrl';
 
 export function useCoverImageSrc(url) {
   const [src, setSrc] = useState(url || null);

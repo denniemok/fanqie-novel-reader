@@ -21,7 +21,7 @@ const SORT_FIELD = {
 };
 
 /** @param {object|null} detail */
-export function extractBookshelfSortMeta(detail) {
+export function extractBookListSortMeta(detail) {
   const d = detail || {};
   const scoreRaw = d.score;
   const score = scoreRaw && scoreRaw !== '0' ? parseFloat(scoreRaw) : null;
@@ -62,7 +62,7 @@ export function sortDiscoverBooks(books, sortBy, direction = 'desc') {
   if (!books.length || sortBy === 'default' || !SORT_FIELD[sortBy]) return books;
   const bookById = Object.fromEntries(books.map((book) => [book.book_id, book]));
   const metaMap = Object.fromEntries(
-    books.map((book) => [book.book_id, extractBookshelfSortMeta(book)])
+    books.map((book) => [book.book_id, extractBookListSortMeta(book)])
   );
   const sortedItems = sortBookshelfItems(
     books.map((book) => ({ bookId: book.book_id })),

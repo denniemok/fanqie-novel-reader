@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import EmptyHint from '../ui/EmptyHint';
 import BookshelfToolbar from './BookshelfToolbar';
 import BookshelfBookList from './BookshelfBookList';
-import ManageActionBar from './ManageActionBar';
+import BookshelfManageActionBar from './BookshelfManageActionBar';
 import BookshelfModals from './BookshelfModals';
 import { ModalText } from '../ui/ModalBase';
 import { useToast } from '../../contexts/ToastContext';
@@ -36,7 +36,7 @@ import {
   reorderCollectionBooks,
   reorderCollections,
 } from '../../utils/storage';
-import { sortBookshelfItems } from '../../utils/book/bookshelfSort';
+import { sortBookshelfItems } from '../../utils/book/bookListSort';
 import { maybeConvert } from '../../utils/text/zh-convert';
 import { resolveBookDisplay } from '../../utils/book/bookInfo';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
@@ -585,7 +585,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
           />
 
           {manageBarVisible && (
-            <ManageActionBar
+            <BookshelfManageActionBar
               activeTab={activeTab}
               selectedCount={selectedBookIds.size}
               allBooksSelected={allBooksSelected}

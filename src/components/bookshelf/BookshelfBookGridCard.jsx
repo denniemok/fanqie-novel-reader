@@ -10,7 +10,7 @@ import { shimmerStyle } from '../../utils/styled/animations';
 import { getCoverMetaEntries } from '../../utils/coverMetaLines';
 import { CardLoadingOverlay } from '../book/CardActionButton';
 import BookCoverImg from '../book/BookCoverImg';
-import BookRefreshError from './BookRefreshError';
+import BookRefreshError from '../book/BookRefreshError';
 
 const SkeletonCard = styled.div`
   display: flex;
@@ -235,7 +235,7 @@ const SelectionBadge = styled.div`
   }
 `;
 
-function BookshelfGridCard({
+function BookshelfBookGridCard({
   bookId,
   onClick,
   conversionMode,
@@ -373,4 +373,4 @@ function BookshelfGridCard({
   );
 }
 
-export default BookshelfGridCard;
+export default BookshelfBookGridCard;

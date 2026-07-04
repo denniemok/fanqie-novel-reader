@@ -5,7 +5,7 @@ import {
   SearchForm,
   SearchSubmitBtn,
 } from './styles';
-import { SearchInput } from '../bookshelf/styles';
+import { SearchInput } from '../layout/BookToolbarStyles';
 
 function DiscoverSearchForm({
   searchInput,

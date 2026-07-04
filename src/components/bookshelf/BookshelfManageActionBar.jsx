@@ -13,13 +13,13 @@ import { CardSpinningIcon } from '../book/CardActionButton';
 import { getDeleteLocalDataLabel, getRemoveFromCollectionLabel } from '../book/BookQuickActions';
 import { ALL_TAB } from './constants';
 import {
-  ManageActionBar as ManageActionBarRoot,
-  ManageActionCount,
-  ManageActionButtons,
-  ManageBarButton,
+  BookshelfManageActionBar as BookshelfManageActionBarRoot,
+  BookshelfManageActionCount,
+  BookshelfManageActionButtons,
+  BookshelfManageBarButton,
 } from './styles';
 
-function ManageActionBar({
+function BookshelfManageActionBar({
   activeTab,
   selectedCount,
   allBooksSelected,
@@ -39,10 +39,10 @@ function ManageActionBar({
   const bulkDeleteLocalDataLabel = getDeleteLocalDataLabel();
 
   return (
-    <ManageActionBarRoot>
-      <ManageActionCount>{selectedCount} 已選</ManageActionCount>
-      <ManageActionButtons>
-        <ManageBarButton
+    <BookshelfManageActionBarRoot>
+      <BookshelfManageActionCount>{selectedCount} 已選</BookshelfManageActionCount>
+      <BookshelfManageActionButtons>
+        <BookshelfManageBarButton
           type="button"
           disabled={allBooksSelected || selectableBookIds.length === 0}
           onClick={onSelectAll}
@@ -50,8 +50,8 @@ function ManageActionBar({
           aria-label="全選"
         >
           <SquareCheckBig />
-        </ManageBarButton>
-        <ManageBarButton
+        </BookshelfManageBarButton>
+        <BookshelfManageBarButton
           type="button"
           disabled={selectedCount === 0}
           onClick={onDeselectAll}
@@ -59,8 +59,8 @@ function ManageActionBar({
           aria-label="全不選"
         >
           <SquareX />
-        </ManageBarButton>
-        <ManageBarButton
+        </BookshelfManageBarButton>
+        <BookshelfManageBarButton
           type="button"
           $variant="collection"
           disabled={selectedCount === 0}
@@ -69,10 +69,10 @@ function ManageActionBar({
           aria-label="加入收藏夾"
         >
           <FolderInput />
-        </ManageBarButton>
+        </BookshelfManageBarButton>
         {selectedCount === 1 && (
           <>
-            <ManageBarButton
+            <BookshelfManageBarButton
               type="button"
               $variant="download"
               onClick={onGoToDownload}
@@ -80,8 +80,8 @@ function ManageActionBar({
               aria-label="下載全部"
             >
               <Download />
-            </ManageBarButton>
-            <ManageBarButton
+            </BookshelfManageBarButton>
+            <BookshelfManageBarButton
               type="button"
               $variant="export"
               onClick={onGoToExport}
@@ -89,10 +89,10 @@ function ManageActionBar({
               aria-label="匯出書籍"
             >
               <FileText />
-            </ManageBarButton>
+            </BookshelfManageBarButton>
           </>
         )}
-        <ManageBarButton
+        <BookshelfManageBarButton
           type="button"
           $variant="refresh"
           disabled={selectedCount === 0 || isRefreshing}
@@ -105,9 +105,9 @@ function ManageActionBar({
           ) : (
             <RefreshCw />
           )}
-        </ManageBarButton>
+        </BookshelfManageBarButton>
         {!isAllTab && onBulkDeleteLocalData && (
-          <ManageBarButton
+          <BookshelfManageBarButton
             type="button"
             $variant="delete"
             disabled={selectedCount === 0}
@@ -116,9 +116,9 @@ function ManageActionBar({
             aria-label={bulkDeleteLocalDataLabel}
           >
             <Trash2 />
-          </ManageBarButton>
+          </BookshelfManageBarButton>
         )}
-        <ManageBarButton
+        <BookshelfManageBarButton
           type="button"
           $variant={isAllTab ? 'delete' : 'collection'}
           disabled={selectedCount === 0}
@@ -127,10 +127,10 @@ function ManageActionBar({
           aria-label={bulkDeleteLabel}
         >
           {isAllTab ? <Trash2 /> : <FolderMinus />}
-        </ManageBarButton>
-      </ManageActionButtons>
-    </ManageActionBarRoot>
+        </BookshelfManageBarButton>
+      </BookshelfManageActionButtons>
+    </BookshelfManageActionBarRoot>
   );
 }
 
-export default ManageActionBar;
+export default BookshelfManageActionBar;

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useCoverImageSrc } from '../../hooks/useCoverImageSrc';
+import { useCoverImageSrc } from '../../hooks/book/useCoverImageSrc';
 
 function BookCoverImg({
   url,

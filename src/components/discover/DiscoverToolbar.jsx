@@ -1,5 +1,5 @@
 import { ArrowDownZA, ArrowUpAZ, Grid2X2, LayoutList, Loader2, RefreshCw } from 'lucide-react';
-import { DISCOVER_SORT_OPTIONS } from '../../utils/book/bookshelfSort';
+import { DISCOVER_SORT_OPTIONS } from '../../utils/book/bookListSort';
 import SelectDropdown from '../ui/SelectDropdown';
 import { CardSpinningIcon } from '../book/CardActionButton';
 import {
@@ -12,7 +12,7 @@ import {
   ToggleBtn,
   ToolbarRight,
   ViewToggle,
-} from '../bookshelf/styles';
+} from '../layout/BookToolbarStyles';
 import { PRIMARY_TABS } from './constants';
 import DiscoverSearchForm from './DiscoverSearchForm';
 import BookFilterPanel from '../book/BookFilterPanel';

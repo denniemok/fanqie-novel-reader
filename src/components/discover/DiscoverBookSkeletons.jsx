@@ -1,4 +1,4 @@
-import { GridLayout, ListLayout } from '../bookshelf/styles';
+import { GridLayout, ListLayout } from '../layout/BookListLayouts';
 import {
   DiscoverListSkeletonCard,
   ListSkeletonCover,

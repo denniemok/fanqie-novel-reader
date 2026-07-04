@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { shimmerStyle } from '../../utils/styled/animations';
-import { SearchBar, SearchInput, TabBar, Tab, TOOLBAR_CONTROL_HEIGHT } from '../bookshelf/styles';
+import { SearchBar, SearchInput, TabBar, Tab, TOOLBAR_CONTROL_HEIGHT } from '../layout/BookToolbarStyles';
 import { IconButton } from '../ui/IconButton';
 
 export const SearchForm = styled.form`

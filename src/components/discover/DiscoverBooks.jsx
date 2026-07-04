@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams, useSearchParams, Navigate } from 'react-router-dom';
 import { buildCatalogUrl, buildDiscoverUrl } from '../../utils/navigation';
-import { sortDiscoverBooks } from '../../utils/book/bookshelfSort';
-import CollectionModal from '../bookshelf/CollectionModal';
+import { sortDiscoverBooks } from '../../utils/book/bookListSort';
+import CollectionModal from '../collection/CollectionModal';
 import { useToast } from '../../contexts/ToastContext';
 import { formatErrorMessage } from '../../utils/errors';
 import {

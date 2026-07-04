@@ -1,5 +1,5 @@
-import CollectionModal from './CollectionModal';
-import CollectionManagementModal from './CollectionManagementModal';
+import CollectionModal from '../collection/CollectionModal';
+import CollectionManagementModal from '../collection/CollectionManagementModal';
 import ConfirmModal from '../ui/ConfirmModal';
 import ExportBookModalHost from '../export/ExportBookModalHost';
 import { getCatalogSortDirection } from '../../utils/storage';

@@ -12,7 +12,7 @@ import {
   ModalText,
 } from '../ui/ModalBase';
 import ConfirmModal from '../ui/ConfirmModal';
-import SortableBooks from './SortableBooks';
+import SortableBooks from '../ui/SortableBooks';
 import EmptyHint from '../ui/EmptyHint';
 
 const Hint = styled.p`

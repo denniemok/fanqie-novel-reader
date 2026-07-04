@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { detailCache } from '../../utils/cache';
-import { extractBookshelfSortMeta } from '../../utils/book/bookshelfSort';
+import { extractBookListSortMeta } from '../../utils/book/bookListSort';
 
 export function useBookshelfSortMeta(bookIds, sortBy) {
   const [metaMap, setMetaMap] = useState({});
@@ -17,7 +17,7 @@ export function useBookshelfSortMeta(bookIds, sortBy) {
       const entries = await Promise.all(
         bookIds.map(async (bookId) => {
           const detail = await detailCache.get(bookId);
-          return [bookId, extractBookshelfSortMeta(detail)];
+          return [bookId, extractBookListSortMeta(detail)];
         })
       );
       if (!cancelled) {

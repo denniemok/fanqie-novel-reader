@@ -11,7 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import SelectDropdown from '../ui/SelectDropdown';
-import { BOOKSHELF_SORT_OPTIONS } from '../../utils/book/bookshelfSort';
+import { BOOKSHELF_SORT_OPTIONS } from '../../utils/book/bookListSort';
 import { buildDefaultDiscoverUrl } from '../../utils/navigation';
 import { ALL_TAB } from './constants';
 import BookFilterPanel from '../book/BookFilterPanel';
@@ -33,7 +33,7 @@ import {
   SortTrailingBtn,
   BtnLabel,
   ToggleBtn,
-} from './styles';
+} from '../layout/BookToolbarStyles';
 
 function BookshelfToolbar({
   activeTab,

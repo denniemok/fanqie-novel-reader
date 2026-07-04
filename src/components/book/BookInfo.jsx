@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import Modal from '../ui/Modal';
+import SimpleTextModal from '../ui/SimpleTextModal';
 import { formatExpandedAbstract } from '../../utils/text/text';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import { resolveBookDisplay } from '../../utils/book/bookInfo';
@@ -501,7 +501,7 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
         {!isCompact && footer && <Footer>{footer}</Footer>}
       </TextBlock>
       {!isCompact && showFullAbstract && (
-        <Modal text={formatExpandedAbstract(convertedAbstract)} onClose={() => setShowFullAbstract(false)} />
+        <SimpleTextModal text={formatExpandedAbstract(convertedAbstract)} onClose={() => setShowFullAbstract(false)} />
       )}
     </InfoWrapper>
   );

@@ -1,9 +1,9 @@
 import EmptyHint from '../ui/EmptyHint';
-import BookshelfGridCard from './BookshelfGridCard';
-import BookshelfListCard from './BookshelfListCard';
-import SortableBooks from './SortableBooks';
+import BookshelfBookGridCard from './BookshelfBookGridCard';
+import BookshelfBookListCard from './BookshelfBookListCard';
+import SortableBooks from '../ui/SortableBooks';
 import { ALL_TAB } from './constants';
-import { GridLayout, ListLayout } from './styles';
+import { GridLayout, ListLayout } from '../layout/BookListLayouts';
 
 function BookshelfBookList({
   activeTab,
@@ -87,7 +87,7 @@ function BookshelfBookList({
           getKey={({ bookId }) => bookId}
           onReorder={onReorder}
           renderItem={({ bookId }, sortable) => (
-            <BookshelfListCard
+            <BookshelfBookListCard
               {...listCardProps(bookId)}
               dragHandleProps={sortable.dragHandleProps}
               isDragging={sortable.isDragging}
@@ -102,7 +102,7 @@ function BookshelfBookList({
     return (
       <ListLayout key={`list-${activeTab}-${renderTick}`}>
         {booksForDisplay.map(({ bookId }) => (
-          <BookshelfListCard key={bookId} {...listCardProps(bookId)} />
+          <BookshelfBookListCard key={bookId} {...listCardProps(bookId)} />
         ))}
       </ListLayout>
     );
@@ -117,7 +117,7 @@ function BookshelfBookList({
         getKey={({ bookId }) => bookId}
         onReorder={onReorder}
         renderItem={({ bookId }, sortable) => (
-            <BookshelfGridCard
+            <BookshelfBookGridCard
             {...gridCardProps(bookId)}
             dragHandleProps={sortable.dragHandleProps}
             isDragging={sortable.isDragging}
@@ -132,7 +132,7 @@ function BookshelfBookList({
   return (
     <GridLayout key={`grid-${activeTab}-${renderTick}`}>
       {booksForDisplay.map(({ bookId }) => (
-            <BookshelfGridCard key={bookId} {...gridCardProps(bookId)} />
+            <BookshelfBookGridCard key={bookId} {...gridCardProps(bookId)} />
       ))}
     </GridLayout>
   );

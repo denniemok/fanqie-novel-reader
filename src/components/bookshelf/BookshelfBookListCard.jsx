@@ -14,7 +14,7 @@ import {
   cardActionBarHandlers,
   CARD_ACTION_FOOTER_MEDIA_QUERY,
 } from '../layout/CardActionBarLayout';
-import BookRefreshError from './BookRefreshError';
+import BookRefreshError from '../book/BookRefreshError';
 
 const SkeletonCard = styled.div`
   display: flex;
@@ -194,7 +194,7 @@ const SelectionBadge = styled.div`
   }
 `;
 
-function BookshelfListCard({
+function BookshelfBookListCard({
   bookId,
   onClick,
   onRefreshClick,
@@ -319,4 +319,4 @@ function BookshelfListCard({
   );
 }
 
-export default BookshelfListCard;
+export default BookshelfBookListCard;
