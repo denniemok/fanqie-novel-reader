@@ -522,8 +522,8 @@ function BookshelfContent({ conversionMode = 'tw' }) {
     <Wrapper
       key={refreshKey}
       $gap={24}
-      $paddingBottom={manageBarVisible ? 88 : undefined}
-      $paddingBottomMobile={manageBarVisible ? 80 : undefined}
+      $paddingBottom={manageBarVisible ? 124 : undefined}
+      $paddingBottomMobile={manageBarVisible ? 116 : undefined}
     >
       {!dataLoaded ? (
         <EmptyHint>載入中…</EmptyHint>
@@ -615,6 +615,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
               onBulkDelete={handleBulkDelete}
               onBulkDeleteLocalData={handleBulkDeleteLocalData}
               isRefreshing={refreshingBookIds.size > 0}
+              onExitManageMode={handleManageModeToggle}
             />
           )}
 

@@ -8,15 +8,20 @@ import {
   FileText,
   RefreshCw,
   Loader2,
+  X,
 } from 'lucide-react';
 import { CardSpinningIcon } from '../book/CardActionButton';
 import { getDeleteLocalDataLabel, getRemoveFromCollectionLabel } from '../book/BookQuickActions';
 import { ALL_TAB } from './constants';
 import {
   BookshelfManageActionBar as BookshelfManageActionBarRoot,
+  BookshelfManageSelectionRow,
   BookshelfManageActionCount,
+  BookshelfManageSelectionButtons,
+  BookshelfManageSelectionButton,
   BookshelfManageActionButtons,
   BookshelfManageBarButton,
+  BookshelfManageExitButton,
 } from './styles';
 
 function BookshelfManageActionBar({
@@ -33,6 +38,7 @@ function BookshelfManageActionBar({
   onBulkDelete,
   onBulkDeleteLocalData,
   isRefreshing,
+  onExitManageMode,
 }) {
   const isAllTab = activeTab === ALL_TAB;
   const bulkDeleteLabel = isAllTab ? '刪除所選書籍' : getRemoveFromCollectionLabel();
@@ -40,26 +46,38 @@ function BookshelfManageActionBar({
 
   return (
     <BookshelfManageActionBarRoot>
-      <BookshelfManageActionCount>{selectedCount} 已選</BookshelfManageActionCount>
+      <BookshelfManageExitButton
+        type="button"
+        onClick={onExitManageMode}
+        title="退出管理"
+        aria-label="退出管理"
+      >
+        <X strokeWidth={2.25} />
+      </BookshelfManageExitButton>
+      <BookshelfManageSelectionRow>
+        <BookshelfManageActionCount>{selectedCount} 已選</BookshelfManageActionCount>
+        <BookshelfManageSelectionButtons>
+          <BookshelfManageSelectionButton
+            type="button"
+            disabled={allBooksSelected || selectableBookIds.length === 0}
+            onClick={onSelectAll}
+            title="全選"
+            aria-label="全選"
+          >
+            <SquareCheckBig />
+          </BookshelfManageSelectionButton>
+          <BookshelfManageSelectionButton
+            type="button"
+            disabled={selectedCount === 0}
+            onClick={onDeselectAll}
+            title="全不選"
+            aria-label="全不選"
+          >
+            <SquareX />
+          </BookshelfManageSelectionButton>
+        </BookshelfManageSelectionButtons>
+      </BookshelfManageSelectionRow>
       <BookshelfManageActionButtons>
-        <BookshelfManageBarButton
-          type="button"
-          disabled={allBooksSelected || selectableBookIds.length === 0}
-          onClick={onSelectAll}
-          title="全選"
-          aria-label="全選"
-        >
-          <SquareCheckBig />
-        </BookshelfManageBarButton>
-        <BookshelfManageBarButton
-          type="button"
-          disabled={selectedCount === 0}
-          onClick={onDeselectAll}
-          title="全不選"
-          aria-label="全不選"
-        >
-          <SquareX />
-        </BookshelfManageBarButton>
         <BookshelfManageBarButton
           type="button"
           $variant="collection"
