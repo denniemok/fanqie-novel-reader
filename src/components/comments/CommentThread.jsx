@@ -1,5 +1,6 @@
 import { MessageCircle, Star, ThumbsUp } from 'lucide-react';
 import styled from 'styled-components';
+import { formatTimestamp, toDateTimeAttr } from '../../utils/datetime';
 import { maybeConvert } from '../../utils/text/zh-convert';
 import { getHiddenReplyCount, organizeReplies } from '../../utils/commentReplies';
 
@@ -20,10 +21,16 @@ const ThreadItem = styled.li`
 
 const CommentHeader = styled.div`
   display: flex;
+  flex-direction: column;
+  gap: 0px;
+  margin-bottom: 8px;
+`;
+
+const CommentHeaderRow = styled.div`
+  display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 8px;
 `;
 
 const CommentUser = styled.span`
@@ -74,6 +81,13 @@ const MetaStat = styled.span`
     flex-shrink: 0;
     opacity: 0.85;
   }
+`;
+
+const CommentDate = styled.time`
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-color-secondary);
+  white-space: nowrap;
 `;
 
 const CommentText = styled.div`
@@ -139,16 +153,22 @@ function ReplyBlock({ reply, conversionMode }) {
   const convertedUser = maybeConvert(user, conversionMode);
   const convertedText = maybeConvert(text, conversionMode);
   const diggCount = formatDiggCount(reply.digg_count);
+  const postedAt = formatTimestamp(reply.create_timestamp);
   const children = reply.children ?? [];
 
   return (
     <ReplyItem>
       <CommentHeader>
-        <CommentUser>{convertedUser}</CommentUser>
-        {diggCount != null && (
-          <HeaderStats>
-            <Stat icon={ThumbsUp} value={diggCount} label="讚" />
-          </HeaderStats>
+        <CommentHeaderRow>
+          <CommentUser>{convertedUser}</CommentUser>
+          {diggCount != null && (
+            <HeaderStats>
+              <Stat icon={ThumbsUp} value={diggCount} label="讚" />
+            </HeaderStats>
+          )}
+        </CommentHeaderRow>
+        {postedAt && (
+          <CommentDate dateTime={toDateTimeAttr(reply.create_timestamp)}>{postedAt}</CommentDate>
         )}
       </CommentHeader>
       <CommentText>{convertedText}</CommentText>
@@ -178,26 +198,32 @@ function CommentThread({ comment, conversionMode }) {
   const hiddenReplyCount = getHiddenReplyCount(comment);
   const replyCount = comment.reply_count ?? replyTree.length;
   const diggCount = formatDiggCount(comment.digg_count);
+  const postedAt = formatTimestamp(comment.create_timestamp);
 
   return (
     <ThreadItem>
       <CommentHeader>
-        <CommentUser>{convertedUser}</CommentUser>
-        {formattedScore != null && (
-          <ScoreBadge title={`評分 ${formattedScore}`}>
-            <Star aria-hidden />
-            {formattedScore}
-          </ScoreBadge>
-        )}
-        {(replyCount > 0 || diggCount != null) && (
-          <HeaderStats>
-            {replyCount > 0 && (
-              <Stat icon={MessageCircle} value={replyCount} label="回覆" />
-            )}
-            {diggCount != null && (
-              <Stat icon={ThumbsUp} value={diggCount} label="讚" />
-            )}
-          </HeaderStats>
+        <CommentHeaderRow>
+          <CommentUser>{convertedUser}</CommentUser>
+          {formattedScore != null && (
+            <ScoreBadge title={`評分 ${formattedScore}`}>
+              <Star aria-hidden />
+              {formattedScore}
+            </ScoreBadge>
+          )}
+          {(replyCount > 0 || diggCount != null) && (
+            <HeaderStats>
+              {replyCount > 0 && (
+                <Stat icon={MessageCircle} value={replyCount} label="回覆" />
+              )}
+              {diggCount != null && (
+                <Stat icon={ThumbsUp} value={diggCount} label="讚" />
+              )}
+            </HeaderStats>
+          )}
+        </CommentHeaderRow>
+        {postedAt && (
+          <CommentDate dateTime={toDateTimeAttr(comment.create_timestamp)}>{postedAt}</CommentDate>
         )}
       </CommentHeader>
       <CommentText>{convertedText}</CommentText>
