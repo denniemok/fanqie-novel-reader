@@ -5,6 +5,7 @@ import { formatExpandedAbstract } from '../../utils/text/text';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import { resolveBookDisplay } from '../../utils/book/bookInfo';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
+import BookCoverImg from './BookCoverImg';
 
 const InfoWrapper = styled.div`
   display: flex;
@@ -431,7 +432,14 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
           {imgError ? (
             <CoverPlaceholder>無封面</CoverPlaceholder>
           ) : (
-            <img src={thumb_url} alt="書籍封面" width="128" height="128" onError={() => setImgError(true)} />
+            <BookCoverImg
+              url={thumb_url}
+              Placeholder={CoverPlaceholder}
+              alt="書籍封面"
+              width="128"
+              height="128"
+              onFailed={() => setImgError(true)}
+            />
           )}
           {showChapterCount && (
             <CoverMeta>

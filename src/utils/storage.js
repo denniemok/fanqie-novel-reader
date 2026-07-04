@@ -387,7 +387,7 @@ export async function addBooksToCollection(collectionId, bookIds) {
     if (c.id !== collectionId) return c;
     const next = [...c.bookIds];
     for (const bid of bids) {
-      if (!next.includes(bid)) next.push(bid);
+      if (!next.includes(bid)) next.unshift(bid);
     }
     return { ...c, bookIds: next };
   });

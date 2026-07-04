@@ -4,6 +4,7 @@ import { normalizeDiscoverBookInfo, resolveBookDisplay } from '../../utils/book/
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 import { getCoverMetaEntries } from '../../utils/coverMetaLines';
 import { cardKeyDownHandler } from '../../utils/cardInteraction';
+import BookCoverImg from '../book/BookCoverImg';
 import {
   Author,
   DiscoverGridCard,
@@ -48,7 +49,14 @@ function DiscoverBookGridCard({ book, conversionMode, onClick, sortBy = 'default
     >
       <CoverWrapper>
         {thumb_url && !imgError ? (
-          <CoverImg src={thumb_url} alt="" loading="lazy" onError={() => setImgError(true)} />
+          <BookCoverImg
+            url={thumb_url}
+            ImgComponent={CoverImg}
+            Placeholder={CoverPlaceholder}
+            alt=""
+            loading="lazy"
+            onFailed={() => setImgError(true)}
+          />
         ) : (
           <CoverPlaceholder>無封面</CoverPlaceholder>
         )}

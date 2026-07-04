@@ -9,6 +9,7 @@ import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext'
 import { shimmerStyle } from '../../utils/styled/animations';
 import { getCoverMetaEntries } from '../../utils/coverMetaLines';
 import { CardLoadingOverlay } from '../book/CardActionButton';
+import BookCoverImg from '../book/BookCoverImg';
 import BookRefreshError from './BookRefreshError';
 
 const SkeletonCard = styled.div`
@@ -345,7 +346,13 @@ function BookshelfGridCard({
 
       <CoverWrapper>
         {thumb_url && !imgError ? (
-          <CoverImg src={thumb_url} alt="書籍封面" onError={() => setImgError(true)} />
+          <BookCoverImg
+            url={thumb_url}
+            ImgComponent={CoverImg}
+            Placeholder={CoverPlaceholder}
+            alt="書籍封面"
+            onFailed={() => setImgError(true)}
+          />
         ) : (
           <CoverPlaceholder>無封面</CoverPlaceholder>
         )}

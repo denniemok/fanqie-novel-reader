@@ -4,6 +4,7 @@ import { getChapterTitle } from '../chapter-helpers';
 import { addBlankLine } from '../text/text';
 import { sortChaptersByNumber } from '../sorting';
 import { resolveBookDisplay } from '../book/bookInfo';
+import { fetchHeicCoverAsJpeg, isHeicCoverUrl } from '../book/coverUrl';
 
 /** Shown when export runs but no chapters are cached locally. */
 export const EXPORT_NO_CACHED_CHAPTERS_MSG = '沒有已下載的章節，請先下載後再匯出。';
@@ -66,26 +67,6 @@ export async function collectCachedChaptersForExport({
   return chapters;
 }
 
-function inferImageExtension(mediaType, url) {
-  if (mediaType === 'image/png') return 'png';
-  if (mediaType === 'image/gif') return 'gif';
-  if (mediaType === 'image/webp') return 'webp';
-  const match = String(url || '').match(/\.(jpe?g|png|webp|gif)(?:\?|$)/i);
-  if (match) return match[1].toLowerCase().replace('jpeg', 'jpg');
-  return 'jpg';
-}
-
-function inferImageMediaType(extension) {
-  if (extension === 'png') return 'image/png';
-  if (extension === 'gif') return 'image/gif';
-  if (extension === 'webp') return 'image/webp';
-  return 'image/jpeg';
-}
-
-function isImageMediaType(mediaType) {
-  return Boolean(mediaType?.startsWith('image/'));
-}
-
 /**
  * Loads an image URL and verifies it decoded with real dimensions.
  * Mirrors UI cover behavior: onError or empty image => unusable cover.
@@ -95,6 +76,7 @@ function isImageMediaType(mediaType) {
 function decodeAndValidateImageUrl(url) {
   return new Promise((resolve) => {
     const img = new Image();
+    img.referrerPolicy = 'no-referrer';
     img.crossOrigin = 'anonymous';
     img.onload = () => {
       if (!img.naturalWidth || !img.naturalHeight) {
@@ -146,33 +128,28 @@ async function loadCoverFromUrl(url) {
 export async function fetchExportCoverImage(url) {
   if (!url) return null;
 
+  const direct = await loadCoverFromUrl(url);
+  if (direct) return direct;
+
+  if (!isHeicCoverUrl(url)) return null;
+
   try {
-    const response = await fetch(url);
-    if (!response.ok) return loadCoverFromUrl(url);
+    const jpegBlob = await fetchHeicCoverAsJpeg(url);
+    if (!jpegBlob) return null;
 
-    const mediaType = response.headers.get('content-type')?.split(';')[0]?.trim().toLowerCase() || '';
-    if (mediaType && !isImageMediaType(mediaType)) return null;
-
-    const data = await response.arrayBuffer();
+    const data = await jpegBlob.arrayBuffer();
     if (!data.byteLength) return null;
 
-    const extension = inferImageExtension(mediaType, url);
-    const resolvedMediaType = mediaType || inferImageMediaType(extension);
-    const objectUrl = URL.createObjectURL(new Blob([data], { type: resolvedMediaType }));
+    const objectUrl = URL.createObjectURL(jpegBlob);
 
     try {
       const img = await decodeAndValidateImageUrl(objectUrl);
       if (!img) return null;
-
-      if (resolvedMediaType === 'image/webp' || resolvedMediaType === 'image/gif') {
-        return imageElementToExportData(img);
-      }
-
-      return { data, mediaType: resolvedMediaType, extension };
+      return { data, mediaType: 'image/jpeg', extension: 'jpg' };
     } finally {
       URL.revokeObjectURL(objectUrl);
     }
   } catch {
-    return loadCoverFromUrl(url);
+    return null;
   }
 }
