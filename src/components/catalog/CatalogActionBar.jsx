@@ -1,8 +1,8 @@
-import { Bookmark, BookOpen, Download, FileText, MessageCircle, RefreshCw } from 'lucide-react';
+import { Bookmark, Download, FileText, MessageCircle, RefreshCw } from 'lucide-react';
 import BookActionBar from '../book/BookActionBar';
 import LabeledIconButton from '../ui/LabeledIconButton';
 import { CHAPTER_BUTTON_TITLE } from '../navigation/ChapterButton';
-import { buildChapterUrl, buildCommentsUrl, ROUTES } from '../../utils/navigation';
+import { buildChapterUrl, buildCommentsUrl } from '../../utils/navigation';
 
 function CatalogActionBar({
   bookId,
@@ -64,14 +64,6 @@ function CatalogActionBar({
         }}
       >
         <Bookmark size={20} strokeWidth={2.5} />
-      </LabeledIconButton>
-      <LabeledIconButton
-        type="button"
-        label="返回書架"
-        title="返回書架"
-        onClick={() => navigate(ROUTES.bookshelf)}
-      >
-        <BookOpen size={20} strokeWidth={2.5} />
       </LabeledIconButton>
     </BookActionBar>
   );

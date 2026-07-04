@@ -24,6 +24,15 @@ const Section = styled.section`
     padding-top: 16px;
     border-top: 1px solid var(--border-color);
   }
+
+  @media (max-height: 500px) {
+    gap: 6px;
+
+    & + & {
+      margin-top: 12px;
+      padding-top: 12px;
+    }
+  }
 `;
 
 const SectionHeader = styled.div`
@@ -135,7 +144,7 @@ function ExportBookModal({
   return (
     <Modal onClose={onClose} maxWidth="420px">
       <ModalTitleBar title="匯出書籍" onClose={onClose} />
-      <ModalBody $scroll={false}>
+      <ModalBody>
         <ModalText>僅匯出已下載的章節。請選擇章節順序、書名封面版本與繁簡轉換後再匯出。</ModalText>
 
         {optionSections.map(({ icon: Icon, label, options, value, onChange, ariaLabel }) => (

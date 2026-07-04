@@ -20,6 +20,12 @@ const Hint = styled.p`
   font-size: 12px;
   color: var(--text-color-secondary);
   line-height: 1.5;
+  flex-shrink: 0;
+
+  @media (max-height: 500px) {
+    margin-bottom: 6px;
+    font-size: 11px;
+  }
 `;
 
 const CollectionRow = styled.div`

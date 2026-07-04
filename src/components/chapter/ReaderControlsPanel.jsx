@@ -47,6 +47,13 @@ const Panel = styled.aside`
     top: calc(118px + env(safe-area-inset-top));
     gap: 6px;
   }
+
+  @media (max-height: 500px) {
+    top: calc(72px + env(safe-area-inset-top));
+    bottom: calc(48px + env(safe-area-inset-bottom));
+    gap: 4px;
+    padding: 2px 0;
+  }
 `;
 
 const Section = styled.div`
@@ -61,6 +68,11 @@ const Section = styled.div`
   @media (max-width: 480px) {
     gap: 6px;
     padding: 8px 6px;
+  }
+
+  @media (max-height: 500px) {
+    gap: 4px;
+    padding: 6px 4px;
   }
 `;
 

@@ -10,14 +10,23 @@ export const ModalOverlay = styled.div`
   background: var(--overlay-bg);
   z-index: 1200;
   display: flex;
-  align-items: center;
+  align-items: safe center;
   justify-content: center;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
     max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
 
   @media (max-width: 480px) {
     padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
       max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  }
+
+  @media (max-height: 500px) {
+    align-items: flex-start;
+    padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right))
+      max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
   }
 `;
 
@@ -28,9 +37,26 @@ export const ModalBox = styled.div`
   box-shadow: var(--retro-shadow);
   width: 100%;
   max-width: ${(p) => p.$maxWidth ?? '380px'};
+  max-height: calc(
+    100dvh - max(24px, env(safe-area-inset-top)) - max(24px, env(safe-area-inset-bottom))
+  );
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  flex-shrink: 0;
+  margin: auto 0;
+
+  @media (max-width: 480px) {
+    max-height: calc(
+      100dvh - max(12px, env(safe-area-inset-top)) - max(12px, env(safe-area-inset-bottom))
+    );
+  }
+
+  @media (max-height: 500px) {
+    max-height: calc(
+      100dvh - max(8px, env(safe-area-inset-top)) - max(8px, env(safe-area-inset-bottom))
+    );
+  }
 `;
 
 export const ModalHeader = styled.div`
@@ -46,6 +72,12 @@ export const ModalHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  flex-shrink: 0;
+
+  @media (max-height: 500px) {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
 `;
 
 const ModalCloseButton = styled.button`
@@ -71,6 +103,11 @@ const ModalCloseButton = styled.button`
   &:hover {
     filter: brightness(1.2);
   }
+
+  @media (max-height: 500px) {
+    width: 32px;
+    height: 32px;
+  }
 `;
 
 export const ModalBody = styled.div`
@@ -78,20 +115,28 @@ export const ModalBody = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex: 1 1 auto;
   min-height: 0;
 
   ${(p) => (p.$scroll !== false) && css`
-    max-height: min(360px, 52dvh);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     ${modalScrollbarStyles}
   `}
+
+  ${(p) => (p.$scroll === false) && css`
+    overflow: hidden;
+  `}
+
+  @media (max-height: 500px) {
+    padding: 12px;
+    gap: 6px;
+  }
 `;
 
 export const ModalScrollRegion = styled.div`
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
-  max-height: min(320px, 48dvh);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   margin: 0 -2px;
@@ -119,6 +164,7 @@ export const ModalFooter = styled.div`
   padding: 12px 16px;
   border-top: 1px solid var(--border-color);
   justify-content: flex-end;
+  flex-shrink: 0;
 
   ${(p) =>
     p.$stretch &&
@@ -126,6 +172,24 @@ export const ModalFooter = styled.div`
       min-width: 0;
       align-items: stretch;
     `}
+
+  @media (max-height: 500px) {
+    padding: 8px 12px;
+    gap: 6px;
+  }
+
+  @media (max-width: 480px) {
+    ${(p) =>
+      p.$stretch &&
+      css`
+        flex-direction: column;
+
+        > button,
+        > input {
+          width: 100%;
+        }
+      `}
+  }
 `;
 
 export const ModalInput = styled.input`

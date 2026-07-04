@@ -13,7 +13,7 @@ function DownloadAllConfirmModal({ chapterCount, onStay, onGoToDownloadPage, onC
   return (
     <Modal onClose={onClose}>
       <ModalTitleBar title="開始下載全部" onClose={onClose} />
-      <ModalBody $scroll={false}>
+      <ModalBody>
         <ModalText>
           即將下載 <strong>{chapterCount}</strong> 章未快取的章節。下載全部一次只會排程一本書，可在下載頁查看進度。
           {'\n\n'}

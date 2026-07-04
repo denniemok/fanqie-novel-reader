@@ -27,6 +27,15 @@ const Section = styled.section`
     padding-top: 16px;
     border-top: 1px solid var(--border-color);
   }
+
+  @media (max-height: 500px) {
+    gap: 6px;
+
+    & + & {
+      margin-top: 12px;
+      padding-top: 12px;
+    }
+  }
 `;
 
 const SectionHeader = styled.div`
@@ -137,7 +146,7 @@ function SettingsModal({ onClose }) {
   return (
     <Modal onClose={onClose} maxWidth="420px">
       <ModalTitleBar title="設定" onClose={onClose} />
-      <ModalBody $scroll={false}>
+      <ModalBody>
         <Section>
           <SectionHeader>
             <BookImage size={16} strokeWidth={2.5} aria-hidden />
