@@ -33,6 +33,7 @@ export const READER_CUSTOM_BG_KEY = 'readerCustomBg';
 export const READER_CUSTOM_TEXT_KEY = 'readerCustomText';
 export const TRADITIONAL_CHINESE_KEY = 'traditionalChinese';
 export const BOOK_DISPLAY_VARIANT_KEY = 'bookDisplayVariant';
+export const BOOKSHELF_QUICK_ACTION_KEY = 'bookshelfQuickAction';
 export const THEME_KEY = 'theme';
 
 export const READER_BACKGROUND_CUSTOM = 'custom';
@@ -73,6 +74,11 @@ export const EXPORT_CHAPTER_ORDER_OPTIONS = [
 export const BOOK_DISPLAY_VARIANT_OPTIONS = [
   { value: 'new', label: '最新書名及封面' },
   { value: 'old', label: '原有書名及封面' },
+];
+
+export const BOOKSHELF_QUICK_ACTION_OPTIONS = [
+  { value: true, label: '顯示快捷操作按鈕' },
+  { value: false, label: '隱藏快捷操作按鈕' },
 ];
 
 /** API sources: { value: opaque ID (used with proxy), label: display name } - real URLs live in proxy only */

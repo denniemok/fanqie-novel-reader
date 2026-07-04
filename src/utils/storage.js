@@ -21,6 +21,7 @@ import {
   CHINESE_FONTS,
   TRADITIONAL_CHINESE_KEY,
   BOOK_DISPLAY_VARIANT_KEY,
+  BOOKSHELF_QUICK_ACTION_KEY,
   TEXT_BRIGHTNESS_KEY,
   TEXT_BRIGHTNESS_MIN,
   TEXT_BRIGHTNESS_MAX,
@@ -295,6 +296,16 @@ export function getCatalogManageMode() {
 
 export function setCatalogManageMode(enabled) {
   return safeSetItem(CATALOG_MANAGE_MODE_KEY, enabled ? 'true' : 'false');
+}
+
+/** @returns {boolean} Default: false */
+export function getBookshelfQuickAction() {
+  const raw = safeGetItem(BOOKSHELF_QUICK_ACTION_KEY);
+  return raw === 'true';
+}
+
+export function setBookshelfQuickAction(enabled) {
+  return safeSetItem(BOOKSHELF_QUICK_ACTION_KEY, enabled ? 'true' : 'false');
 }
 
 export async function isChapterCached(itemId) {

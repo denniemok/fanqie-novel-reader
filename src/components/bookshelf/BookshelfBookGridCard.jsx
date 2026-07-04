@@ -8,9 +8,16 @@ import { resolveBookDisplay } from '../../utils/book/bookInfo';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 import { shimmerStyle } from '../../utils/styled/animations';
 import { getCoverMetaEntries } from '../../utils/coverMetaLines';
-import { CardLoadingOverlay } from '../book/CardActionButton';
+import { CardLoadingOverlay, CardActionButton } from '../book/CardActionButton';
 import BookCoverImg from '../book/BookCoverImg';
 import BookRefreshError from '../book/BookRefreshError';
+import { BookQuickActions } from '../book/BookQuickActions';
+import {
+  CardActionBarScroll,
+  CardActionBarScrollInner,
+  CardActionFooter,
+  cardActionBarHandlers,
+} from '../layout/CardActionBarLayout';
 
 const SkeletonCard = styled.div`
   display: flex;
@@ -235,9 +242,30 @@ const SelectionBadge = styled.div`
   }
 `;
 
+const GridCardActionButton = styled(CardActionButton).attrs({ $compact: true })``;
+
+const GridActionFooter = styled(CardActionFooter)`
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px 8px;
+
+  ${CardActionBarScrollInner} {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 2px 0 4px;
+  }
+`;
+
 function BookshelfBookGridCard({
   bookId,
   onClick,
+  onRefreshClick,
+  onDeleteClick,
+  onDeleteLocalDataClick,
+  onAddToCollection,
+  onDownload,
+  onExport,
+  isAllTab = true,
   conversionMode,
   sortBy = 'manual',
   dragHandleProps,
@@ -250,8 +278,9 @@ function BookshelfBookGridCard({
   bulkRefreshing = false,
   refreshError,
   bookDataVersion = 0,
+  showActions = false,
 }) {
-  const { bookInfo, isLoading, isRefreshing: hookRefreshing, error } = useBookLoader(bookId, {
+  const { bookInfo, isLoading, refetch, isRefreshing: hookRefreshing, error } = useBookLoader(bookId, {
     detailOnly: true,
     bookDataVersion,
   });
@@ -324,6 +353,21 @@ function BookshelfBookGridCard({
     onClick?.();
   };
 
+  const showItemActions = showActions && !selectionMode && !reorderMode;
+  const actionProps = {
+    bookId,
+    bookInfo,
+    isAllTab,
+    isRefreshing,
+    onAddToCollection,
+    onDownload,
+    onExport,
+    onRefreshClick,
+    refetch,
+    onDeleteClick,
+    onDeleteLocalDataClick,
+  };
+
   return (
     <Card
       onClick={handleCardClick}
@@ -368,6 +412,13 @@ function BookshelfBookGridCard({
         <Title>{convertedName || bookId}</Title>
         <Author $empty={!convertedAuthor}>{convertedAuthor || '\u00A0'}</Author>
       </Info>
+      {showItemActions && (
+        <GridActionFooter {...cardActionBarHandlers}>
+          <CardActionBarScroll>
+            <BookQuickActions {...actionProps} ButtonComponent={GridCardActionButton} />
+          </CardActionBarScroll>
+        </GridActionFooter>
+      )}
       <BookRefreshError message={refreshError} />
     </Card>
   );

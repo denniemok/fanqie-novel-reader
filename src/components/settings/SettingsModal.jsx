@@ -8,11 +8,13 @@ import ApiOverallBadge from './ApiOverallBadge';
 import { useApiBase } from '../../hooks/api/useApiBase';
 import { useApiStatus } from '../../hooks/api/useApiStatus';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
+import { useBookshelfQuickAction } from '../../contexts/BookshelfQuickActionContext';
 import { useConversionMode } from '../../hooks/useConversionMode';
 import { useTheme } from '../../contexts/ThemeContext';
 import {
   API_OPTIONS,
   BOOK_DISPLAY_VARIANT_OPTIONS,
+  BOOKSHELF_QUICK_ACTION_OPTIONS,
   ZH_CONVERSION_OPTIONS,
 } from '../../utils/constants';
 import { ROUTES } from '../../utils/navigation';
@@ -135,6 +137,7 @@ function SettingsModal({ onClose }) {
   const [apiBase, handleApiChange] = useApiBase();
   const statusByApi = useApiStatus();
   const { variant, setVariant } = useBookDisplayVariant();
+  const { enabled: bookshelfQuickAction, setEnabled: setBookshelfQuickAction } = useBookshelfQuickAction();
   const [conversionMode, setConversionMode] = useConversionMode();
   const { theme, setTheme } = useTheme();
 
@@ -157,7 +160,21 @@ function SettingsModal({ onClose }) {
               options={BOOK_DISPLAY_VARIANT_OPTIONS}
               value={variant}
               onChange={setVariant}
+              attachedLabel="書名與封面"
               ariaLabel="選擇書名與封面版本"
+              menuAlign="left"
+              menuPortal
+              openUpward="auto"
+              triggerMinWidth={0}
+            />
+          </SelectField>
+          <SelectField>
+            <SelectDropdown
+              options={BOOKSHELF_QUICK_ACTION_OPTIONS}
+              value={bookshelfQuickAction}
+              onChange={setBookshelfQuickAction}
+              attachedLabel="書架快捷操作"
+              ariaLabel="選擇書架快捷操作"
               menuAlign="left"
               menuPortal
               openUpward="auto"

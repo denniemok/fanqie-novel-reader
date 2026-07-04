@@ -2,6 +2,7 @@ import EmptyHint from '../ui/EmptyHint';
 import BookshelfBookGridCard from './BookshelfBookGridCard';
 import BookshelfBookListCard from './BookshelfBookListCard';
 import SortableBooks from '../ui/SortableBooks';
+import { useBookshelfQuickAction } from '../../contexts/BookshelfQuickActionContext';
 import { ALL_TAB } from './constants';
 import { GridLayout, ListLayout } from '../layout/BookListLayouts';
 
@@ -30,6 +31,8 @@ function BookshelfBookList({
   onBookDownload,
   onBookExport,
 }) {
+  const { enabled: bookshelfQuickAction } = useBookshelfQuickAction();
+
   if (sortedDisplayBooks.length === 0) {
     return (
       <EmptyHint>
@@ -45,7 +48,7 @@ function BookshelfBookList({
   }
 
   const selectionMode = manageMode && !reorderMode;
-  const showListActions = !selectionMode && !reorderMode;
+  const showQuickActions = bookshelfQuickAction && !selectionMode && !reorderMode;
   const isAllTab = activeTab === ALL_TAB;
 
   const bookCardProps = (bookId) => ({
@@ -63,11 +66,19 @@ function BookshelfBookList({
   const gridCardProps = (bookId) => ({
     ...bookCardProps(bookId),
     sortBy,
+    showActions: showQuickActions,
+    onRefreshClick: onBookRefresh,
+    onDeleteClick: onBookDelete,
+    onDeleteLocalDataClick: isAllTab ? undefined : onBookDeleteLocalData,
+    onAddToCollection: onBookAddToCollection,
+    onDownload: onBookDownload,
+    onExport: onBookExport,
+    isAllTab,
   });
 
   const listCardProps = (bookId) => ({
     ...bookCardProps(bookId),
-    showActions: showListActions,
+    showActions: showQuickActions,
     onRefreshClick: onBookRefresh,
     onDeleteClick: onBookDelete,
     onDeleteLocalDataClick: isAllTab ? undefined : onBookDeleteLocalData,

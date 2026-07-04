@@ -1,4 +1,6 @@
+import React from 'react';
 import styled, { css } from 'styled-components';
+import { useHorizontalDragScroll } from '../../hooks/useHorizontalDragScroll';
 
 /** Viewports at or below this width use the card action footer instead of the overlay. */
 export const CARD_ACTION_FOOTER_MAX_WIDTH = '768px';
@@ -13,7 +15,7 @@ const actionBarStyles = css`
   overflow: visible;
 `;
 
-export const CardActionBarScroll = styled.div`
+export const CardActionBarScrollInner = styled.div`
   display: flex;
   flex-wrap: nowrap;
   gap: 4px;
@@ -23,12 +25,28 @@ export const CardActionBarScroll = styled.div`
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
   padding: 4px 5px 6px 4px;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
 
   &::-webkit-scrollbar {
     display: none;
   }
 `;
+
+export function CardActionBarScroll({ children, ...rest }) {
+  const { ref, handlers } = useHorizontalDragScroll();
+
+  return (
+    <CardActionBarScrollInner ref={ref} {...handlers} {...rest}>
+      {children}
+    </CardActionBarScrollInner>
+  );
+}
 
 export const CardActionOverlay = styled.div`
   ${actionBarStyles}
