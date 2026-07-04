@@ -37,11 +37,11 @@ const FormEl = styled.form`
     font-size: 16px;
     transition: var(--transition-default);
     font-family: inherit;
+    box-shadow: var(--retro-shadow);
 
     &:focus {
       outline: none;
       border-color: var(--accent-color);
-      box-shadow: 0 0 0 3px var(--accent-soft);
     }
 
     &::placeholder {

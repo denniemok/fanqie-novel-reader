@@ -81,27 +81,11 @@ const Card = styled.div`
   opacity: ${(p) => (p.$disabled ? 0.7 : 1)};
   box-shadow: ${(p) => (p.$selected ? '0 0 0 2px color-mix(in srgb, var(--accent-color) 35%, transparent)' : 'var(--retro-shadow)')};
 
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: var(--accent-color);
-    opacity: ${(p) => (p.$selected ? 1 : 0)};
-    transition: opacity 0.25s ease;
-  }
-
   &:hover {
     border-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--border-color)' : 'var(--accent-color)')};
     background-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--background-color2)' : 'var(--hover-background-color)')};
     transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(-2px, -2px)')};
     box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : 'var(--retro-shadow-hover)')};
-
-    &::before {
-      opacity: ${(p) => (p.$reorderMode || p.$isDragging ? 0 : 1)};
-    }
   }
 
   &:active {

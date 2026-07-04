@@ -50,11 +50,13 @@ const SiteTitle = styled(Link)`
   transition: var(--transition-default);
   box-shadow: var(--retro-shadow);
 
-  &:hover {
-    background: var(--accent-color);
-    color: var(--text-on-accent);
-    border-color: var(--accent-color);
-    transform: rotate(-1deg);
+  @media (hover: hover) {
+    &:hover {
+      background: var(--accent-color);
+      color: var(--text-on-accent);
+      border-color: var(--accent-color);
+      transform: rotate(-1deg);
+    }
   }
 `;
 
