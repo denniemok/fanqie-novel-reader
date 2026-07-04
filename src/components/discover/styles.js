@@ -387,3 +387,11 @@ export const SkeletonLine = styled.div`
   width: ${(p) => p.$width || '100%'};
   ${shimmerStyle}
 `;
+
+export const SearchResultCapHint = styled.p`
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: var(--text-color-secondary);
+  text-align: center;
+  opacity: 0.75;
+`;

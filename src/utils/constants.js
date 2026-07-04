@@ -106,6 +106,8 @@ export const CHINESE_FONTS = [
   { value: "'Microsoft JhengHei', 'Heiti TC', 'Heiti SC', sans-serif", label: '微軟正黑體' },
 ].map((font) => ({ ...font, fontFamily: font.value }));
 
+export const SEARCH_RESULT_LIMIT = 50;
+
 export const FONT_SIZE_MIN = 18;
 export const FONT_SIZE_MAX = 56;
 export const FONT_SIZE_DEFAULT = 32;

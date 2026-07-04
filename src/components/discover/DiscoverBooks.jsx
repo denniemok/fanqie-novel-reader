@@ -23,6 +23,7 @@ import {
   addBooksToReadingHistory,
   removeBooksFromReadingHistory,
 } from '../../utils/storage';
+import { SEARCH_RESULT_LIMIT } from '../../utils/constants';
 import { useDiscoverBookList } from '../../hooks/discover/useDiscoverBookList';
 import {
   DEFAULT_SECONDARY_BY_PRIMARY,
@@ -44,7 +45,7 @@ import DiscoverBookIdForm from './DiscoverBookIdForm';
 import DiscoverToolbar from './DiscoverToolbar';
 import DiscoverBookList from './DiscoverBookList';
 import DiscoverBookSkeletons from './DiscoverBookSkeletons';
-import { OthersPanel } from './styles';
+import { OthersPanel, SearchResultCapHint } from './styles';
 
 function DiscoverBooks({ conversionMode = 'tw' }) {
   const navigate = useNavigate();
@@ -331,6 +332,12 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
           baseBookCardProps={baseBookCardProps}
           bookListCardProps={bookListCardProps}
         />
+      )}
+
+      {showSearchContent && submittedQuery && !loading && !error && books.length >= SEARCH_RESULT_LIMIT && sortedBooks.length > 0 && (
+        <SearchResultCapHint>
+          顯示前 {SEARCH_RESULT_LIMIT} 筆結果，請嘗試更精確的關鍵字
+        </SearchResultCapHint>
       )}
 
       {addToCollectionBookIds && (
