@@ -3,6 +3,7 @@ import { ChevronDown, SlidersHorizontal, X } from 'lucide-react';
 import styled from 'styled-components';
 import { toolbarRetroUnit } from '../../utils/styled/retro';
 import {
+  computeBookFilterOptionCounts,
   EMPTY_BOOK_FILTERS,
   STATUS_FILTER_OPTIONS,
   WORD_COUNT_FILTER_OPTIONS,
@@ -165,21 +166,25 @@ const Chip = styled.button`
   }
 `;
 
-function FilterRow({ label, options, value, onChange }) {
+function FilterRow({ label, options, value, onChange, optionCounts }) {
   return (
     <Row>
       <Label>{label}：</Label>
       <Options>
-        {options.map((option) => (
-          <Chip
-            key={option.value || 'all'}
-            type="button"
-            $active={value === option.value}
-            onClick={() => onChange(option.value)}
-          >
-            {option.label}
-          </Chip>
-        ))}
+        {options.map((option) => {
+          const count = optionCounts?.[option.value || ''];
+          return (
+            <Chip
+              key={option.value || 'all'}
+              type="button"
+              $active={value === option.value}
+              onClick={() => onChange(option.value)}
+            >
+              {option.label}
+              {count != null && ` (${count})`}
+            </Chip>
+          );
+        })}
       </Options>
     </Row>
   );
@@ -211,6 +216,9 @@ function BookFilterPanel({
   onFiltersChange,
   expanded = false,
   onExpandedChange,
+  filterItems,
+  getFilterMeta,
+  filteredCount,
 }) {
   const categoryOptions = [
     { value: '', label: '全部' },
@@ -229,6 +237,39 @@ function BookFilterPanel({
     [filters, categoryOptions, conversionMode]
   );
 
+  const categoryCounts = useMemo(() => {
+    if (!filterItems || !getFilterMeta) return null;
+    return computeBookFilterOptionCounts(
+      filterItems,
+      getFilterMeta,
+      filters,
+      categoryOptions,
+      'category'
+    );
+  }, [filterItems, getFilterMeta, filters, categoryOptions]);
+
+  const statusCounts = useMemo(() => {
+    if (!filterItems || !getFilterMeta) return null;
+    return computeBookFilterOptionCounts(
+      filterItems,
+      getFilterMeta,
+      filters,
+      STATUS_FILTER_OPTIONS,
+      'status'
+    );
+  }, [filterItems, getFilterMeta, filters]);
+
+  const wordCountCounts = useMemo(() => {
+    if (!filterItems || !getFilterMeta) return null;
+    return computeBookFilterOptionCounts(
+      filterItems,
+      getFilterMeta,
+      filters,
+      WORD_COUNT_FILTER_OPTIONS,
+      'wordCount'
+    );
+  }, [filterItems, getFilterMeta, filters]);
+
   const showActiveFilters = activeFilterLabels.length > 0;
 
   const clearFilters = () => {
@@ -246,6 +287,7 @@ function BookFilterPanel({
         >
           <SlidersHorizontal aria-hidden />
           篩選
+          {filteredCount != null && ` (${filteredCount})`}
           <ChevronDown className={`chevron${expanded ? ' open' : ''}`} aria-hidden />
         </ToggleBtn>
 
@@ -276,18 +318,21 @@ function BookFilterPanel({
             options={categoryOptions}
             value={filters.category}
             onChange={(value) => setFilter('category', value)}
+            optionCounts={categoryCounts}
           />
           <FilterRow
             label="狀態"
             options={STATUS_FILTER_OPTIONS}
             value={filters.status}
             onChange={(value) => setFilter('status', value)}
+            optionCounts={statusCounts}
           />
           <FilterRow
             label="字數"
             options={WORD_COUNT_FILTER_OPTIONS}
             value={filters.wordCount}
             onChange={(value) => setFilter('wordCount', value)}
+            optionCounts={wordCountCounts}
           />
         </Body>
       )}

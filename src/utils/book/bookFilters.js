@@ -117,3 +117,17 @@ export function bookMatchesFilters(meta, filters = EMPTY_BOOK_FILTERS) {
     && matchesWordCountFilter(meta.wordCount, filters.wordCount)
   );
 }
+
+/** @param {Array} items @param {Function} getMeta @param {object} filters @param {Array} options @param {string} filterKey */
+export function computeBookFilterOptionCounts(items, getMeta, filters, options, filterKey) {
+  const counts = {};
+  for (const option of options) {
+    const testFilters = { ...filters, [filterKey]: option.value };
+    let count = 0;
+    for (const item of items) {
+      if (bookMatchesFilters(getMeta(item), testFilters)) count += 1;
+    }
+    counts[option.value || ''] = count;
+  }
+  return counts;
+}

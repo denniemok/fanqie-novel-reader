@@ -63,6 +63,9 @@ function BookshelfToolbar({
   filtersExpanded,
   onFiltersExpandedChange,
   conversionMode,
+  filterItems,
+  getFilterMeta,
+  filteredCount,
 }) {
   return (
     <ToolbarRoot>
@@ -133,6 +136,9 @@ function BookshelfToolbar({
         onFiltersChange={onBookFiltersChange}
         expanded={filtersExpanded}
         onExpandedChange={onFiltersExpandedChange}
+        filterItems={filterItems}
+        getFilterMeta={getFilterMeta}
+        filteredCount={filteredCount}
       />
 
       <TabActions>

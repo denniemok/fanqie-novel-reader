@@ -286,6 +286,9 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
         filtersExpanded={filtersExpanded}
         onFiltersExpandedChange={setFiltersExpanded}
         conversionMode={conversionMode}
+        filterItems={books}
+        getFilterMeta={extractDiscoverBookFilterMeta}
+        filteredCount={filteredBooks.length}
       />
 
       {activePrimary === PRIMARY_TAB_OTHERS && (

@@ -140,6 +140,19 @@ function BookshelfContent({ conversionMode = 'tw' }) {
 
   const hasSearch = Boolean(searchQuery.trim());
   const hasActiveFilters = hasActiveBookFilters(bookFilters);
+
+  const filterBaseItems = useMemo(() => {
+    if (!hasSearch) return sortedDisplayBooks;
+    return sortedDisplayBooks.filter(({ bookId }) =>
+      bookMatchesBookshelfSearch(searchMetaMap[bookId], bookId, searchQuery, conversionMode)
+    );
+  }, [sortedDisplayBooks, hasSearch, searchMetaMap, searchQuery, conversionMode]);
+
+  const getFilterMeta = useCallback(
+    ({ bookId }) => searchMetaMap[bookId],
+    [searchMetaMap]
+  );
+
   const booksForDisplay = useMemo(() => {
     let result = sortedDisplayBooks;
     if (hasSearch) {
@@ -544,6 +557,9 @@ function BookshelfContent({ conversionMode = 'tw' }) {
             filtersExpanded={filtersExpanded}
             onFiltersExpandedChange={setFiltersExpanded}
             conversionMode={conversionMode}
+            filterItems={filterBaseItems}
+            getFilterMeta={getFilterMeta}
+            filteredCount={booksForDisplay.length}
           />
 
           {reorderMode && canReorder && (

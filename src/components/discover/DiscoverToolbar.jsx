@@ -52,6 +52,9 @@ function DiscoverToolbar({
   filtersExpanded,
   onFiltersExpandedChange,
   conversionMode,
+  filterItems,
+  getFilterMeta,
+  filteredCount,
 }) {
   const filterPanel = showListContent ? (
     <BookFilterPanel
@@ -61,6 +64,9 @@ function DiscoverToolbar({
       onFiltersChange={onBookFiltersChange}
       expanded={filtersExpanded}
       onExpandedChange={onFiltersExpandedChange}
+      filterItems={filterItems}
+      getFilterMeta={getFilterMeta}
+      filteredCount={filteredCount}
     />
   ) : null;
 
