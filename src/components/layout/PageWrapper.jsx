@@ -6,7 +6,7 @@ const PageWrapper = styled.div`
   overflow-x: hidden;
   width: 100%;
   background-color: ${(p) => p.$backgroundColor ?? 'transparent'};
-  ${(p) => p.$withBottomPadding && 'padding-bottom: env(safe-area-inset-bottom);'}
+  ${(p) => p.$withBottomPadding && 'padding-bottom: var(--safe-area-bottom, env(safe-area-inset-bottom, 0px));'}
 `;
 
 export default PageWrapper;

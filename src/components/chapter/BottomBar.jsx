@@ -3,14 +3,13 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 import { buildChapterUrl } from '../../utils/navigation';
+import { fixedBottomBar } from '../../utils/styled/viewport';
 
 const BottomBarWrapper = styled.div`
   position: fixed;
-  bottom: 0;
   left: 0;
   right: 0;
-  height: 56px;
-  padding-bottom: env(safe-area-inset-bottom);
+  ${fixedBottomBar(56)}
   display: flex;
   background-color: var(--topbar-bg);
   backdrop-filter: blur(12px);

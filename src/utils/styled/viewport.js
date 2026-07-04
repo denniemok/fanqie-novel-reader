@@ -1,20 +1,33 @@
 import { css } from 'styled-components';
 
-// Safari iOS: 100vh/100dvh can be shorter than the visible area; -webkit-fill-available fixes it.
 export const viewportHeight = css`
   height: 100vh;
+  height: 100svh;
   height: 100dvh;
-
-  @supports (-webkit-touch-callout: none) {
-    height: -webkit-fill-available;
-  }
 `;
 
 export const minViewportHeight = css`
   min-height: 100vh;
+  min-height: 100svh;
   min-height: 100dvh;
+`;
 
-  @supports (-webkit-touch-callout: none) {
-    min-height: -webkit-fill-available;
-  }
+export const safeAreaInsetBottom = css`
+  padding-bottom: var(--safe-area-bottom, env(safe-area-inset-bottom, 0px));
+`;
+
+/**
+ * Flush fixed bottom bar (chapter nav, etc). Escapes the global border-box rule so the
+ * safe-area padding adds to the box instead of squeezing the fixed content height.
+ */
+export const fixedBottomBar = (contentHeight = 56) => css`
+  box-sizing: content-box;
+  bottom: 0;
+  height: ${contentHeight}px;
+  ${safeAreaInsetBottom}
+`;
+
+/** Floating controls above the bottom edge (manage bar, FABs). */
+export const floatingBottom = (gap = '16px') => css`
+  bottom: calc(${gap} + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)));
 `;

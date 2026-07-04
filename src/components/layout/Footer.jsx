@@ -7,7 +7,7 @@ const FooterWrapper = styled.footer`
   box-sizing: border-box;
   text-align: center;
   margin-top: 70px;
-  padding: 32px 24px calc(26px + env(safe-area-inset-bottom));
+  padding: 32px 24px calc(26px + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)));
   color: var(--text-color-secondary);
   font-size: 13px;
   letter-spacing: 0.06em;

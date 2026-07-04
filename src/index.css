@@ -39,6 +39,8 @@
   --topbar-shadow: 0 4px 20px rgba(160, 120, 130, 0.12);
   /* TopBarBase: padding + 44px row + border-bottom */
   --topbar-height: calc(70px + env(safe-area-inset-top));
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --chapter-bottom-bar-height: 56px;
   /* Background image wash */
   --bg-wash-linear: linear-gradient(
     165deg,
@@ -200,6 +202,7 @@ body {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: none;
   min-height: 100vh;
+  min-height: 100svh;
   min-height: 100dvh;
   transition: color 0.4s ease;
 }
@@ -214,12 +217,6 @@ a:focus-visible,
 [role="button"]:focus-visible {
   outline: 2px solid var(--accent-color);
   outline-offset: 2px;
-}
-
-@supports (-webkit-touch-callout: none) {
-  body {
-    min-height: -webkit-fill-available;
-  }
 }
 
 a, span, h1, h2, h3, h4, h5, h6, p, li {

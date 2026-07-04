@@ -28,7 +28,7 @@ const Panel = styled.aside`
   position: fixed;
   right: max(12px, env(safe-area-inset-right));
   top: calc(128px + env(safe-area-inset-top));
-  bottom: calc(64px + env(safe-area-inset-bottom));
+  bottom: calc(8px + var(--chapter-bottom-bar-height, 56px) + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)));
   z-index: 960;
   display: flex;
   flex-direction: column;
@@ -50,7 +50,7 @@ const Panel = styled.aside`
 
   @media (max-height: 500px) {
     top: calc(72px + env(safe-area-inset-top));
-    bottom: calc(48px + env(safe-area-inset-bottom));
+    bottom: calc(var(--chapter-bottom-bar-height, 56px) - 8px + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)));
     gap: 4px;
     padding: 2px 0;
   }

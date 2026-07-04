@@ -8,7 +8,7 @@ const ReaderWrapper = styled.div`
   margin: 0 auto;
   padding: 40px 24px 100px 24px;
   padding-top: calc(140px + env(safe-area-inset-top));
-  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+  padding-bottom: calc(100px + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)));
   max-width: 800px;
   background-color: ${(p) => p.$readerBackground ?? 'var(--background-color)'};
   ${minViewportHeight}
@@ -16,7 +16,7 @@ const ReaderWrapper = styled.div`
   @media (max-width: 480px) {
     padding: 24px 16px 100px 16px;
     padding-top: calc(130px + env(safe-area-inset-top));
-    padding-bottom: calc(100px + env(safe-area-inset-bottom));
+    padding-bottom: calc(100px + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)));
   }
 
   p {

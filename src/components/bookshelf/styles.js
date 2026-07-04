@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import PageContent from '../layout/PageContent';
 import { CardActionButton } from '../book/CardActionButton';
+import { floatingBottom } from '../../utils/styled/viewport';
 
 export const Wrapper = styled(PageContent)``;
 
@@ -19,7 +20,7 @@ export const ReorderHint = styled.div`
 export const BookshelfManageActionBar = styled.div`
   position: fixed;
   left: 50%;
-  bottom: calc(16px + env(safe-area-inset-bottom));
+  ${floatingBottom('16px')}
   transform: translateX(-50%);
   z-index: 200;
   display: flex;
