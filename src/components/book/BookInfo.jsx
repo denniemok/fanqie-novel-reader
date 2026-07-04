@@ -6,6 +6,7 @@ import { useConvertedText } from '../../hooks/useConvertedText';
 import { resolveBookDisplay } from '../../utils/book/bookInfo';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 import BookCoverImg from './BookCoverImg';
+import { HorizontalScrollArea, HorizontalScrollInner } from '../ui/HorizontalScrollArea';
 
 const InfoWrapper = styled.div`
   display: flex;
@@ -180,19 +181,8 @@ const TextBlock = styled.div`
   }
 `;
 
-const HorizontalScroll = styled.div`
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  max-width: 100%;
-  min-width: 0;
+const HorizontalScrollRow = styled(HorizontalScrollInner)`
   width: 100%;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 `;
 
 const TitleBlock = styled.div`
@@ -255,13 +245,16 @@ const TitleText = styled.span`
 `;
 
 const AuthorText = styled.span`
-  white-space: nowrap;
-  flex-shrink: 0;
+  display: block;
+  width: 100%;
   color: var(--accent-color);
   font-size: 14px;
   font-weight: 700;
   line-height: 1;
   font-family: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   @media (max-width: 480px) {
     font-size: 13px;
@@ -331,7 +324,7 @@ const ScrollableTagText = styled.span`
   font-family: inherit;
 `;
 
-const MetaRow = styled(HorizontalScroll)`
+const MetaRow = styled(HorizontalScrollRow)`
   align-items: center;
   gap: 8px;
   margin-top: 8px;
@@ -457,14 +450,10 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
             </>
           ) : (
             <>
-              <HorizontalScroll role="group" aria-label="書名">
+              <HorizontalScrollArea as={HorizontalScrollRow} role="group" aria-label="書名">
                 <TitleText>{convertedBookName}</TitleText>
-              </HorizontalScroll>
-              {convertedAuthor && (
-                <HorizontalScroll role="group" aria-label="作者">
-                  <AuthorText>{convertedAuthor}</AuthorText>
-                </HorizontalScroll>
-              )}
+              </HorizontalScrollArea>
+              {convertedAuthor && <AuthorText>{convertedAuthor}</AuthorText>}
             </>
           )}
         </TitleBlock>
@@ -472,9 +461,9 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
           isCompact ? (
             <Tags>{convertedTags}</Tags>
           ) : (
-            <HorizontalScroll role="group" aria-label="標籤">
+            <HorizontalScrollArea as={HorizontalScrollRow} role="group" aria-label="標籤">
               <ScrollableTagText>{convertedTags}</ScrollableTagText>
-            </HorizontalScroll>
+            </HorizontalScrollArea>
           )
         )}
         <Abstract>
@@ -485,7 +474,7 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
           )}
           {convertedAbstract}
         </Abstract>
-        <MetaRow {...scrollCaptureProps}>
+        <HorizontalScrollArea as={MetaRow} {...scrollCaptureProps}>
           {showChapterCount && !thumb_url && (
             <MetaTag className="meta-chapters">{chapter_count ? `共 ${chapter_count} 章節` : '暫無章節資訊'}</MetaTag>
           )}
@@ -497,7 +486,7 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
           {word_number && <MetaTag className="meta-word-number">{convertedWordNumber}字</MetaTag>}
           {creation_status && <MetaTag className="meta-creation-status">{convertedCreationStatus}</MetaTag>}
           {last_publish_time && <MetaTag className="meta-publish-time">更新 {last_publish_time}</MetaTag>}
-        </MetaRow>
+        </HorizontalScrollArea>
         {!isCompact && footer && <Footer>{footer}</Footer>}
       </TextBlock>
       {!isCompact && showFullAbstract && (

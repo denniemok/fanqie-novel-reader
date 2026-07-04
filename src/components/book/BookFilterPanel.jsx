@@ -9,6 +9,7 @@ import {
   WORD_COUNT_FILTER_OPTIONS,
 } from '../../utils/book/bookFilters';
 import { maybeConvert } from '../../utils/text/zh-convert';
+import { HorizontalScrollArea, HorizontalScrollInner } from '../ui/HorizontalScrollArea';
 
 const PanelRoot = styled.div`
   display: flex;
@@ -64,19 +65,10 @@ const ToggleBtn = styled.button`
   }
 `;
 
-const ActiveFilters = styled.div`
-  display: flex;
+const ActiveFilters = styled(HorizontalScrollInner)`
   align-items: center;
   gap: 6px;
   flex: 1;
-  min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 `;
 
 const ActiveTag = styled.span`
@@ -292,11 +284,11 @@ function BookFilterPanel({
         </ToggleBtn>
 
         {showActiveFilters && (
-          <ActiveFilters aria-label="已選篩選">
+          <HorizontalScrollArea as={ActiveFilters} aria-label="已選篩選">
             {activeFilterLabels.map((label) => (
               <ActiveTag key={label}>{label}</ActiveTag>
             ))}
-          </ActiveFilters>
+          </HorizontalScrollArea>
         )}
 
         {showActiveFilters && (

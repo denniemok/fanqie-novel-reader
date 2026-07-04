@@ -1,20 +1,13 @@
 import styled from 'styled-components';
 import { toolbarRetroUnit } from '../../utils/styled/retro';
+import { HorizontalScrollInner } from '../ui/HorizontalScrollArea';
 
 export const TOOLBAR_CONTROL_HEIGHT = '44px';
 
-export const TabBar = styled.div`
-  display: flex;
+export const TabBar = styled(HorizontalScrollInner)`
   align-items: stretch;
   gap: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
   ${toolbarRetroUnit}
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 `;
 
 export const Tab = styled.button`

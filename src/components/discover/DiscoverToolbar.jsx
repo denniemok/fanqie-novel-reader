@@ -7,19 +7,19 @@ import {
   SortTrailingBtn,
   SortUnit,
   TabActions,
-  TabBar,
   Tab,
   ToggleBtn,
   ToolbarRight,
   ViewToggle,
 } from '../layout/BookToolbarStyles';
+import { ScrollableTabBar } from '../layout/ScrollableTabBar';
+import { ScrollableSecondaryTabBar } from './ScrollableSecondaryTabBar';
 import { PRIMARY_TABS } from './constants';
 import DiscoverSearchForm from './DiscoverSearchForm';
 import BookFilterPanel from '../book/BookFilterPanel';
 import {
   SecondaryRefreshBtn,
   SecondaryTab,
-  SecondaryTabBar,
   SecondaryTabRow,
   TabStack,
 } from './styles';
@@ -72,7 +72,7 @@ function DiscoverToolbar({
 
   return (
     <TabStack>
-      <TabBar>
+      <ScrollableTabBar>
         {PRIMARY_TABS.map((tab) => (
           <Tab
             key={tab.id}
@@ -83,11 +83,11 @@ function DiscoverToolbar({
             {tab.label}
           </Tab>
         ))}
-      </TabBar>
+      </ScrollableTabBar>
 
       {showDiscoverContent && secondaryTabs.length > 0 && (
         <SecondaryTabRow>
-          <SecondaryTabBar>
+          <ScrollableSecondaryTabBar>
             {secondaryTabs.map((tab) => (
               <SecondaryTab
                 key={tab.id}
@@ -98,7 +98,7 @@ function DiscoverToolbar({
                 {tab.label}
               </SecondaryTab>
             ))}
-          </SecondaryTabBar>
+          </ScrollableSecondaryTabBar>
           <SecondaryRefreshBtn
             type="button"
             title="刷新列表"

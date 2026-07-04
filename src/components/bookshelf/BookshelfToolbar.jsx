@@ -17,7 +17,6 @@ import { ALL_TAB } from './constants';
 import BookFilterPanel from '../book/BookFilterPanel';
 import {
   ToolbarRoot,
-  TabBar,
   Tab,
   TabInner,
   TabName,
@@ -34,6 +33,7 @@ import {
   BtnLabel,
   ToggleBtn,
 } from '../layout/BookToolbarStyles';
+import { ScrollableTabBar } from '../layout/ScrollableTabBar';
 
 function BookshelfToolbar({
   activeTab,
@@ -69,7 +69,7 @@ function BookshelfToolbar({
 }) {
   return (
     <ToolbarRoot>
-      <TabBar>
+      <ScrollableTabBar>
         <Tab
           $active={activeTab === ALL_TAB}
           onClick={() => onActiveTabChange(ALL_TAB)}
@@ -93,7 +93,7 @@ function BookshelfToolbar({
             </TabInner>
           </Tab>
         ))}
-      </TabBar>
+      </ScrollableTabBar>
 
       <SearchRow>
         <SearchBar>
