@@ -3,14 +3,13 @@ export const CANONICAL_IMPORT_URL = 'https://fanqietc.com/import';
 export const CANONICAL_HOSTNAME = new URL(CANONICAL_SITE_URL).hostname;
 export const LEGACY_HOSTNAMES = ['fanqietc.pages.dev', 'fqnr.pages.dev'];
 export const DATA_BACKUP_VERSION = 1;
-export const DATA_BACKUP_EXTENSION = '.fanqie-backup';
+export const DATA_BACKUP_EXTENSION = '.fanqietc-backup';
 
 export const INDEXEDDB_STORE_NAME = 'fanqie-database';
 export const DIRECTORY_CACHE_KEY = 'fanqie-directory';
 export const CHAPTER_CACHE_KEY = 'fanqie-chapter';
 export const DETAIL_CACHE_KEY = 'fanqie-detail';
 export const READING_HISTORY_KEY = 'fanqie-history';
-export const READING_HISTORY_LEGACY_KEY = 'fanqie-readingHistory';
 export const COLLECTIONS_KEY = 'fanqie-collections';
 
 export const BOOKSHELF_VIEW_MODE_KEY = 'bookshelfViewMode';

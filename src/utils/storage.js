@@ -2,7 +2,6 @@ import {
   CATALOG_SORT_DIRECTION_KEY,
   CATALOG_MANAGE_MODE_KEY,
   READING_HISTORY_KEY,
-  READING_HISTORY_LEGACY_KEY,
   COLLECTIONS_KEY,
   BOOKSHELF_VIEW_MODE_KEY,
   DISCOVER_VIEW_MODE_KEY,
@@ -110,14 +109,6 @@ export async function deleteBooksData(bookIds) {
   await saveCollections(collections);
 }
 
-async function migrateReadingHistoryFromLocalStorage() {
-  const legacy = safeGetJSON(READING_HISTORY_LEGACY_KEY);
-  if (!Array.isArray(legacy)) return null;
-  await setStoreItem(READING_HISTORY_KEY, legacy);
-  safeRemoveItem(READING_HISTORY_LEGACY_KEY);
-  return legacy;
-}
-
 async function saveReadingHistory(history) {
   return setStoreItem(READING_HISTORY_KEY, history);
 }
@@ -125,8 +116,6 @@ async function saveReadingHistory(history) {
 export async function getReadingHistory() {
   const fromIdb = await getStoreItem(READING_HISTORY_KEY);
   if (Array.isArray(fromIdb)) return fromIdb;
-  const migrated = await migrateReadingHistoryFromLocalStorage();
-  if (Array.isArray(migrated)) return migrated;
   await saveReadingHistory([]);
   return [];
 }

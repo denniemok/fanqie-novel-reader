@@ -43,7 +43,7 @@ function ImportContent() {
     try {
       const summary = await importUserData(selectedFile);
       showToast(
-        `匯入完成：${summary.chapters} 章節、${summary.directories} 本目錄、${summary.localStorageCount} 項設定。`
+        `匯入完成：${summary.chapters} 章節、${summary.directories} 本目錄、${summary.details} 本書籍。`
       );
       setSelectedFile(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -80,7 +80,7 @@ function ImportContent() {
 
         <StepCard>
           <b>上傳備份檔</b>
-          <p>請選擇從舊站下載的備份檔。匯入後，相同的書籍資料和設定會被覆蓋更新。</p>
+          <p>請選擇從舊站下載的備份檔。匯入後，相同的書籍資料會被覆蓋更新（不會變更本機的閱讀設定）。</p>
           <ActionRow>
             <GrayButton type="button" onClick={() => fileInputRef.current?.click()}>
               選擇檔案

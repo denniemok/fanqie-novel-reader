@@ -7,6 +7,7 @@ import {
   CANONICAL_IMPORT_URL,
   CANONICAL_HOSTNAME,
   CANONICAL_SITE_URL,
+  DATA_BACKUP_EXTENSION,
   LEGACY_HOSTNAMES,
 } from '../../utils/constants';
 import { exportUserData, isLegacyOrigin } from '../../utils/dataMigration';
@@ -21,11 +22,11 @@ function ExportContent() {
     setExporting(true);
     try {
       const summary = await exportUserData();
-      if (summary.totalKeys === 0 && summary.localStorageKeys === 0) {
+      if (summary.totalKeys === 0) {
         showToast('備份檔已下載，但目前沒有可遷移的資料。');
       } else {
         showToast(
-          `已匯出備份檔（${summary.chapters} 章節、${summary.directories} 本目錄、${summary.localStorageKeys} 項設定）。`
+          `已匯出備份檔（${summary.chapters} 章節、${summary.directories} 本目錄、${summary.details} 本書籍）。`
         );
       }
     } catch {
@@ -57,7 +58,7 @@ function ExportContent() {
               <HostCodeList hostnames={LEGACY_HOSTNAMES} />）。
             </li>
             <li>進入本頁（<code>/export</code>）或從首頁點擊「前往匯出資料」。</li>
-            <li>點擊下方的「匯出資料」，瀏覽器會下載一個 <code>.fanqie-backup</code> 的備份檔。</li>
+            <li>點擊下方的「匯出資料」，瀏覽器會下載一個 <code>{DATA_BACKUP_EXTENSION}</code> 的備份檔。</li>
           </ol>
           {!onLegacySite && (
             <Hint>
@@ -81,7 +82,7 @@ function ExportContent() {
               </a>
               {' '}的匯入頁面。
             </li>
-            <li>上傳剛剛下載的 <code>.fanqie-backup</code> 檔案。</li>
+            <li>上傳剛剛下載的 <code>{DATA_BACKUP_EXTENSION}</code> 檔案。</li>
             <li>匯入成功後，重新整理書架就可以繼續看書囉！</li>
           </ol>
           <ActionRow>
