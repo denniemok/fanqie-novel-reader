@@ -1,17 +1,16 @@
-import { ArrowDownZA, ArrowUpAZ, Grid2X2, LayoutList, Loader2, RefreshCw } from 'lucide-react';
+import { Loader2, RefreshCw } from 'lucide-react';
 import { DISCOVER_SORT_OPTIONS } from '../../utils/book/bookListSort';
 import SelectDropdown from '../ui/SelectDropdown';
 import { CardSpinningIcon } from '../book/CardActionButton';
 import {
-  BtnLabel,
-  SortTrailingBtn,
   SortUnit,
-  TabActions,
   Tab,
-  ToggleBtn,
+  TabActions,
+  TOOLBAR_SORT_DROPDOWN_PROPS,
   ToolbarRight,
-  ViewToggle,
 } from '../layout/BookToolbarStyles';
+import ListGridViewToggle from '../layout/ListGridViewToggle';
+import SortDirectionButton from '../layout/SortDirectionButton';
 import { ScrollableTabBar } from '../layout/ScrollableTabBar';
 import { ScrollableSecondaryTabBar } from './ScrollableSecondaryTabBar';
 import { PRIMARY_TABS } from './constants';
@@ -141,51 +140,17 @@ function DiscoverToolbar({
                 value={sortBy}
                 onChange={onSortChange}
                 ariaLabel="探索排序方式"
-                attachedLabel="排序"
-                hideAttachedLabelOnMobile
-                embedded
-                square
-                retro
                 hasTrailing={sortBy !== 'default'}
-                menuAlign="left"
-                triggerMinWidth={108}
-                triggerMinWidthMobile={72}
-                triggerBold
+                {...TOOLBAR_SORT_DROPDOWN_PROPS}
               />
               {sortBy !== 'default' && (
-                <SortTrailingBtn
-                  type="button"
-                  onClick={onSortDirectionToggle}
-                  title={sortDirection === 'desc' ? '由高到低（點擊切換）' : '由低到高（點擊切換）'}
-                  aria-label={sortDirection === 'desc' ? '降序排列' : '升序排列'}
-                >
-                  {sortDirection === 'desc' ? <ArrowDownZA /> : <ArrowUpAZ />}
-                  <BtnLabel>{sortDirection === 'desc' ? '降序' : '升序'}</BtnLabel>
-                </SortTrailingBtn>
+                <SortDirectionButton
+                  sortDirection={sortDirection}
+                  onToggle={onSortDirectionToggle}
+                />
               )}
             </SortUnit>
-            <ViewToggle>
-              <ToggleBtn
-                type="button"
-                $active={viewMode === 'list'}
-                onClick={() => onViewModeChange('list')}
-                title="列表視圖"
-                aria-label="列表視圖"
-              >
-                <LayoutList />
-                <BtnLabel>列表</BtnLabel>
-              </ToggleBtn>
-              <ToggleBtn
-                type="button"
-                $active={viewMode === 'grid'}
-                onClick={() => onViewModeChange('grid')}
-                title="格狀視圖"
-                aria-label="格狀視圖"
-              >
-                <Grid2X2 />
-                <BtnLabel>格狀</BtnLabel>
-              </ToggleBtn>
-            </ViewToggle>
+            <ListGridViewToggle viewMode={viewMode} onViewModeChange={onViewModeChange} />
           </ToolbarRight>
         </TabActions>
       )}

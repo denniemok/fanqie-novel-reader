@@ -1,8 +1,4 @@
 import {
-  ArrowDownZA,
-  ArrowUpAZ,
-  Grid2X2,
-  LayoutList,
   Plus,
   Folders,
   Hand,
@@ -32,7 +28,10 @@ import {
   SortTrailingBtn,
   BtnLabel,
   ToggleBtn,
+  TOOLBAR_SORT_DROPDOWN_PROPS,
 } from '../layout/BookToolbarStyles';
+import ListGridViewToggle from '../layout/ListGridViewToggle';
+import SortDirectionButton from '../layout/SortDirectionButton';
 import { ScrollableTabBar } from '../layout/ScrollableTabBar';
 
 function BookshelfToolbar({
@@ -149,27 +148,14 @@ function BookshelfToolbar({
               value={sortBy}
               onChange={onSortChange}
               ariaLabel="書架排序方式"
-              attachedLabel="排序"
-              hideAttachedLabelOnMobile
-              embedded
-              square
-              retro
               hasTrailing={sortBy !== 'manual' || canReorder}
-              menuAlign="left"
-              triggerMinWidth={108}
-              triggerMinWidthMobile={72}
-              triggerBold
+              {...TOOLBAR_SORT_DROPDOWN_PROPS}
             />
             {sortBy !== 'manual' ? (
-              <SortTrailingBtn
-                type="button"
-                onClick={onSortDirectionToggle}
-                title={sortDirection === 'desc' ? '由高到低（點擊切換）' : '由低到高（點擊切換）'}
-                aria-label={sortDirection === 'desc' ? '降序排列' : '升序排列'}
-              >
-                {sortDirection === 'desc' ? <ArrowDownZA /> : <ArrowUpAZ />}
-                <BtnLabel>{sortDirection === 'desc' ? '降序' : '升序'}</BtnLabel>
-              </SortTrailingBtn>
+              <SortDirectionButton
+                sortDirection={sortDirection}
+                onToggle={onSortDirectionToggle}
+              />
             ) : canReorder && !hasSearch && !hasActiveFilters ? (
               <SortTrailingBtn
                 type="button"
@@ -207,26 +193,7 @@ function BookshelfToolbar({
               <BtnLabel>新書</BtnLabel>
             </ToggleBtn>
           </ViewToggle>
-          <ViewToggle>
-            <ToggleBtn
-              $active={viewMode === 'list'}
-              onClick={() => onViewModeChange('list')}
-              title="列表視圖"
-              aria-label="列表視圖"
-            >
-              <LayoutList />
-              <BtnLabel>列表</BtnLabel>
-            </ToggleBtn>
-            <ToggleBtn
-              $active={viewMode === 'grid'}
-              onClick={() => onViewModeChange('grid')}
-              title="格狀視圖"
-              aria-label="格狀視圖"
-            >
-              <Grid2X2 />
-              <BtnLabel>格狀</BtnLabel>
-            </ToggleBtn>
-          </ViewToggle>
+          <ListGridViewToggle viewMode={viewMode} onViewModeChange={onViewModeChange} />
         </ToolbarRight>
       </TabActions>
     </ToolbarRoot>

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import styled from 'styled-components';
 import { ArrowDownUp, BookImage, Languages } from 'lucide-react';
 import {
   Modal,
@@ -10,61 +9,10 @@ import {
   ModalSecondaryButton,
   ModalText,
 } from '../ui/ModalBase';
+import { MODAL_SELECT_PROPS, Section, SectionHeader, SelectField } from '../ui/ModalFormSection';
 import SelectDropdown from '../ui/SelectDropdown';
 import { BOOK_DISPLAY_VARIANT_OPTIONS, EXPORT_CHAPTER_ORDER_OPTIONS, ZH_CONVERSION_OPTIONS } from '../../utils/constants';
 import { runBookEpubExport, runBookTxtExport } from '../../utils/export/exportBookActions';
-
-const Section = styled.section`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  & + & {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border-color);
-  }
-
-  @media (max-height: 500px) {
-    gap: 6px;
-
-    & + & {
-      margin-top: 12px;
-      padding-top: 12px;
-    }
-  }
-`;
-
-const SectionHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-color-secondary);
-
-  svg {
-    color: var(--accent-color);
-    flex-shrink: 0;
-  }
-`;
-
-const SelectField = styled.div`
-  width: 100%;
-
-  > div {
-    display: flex;
-    width: 100%;
-  }
-
-  button {
-    flex: 1;
-    min-width: 0 !important;
-    width: 100%;
-  }
-`;
 
 function ExportBookModal({
   bookId,
@@ -159,10 +107,7 @@ function ExportBookModal({
                 value={value}
                 onChange={onChange}
                 ariaLabel={ariaLabel}
-                menuAlign="left"
-                menuPortal
-                openUpward="auto"
-                triggerMinWidth={0}
+                {...MODAL_SELECT_PROPS}
               />
             </SelectField>
           </Section>

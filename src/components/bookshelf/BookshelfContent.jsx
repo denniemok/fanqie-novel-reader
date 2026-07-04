@@ -42,10 +42,9 @@ import { resolveBookDisplay } from '../../utils/book/bookInfo';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 import { useBookshelfSortMeta } from '../../hooks/bookshelf/useBookshelfSortMeta';
 import { useBookshelfSearchMeta, bookMatchesBookshelfSearch } from '../../hooks/bookshelf/useBookshelfSearchMeta';
+import { usePersistedBookFilters } from '../../hooks/usePersistedBookFilters';
 import {
   bookMatchesFilters,
-  collectCategoriesFromItems,
-  hasActiveBookFilters,
 } from '../../utils/book/bookFilters';
 import { ALL_TAB } from './constants';
 import { Wrapper, ReorderHint } from './styles';
@@ -70,10 +69,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
   const [addToCollectionBookIds, setAddToCollectionBookIds] = useState(null);
   const [newCollectionName, setNewCollectionName] = useState('');
   const [showCollectionManagement, setShowCollectionManagement] = useState(false);
-  const initialFilterState = getBookshelfFilterState();
   const [searchQuery, setSearchQuery] = useState('');
-  const [bookFilters, setBookFilters] = useState(initialFilterState.filters);
-  const [filtersExpanded, setFiltersExpanded] = useState(initialFilterState.expanded);
   const [reorderMode, setReorderMode] = useState(false);
   const [manageMode, setManageMode] = useState(false);
   const [selectedBookIds, setSelectedBookIds] = useState(() => new Set());
@@ -133,13 +129,26 @@ function BookshelfContent({ conversionMode = 'tw' }) {
   );
   const searchMetaMap = useBookshelfSearchMeta(bookIds, searchMetaRefreshKey);
 
-  const filterCategories = useMemo(
-    () => collectCategoriesFromItems(displayBooks, ({ bookId }) => searchMetaMap[bookId]),
-    [displayBooks, searchMetaMap]
+  const getBookshelfFilterMeta = useCallback(
+    ({ bookId }) => searchMetaMap[bookId],
+    [searchMetaMap]
   );
 
+  const {
+    bookFilters,
+    setBookFilters,
+    filtersExpanded,
+    setFiltersExpanded,
+    filterCategories,
+    hasActiveFilters,
+  } = usePersistedBookFilters({
+    getState: getBookshelfFilterState,
+    setState: setBookshelfFilterState,
+    items: displayBooks,
+    getMeta: getBookshelfFilterMeta,
+  });
+
   const hasSearch = Boolean(searchQuery.trim());
-  const hasActiveFilters = hasActiveBookFilters(bookFilters);
 
   const filterBaseItems = useMemo(() => {
     if (!hasSearch) return sortedDisplayBooks;
@@ -261,10 +270,6 @@ function BookshelfContent({ conversionMode = 'tw' }) {
   useEffect(() => {
     if (hasSearch || hasActiveFilters) setReorderMode(false);
   }, [hasSearch, hasActiveFilters]);
-
-  useEffect(() => {
-    setBookshelfFilterState({ filters: bookFilters, expanded: filtersExpanded });
-  }, [bookFilters, filtersExpanded]);
 
   const handleHistoryReorder = useCallback(async (fromIndex, toIndex) => {
     await scrollPreservingUpdate(

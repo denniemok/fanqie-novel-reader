@@ -4,6 +4,18 @@ import { HorizontalScrollInner } from '../ui/HorizontalScrollArea';
 
 export const TOOLBAR_CONTROL_HEIGHT = '44px';
 
+export const TOOLBAR_SORT_DROPDOWN_PROPS = {
+  attachedLabel: '排序',
+  hideAttachedLabelOnMobile: true,
+  embedded: true,
+  square: true,
+  retro: true,
+  menuAlign: 'left',
+  triggerMinWidth: 108,
+  triggerMinWidthMobile: 72,
+  triggerBold: true,
+};
+
 export const TabBar = styled(HorizontalScrollInner)`
   align-items: stretch;
   gap: 0;

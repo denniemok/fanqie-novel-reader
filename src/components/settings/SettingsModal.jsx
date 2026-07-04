@@ -2,7 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { Activity, BookImage, Globe, Languages, Moon, Sun } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Modal, ModalTitleBar, ModalBody } from '../ui/ModalBase';
+import { Modal, ModalTitleBar, ModalBody, ModalText } from '../ui/ModalBase';
+import { MODAL_SELECT_PROPS, Section, SectionHeader, SelectField } from '../ui/ModalFormSection';
 import SelectDropdown from '../ui/SelectDropdown';
 import ApiOverallBadge from './ApiOverallBadge';
 import { useApiBase } from '../../hooks/api/useApiBase';
@@ -18,58 +19,6 @@ import {
   ZH_CONVERSION_OPTIONS,
 } from '../../utils/constants';
 import { ROUTES } from '../../utils/navigation';
-
-const Section = styled.section`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  & + & {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border-color);
-  }
-
-  @media (max-height: 500px) {
-    gap: 6px;
-
-    & + & {
-      margin-top: 12px;
-      padding-top: 12px;
-    }
-  }
-`;
-
-const SectionHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-color-secondary);
-
-  svg {
-    color: var(--accent-color);
-    flex-shrink: 0;
-  }
-`;
-
-const SelectField = styled.div`
-  width: 100%;
-
-  > div {
-    display: flex;
-    width: 100%;
-  }
-
-  button {
-    flex: 1;
-    min-width: 0 !important;
-    width: 100%;
-  }
-`;
 
 const ApiOptionRow = styled.span`
   display: flex;
@@ -162,10 +111,7 @@ function SettingsModal({ onClose }) {
               onChange={setVariant}
               attachedLabel="書名與封面"
               ariaLabel="選擇書名與封面版本"
-              menuAlign="left"
-              menuPortal
-              openUpward="auto"
-              triggerMinWidth={0}
+              {...MODAL_SELECT_PROPS}
             />
           </SelectField>
           <SelectField>
@@ -175,10 +121,7 @@ function SettingsModal({ onClose }) {
               onChange={setBookshelfQuickAction}
               attachedLabel="書架快捷操作"
               ariaLabel="選擇書架快捷操作"
-              menuAlign="left"
-              menuPortal
-              openUpward="auto"
-              triggerMinWidth={0}
+              {...MODAL_SELECT_PROPS}
             />
           </SelectField>
         </Section>
@@ -194,10 +137,7 @@ function SettingsModal({ onClose }) {
               value={apiBase}
               onChange={handleApiChange}
               ariaLabel="選擇 API 服務"
-              menuAlign="left"
-              menuPortal
-              openUpward="auto"
-              triggerMinWidth={0}
+              {...MODAL_SELECT_PROPS}
               renderOption={(opt) => (
                 <ApiOptionRow>
                   <span>{opt.label}</span>
@@ -235,12 +175,10 @@ function SettingsModal({ onClose }) {
               value={conversionMode}
               onChange={setConversionMode}
               ariaLabel="選擇繁簡轉換"
-              menuAlign="left"
-              menuPortal
-              openUpward="auto"
-              triggerMinWidth={0}
+              {...MODAL_SELECT_PROPS}
             />
           </SelectField>
+          <ModalText>僅影響閱讀內容（書名、正文、評論等），不影響介面。</ModalText>
         </Section>
 
         <Section>
@@ -254,10 +192,7 @@ function SettingsModal({ onClose }) {
               value={theme}
               onChange={setTheme}
               ariaLabel="選擇主題"
-              menuAlign="left"
-              menuPortal
-              openUpward="auto"
-              triggerMinWidth={0}
+              {...MODAL_SELECT_PROPS}
               renderOption={renderThemeOption}
               renderValue={renderThemeOption}
             />

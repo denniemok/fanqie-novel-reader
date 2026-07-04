@@ -25,6 +25,7 @@ import {
 } from '../../utils/storage';
 import { SEARCH_RESULT_LIMIT } from '../../utils/constants';
 import { useDiscoverBookList } from '../../hooks/discover/useDiscoverBookList';
+import { usePersistedBookFilters } from '../../hooks/usePersistedBookFilters';
 import {
   DEFAULT_SECONDARY_BY_PRIMARY,
   PRIMARY_TAB_OTHERS,
@@ -34,9 +35,7 @@ import {
 } from './constants';
 import {
   bookMatchesFilters,
-  collectCategoriesFromItems,
   extractDiscoverBookFilterMeta,
-  hasActiveBookFilters,
 } from '../../utils/book/bookFilters';
 import DiscoverSection from './DiscoverSection';
 import EmptyHint from '../ui/EmptyHint';
@@ -66,7 +65,6 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
     ? buildDiscoverUrl(activePrimary, activeSecondary)
     : null;
 
-  const initialFilterState = getDiscoverFilterState();
   const [refreshKey, setRefreshKey] = useState(0);
   const [viewMode, setViewModeState] = useState(getDiscoverViewMode);
   const [sortBy, setSortByState] = useState(getDiscoverSort);
@@ -76,8 +74,6 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
   const [collections, setCollections] = useState([]);
   const [allBookIds, setAllBookIds] = useState([]);
   const [newCollectionName, setNewCollectionName] = useState('');
-  const [bookFilters, setBookFilters] = useState(initialFilterState.filters);
-  const [filtersExpanded, setFiltersExpanded] = useState(initialFilterState.expanded);
 
   const reloadCollectionData = useCallback(async () => {
     const [cols, history] = await Promise.all([getCollections(), getReadingHistory()]);
@@ -98,6 +94,20 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
     skip: skipFetch,
   });
 
+  const {
+    bookFilters,
+    setBookFilters,
+    filtersExpanded,
+    setFiltersExpanded,
+    filterCategories,
+    hasActiveFilters,
+  } = usePersistedBookFilters({
+    getState: getDiscoverFilterState,
+    setState: setDiscoverFilterState,
+    items: books,
+    getMeta: extractDiscoverBookFilterMeta,
+  });
+
   useEffect(() => {
     setSearchInput(submittedQuery);
   }, [submittedQuery]);
@@ -108,16 +118,6 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
     setDiscoverActiveTab({ primary: activePrimary, secondary: activeSecondary });
   }, [activePrimary, activeSecondary, redirectTo, searchRedirectTo]);
 
-  useEffect(() => {
-    setDiscoverFilterState({ filters: bookFilters, expanded: filtersExpanded });
-  }, [bookFilters, filtersExpanded]);
-
-  const filterCategories = useMemo(
-    () => collectCategoriesFromItems(books, (book) => extractDiscoverBookFilterMeta(book)),
-    [books]
-  );
-
-  const hasActiveFilters = hasActiveBookFilters(bookFilters);
   const filteredBooks = useMemo(() => {
     if (!hasActiveFilters) return books;
     return books.filter((book) => bookMatchesFilters(extractDiscoverBookFilterMeta(book), bookFilters));
