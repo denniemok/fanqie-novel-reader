@@ -4,7 +4,7 @@ import { Minus, Plus, Sun, Moon, Type, Palette, RefreshCw } from 'lucide-react';
 import { ModalOverlay } from '../ui/ModalBase';
 import { IconButton } from '../ui/IconButton';
 import IconDropdown from '../ui/IconDropdown';
-import CatalogButton from '../navigation/CatalogButton';
+import SettingsButton from '../settings/SettingsButton';
 import {
   FONT_SIZE_MIN,
   FONT_SIZE_MAX,
@@ -108,7 +108,6 @@ const ColorInput = styled.input`
 function ReaderControlsPanel({
   open,
   onClose,
-  bookId,
   onRefresh,
   fontSize,
   onFontSizeChange,
@@ -123,7 +122,6 @@ function ReaderControlsPanel({
   onCustomBgChange,
   onCustomTextChange,
 }) {
-  const hasActions = onRefresh || bookId;
   const isCustom = readerBackground === READER_BACKGROUND_CUSTOM;
 
   if (!open) return null;
@@ -218,16 +216,14 @@ function ReaderControlsPanel({
             </ColorPickerLabel>
           </Section>
         )}
-        {hasActions && (
-          <Section>
-            {onRefresh && (
-              <IconButton type="button" title="刷新章節" onClick={onRefresh}>
-                <RefreshCw size={20} strokeWidth={2.5} />
-              </IconButton>
-            )}
-            {bookId && <CatalogButton bookId={bookId} />}
-          </Section>
-        )}
+        <Section>
+          {onRefresh && (
+            <IconButton type="button" title="刷新章節" onClick={onRefresh}>
+              <RefreshCw size={20} strokeWidth={2.5} />
+            </IconButton>
+          )}
+          <SettingsButton />
+        </Section>
       </Panel>
     </>,
     document.body,

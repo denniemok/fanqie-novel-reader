@@ -1,8 +1,5 @@
-import React, { useState } from 'react';
-import { Menu } from 'lucide-react';
+import React from 'react';
 import styled from 'styled-components';
-import { useMediaQuery } from '../../hooks/useMediaQuery';
-import Toolbox from './Toolbox';
 
 const RightActions = styled.div`
   display: flex;
@@ -27,17 +24,7 @@ export const ActionBarSeparator = styled.span`
   }
 `;
 
-const CollapsibleActions = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  @media (max-width: 900px) {
-    display: none;
-  }
-`;
-
-const PinnedActions = styled.div`
+const ActionsGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -71,63 +58,15 @@ const PinnedActions = styled.div`
   }
 `;
 
-const ToolboxToggle = styled.button`
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  min-width: 44px;
-  min-height: 44px;
-  color: var(--text-color-secondary);
-  background: none;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  @media (hover: hover) {
-    &:hover {
-      background-color: var(--hover-background-color);
-      color: var(--accent-color);
-    }
-  }
-
-  @media (max-width: 900px) {
-    display: flex;
-  }
-`;
-
 function ActionBar({ pinnedStart, pinnedEnd, children }) {
-  const [toolboxOpen, setToolboxOpen] = useState(false);
-  const isMobile = useMediaQuery('(max-width: 900px)');
-
   return (
-    <>
-      <RightActions>
-        {pinnedStart && <PinnedActions>{pinnedStart}</PinnedActions>}
-        {isMobile ? (
-          <>
-            {pinnedEnd && <ActionBarSeparator aria-hidden="true" />}
-            {pinnedEnd && <PinnedActions>{pinnedEnd}</PinnedActions>}
-            <ToolboxToggle type="button" title="工具" onClick={() => setToolboxOpen(true)}>
-              <Menu size={20} strokeWidth={2.5} />
-            </ToolboxToggle>
-          </>
-        ) : (
-          <>
-            {pinnedStart && <ActionBarSeparator aria-hidden="true" />}
-            <CollapsibleActions>{children}</CollapsibleActions>
-            {pinnedEnd && <ActionBarSeparator aria-hidden="true" />}
-            {pinnedEnd}
-          </>
-        )}
-      </RightActions>
-      {isMobile && (
-        <Toolbox open={toolboxOpen} onClose={() => setToolboxOpen(false)}>
-          {children}
-        </Toolbox>
-      )}
-    </>
+    <RightActions>
+      {pinnedStart && <ActionsGroup>{pinnedStart}</ActionsGroup>}
+      {pinnedStart && <ActionBarSeparator aria-hidden="true" />}
+      <ActionsGroup>{children}</ActionsGroup>
+      {pinnedEnd && <ActionBarSeparator aria-hidden="true" />}
+      {pinnedEnd && <ActionsGroup>{pinnedEnd}</ActionsGroup>}
+    </RightActions>
   );
 }
 

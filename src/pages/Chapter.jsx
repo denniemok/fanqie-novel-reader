@@ -78,7 +78,6 @@ function Chapter() {
               <ReaderControlsPanel
                 open={readerControlsOpen}
                 onClose={() => setReaderControlsOpen(false)}
-                bookId={bookId ?? chapterData?.novel_data?.book_id}
                 onRefresh={handleRefresh}
                 fontSize={fontSize}
                 onFontSizeChange={handleFontSizeChange}

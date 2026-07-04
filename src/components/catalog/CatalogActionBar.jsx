@@ -1,6 +1,7 @@
 import { Bookmark, BookOpen, Download, FileText, MessageCircle, RefreshCw } from 'lucide-react';
 import BookActionBar from '../book/BookActionBar';
 import LabeledIconButton from '../ui/LabeledIconButton';
+import { CHAPTER_BUTTON_TITLE } from '../navigation/ChapterButton';
 import { buildChapterUrl, buildCommentsUrl, ROUTES } from '../../utils/navigation';
 
 function CatalogActionBar({
@@ -46,22 +47,24 @@ function CatalogActionBar({
       </LabeledIconButton>
       <LabeledIconButton
         type="button"
-        label="評論"
-        title="評論"
+        label="查看評論"
+        title="查看評論"
         onClick={() => navigate(buildCommentsUrl(bookId))}
       >
         <MessageCircle size={20} strokeWidth={2.5} />
       </LabeledIconButton>
-      {lastReadItemId && (
-        <LabeledIconButton
-          type="button"
-          label="返回章節"
-          title="返回章節"
-          onClick={() => navigate(buildChapterUrl(lastReadItemId, bookId))}
-        >
-          <Bookmark size={20} strokeWidth={2.5} />
-        </LabeledIconButton>
-      )}
+      <LabeledIconButton
+        type="button"
+        label={CHAPTER_BUTTON_TITLE}
+        title={CHAPTER_BUTTON_TITLE}
+        disabled={!lastReadItemId}
+        onClick={() => {
+          if (!lastReadItemId) return;
+          navigate(buildChapterUrl(lastReadItemId, bookId));
+        }}
+      >
+        <Bookmark size={20} strokeWidth={2.5} />
+      </LabeledIconButton>
       <LabeledIconButton
         type="button"
         label="返回書架"

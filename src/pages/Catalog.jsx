@@ -115,7 +115,14 @@ function Catalog() {
 
   return (
     <PageWrapper>
-      {bookInfo && <NavTopBar pageTitle="目錄" />}
+      {bookInfo && (
+        <NavTopBar
+          pageTitle="目錄"
+          navVariant="catalog"
+          bookId={bookId}
+          lastReadItemId={lastReadItemId}
+        />
+      )}
       {bookInfo ? (
         <TopBarOffset>
           <BookInfo bookInfo={bookInfo} conversionMode={conversionMode} />

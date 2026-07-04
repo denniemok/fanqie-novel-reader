@@ -84,7 +84,7 @@ function Comments() {
         <Loading onAbort={() => navigate(buildCatalogUrl(bookId))} />
       ) : (
         <>
-          <NavTopBar pageTitle="評論" />
+          <NavTopBar pageTitle="評論" navVariant="comments" bookId={bookId} />
           <CommentsContent
             bookId={bookId}
             bookInfo={bookInfo}

@@ -81,7 +81,7 @@ function TopBarBase({ pageTitle, children }) {
   return (
     <TopBarWrapper>
       <TitleGroup>
-        <SiteTitle to={ROUTES.home}>番茄繁體閱讀</SiteTitle>
+        <SiteTitle to={ROUTES.home}>番茄閱讀</SiteTitle>
         {pageTitle && (
           <>
             <TitleSep>›</TitleSep>

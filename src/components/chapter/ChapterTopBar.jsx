@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import ActionBar from '../layout/ActionBar';
 import NavButtons from '../navigation/NavButtons';
-import SettingsButton from '../settings/SettingsButton';
 import ReaderSettingsButton from './ReaderSettingsButton';
 import { resolveBookDisplay } from '../../utils/book/bookInfo';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
@@ -154,11 +153,10 @@ function ChapterTopBar({
                 active={readerControlsOpen}
                 onToggle={onReaderControlsToggle}
               />
-              <SettingsButton />
             </PinnedEndGroup>
           )}
         >
-          <NavButtons />
+          <NavButtons variant="chapter" bookId={bookId} />
         </ActionBar>
       </InfoRow>
       {progress != null && (
