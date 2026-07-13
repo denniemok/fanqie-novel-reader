@@ -76,20 +76,22 @@ const Card = styled.div`
     transition: opacity 0.25s ease;
   }
 
-  &:hover {
-    border-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--border-color)' : 'var(--accent-color)')};
-    background-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--background-color2)' : 'var(--hover-background-color)')};
-    transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(-2px, -2px)')};
-    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : 'var(--retro-shadow-hover)')};
+  @media (hover: hover) {
+    &:hover {
+      border-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--border-color)' : 'var(--accent-color)')};
+      background-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--background-color2)' : 'var(--hover-background-color)')};
+      transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(-2px, -2px)')};
+      box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : 'var(--retro-shadow-hover)')};
 
-    &::after {
-      opacity: ${(p) => (p.$reorderMode || p.$isDragging ? 0 : 0.5)};
+      &::after {
+        opacity: ${(p) => (p.$reorderMode || p.$isDragging ? 0 : 0.5)};
+      }
     }
-  }
 
-  &:active {
-    transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(1px, 1px)')};
-    box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : 'none')};
+    &:active {
+      transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(1px, 1px)')};
+      box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : 'none')};
+    }
   }
 
   ${(p) => p.$isDragging && `
@@ -129,8 +131,10 @@ const CoverWrapper = styled.div`
   width: 100%;
   overflow: hidden;
 
-  &:hover img {
-    transform: scale(1.03);
+  @media (hover: hover) {
+    &:hover img {
+      transform: scale(1.03);
+    }
   }
 `;
 

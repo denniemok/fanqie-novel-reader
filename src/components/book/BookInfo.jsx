@@ -71,9 +71,11 @@ const CoverWrapper = styled.div`
     transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.25s ease;
   }
 
-  &:hover img {
-    transform: scale(1.02) rotate(-0.5deg);
-    box-shadow: var(--retro-shadow-hover);
+  @media (hover: hover) {
+    &:hover img {
+      transform: scale(1.02) rotate(-0.5deg);
+      box-shadow: var(--retro-shadow-hover);
+    }
   }
 
   @media (max-width: 480px) {

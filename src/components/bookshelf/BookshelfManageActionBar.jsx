@@ -21,7 +21,6 @@ import {
   BookshelfManageSelectionButton,
   BookshelfManageActionButtons,
   BookshelfManageBarButton,
-  BookshelfManageExitButton,
 } from './styles';
 
 function BookshelfManageActionBar({
@@ -46,14 +45,6 @@ function BookshelfManageActionBar({
 
   return (
     <BookshelfManageActionBarRoot>
-      <BookshelfManageExitButton
-        type="button"
-        onClick={onExitManageMode}
-        title="退出管理"
-        aria-label="退出管理"
-      >
-        <X strokeWidth={2.25} />
-      </BookshelfManageExitButton>
       <BookshelfManageSelectionRow>
         <BookshelfManageActionCount>{selectedCount} 已選</BookshelfManageActionCount>
         <BookshelfManageSelectionButtons>
@@ -145,6 +136,14 @@ function BookshelfManageActionBar({
           aria-label={bulkDeleteLabel}
         >
           {isAllTab ? <Trash2 /> : <FolderMinus />}
+        </BookshelfManageBarButton>
+        <BookshelfManageBarButton
+          type="button"
+          onClick={onExitManageMode}
+          title="退出管理"
+          aria-label="退出管理"
+        >
+          <X strokeWidth={2.25} />
         </BookshelfManageBarButton>
       </BookshelfManageActionButtons>
     </BookshelfManageActionBarRoot>

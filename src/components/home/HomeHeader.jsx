@@ -99,7 +99,7 @@ function HomeHeader() {
       <SettingsButtonSlot>
         <SettingsButton />
       </SettingsButtonSlot>
-      <Title>番茄繁體閱讀</Title>
+      <Title>番茄閱讀</Title>
       <Subtitle>輕鬆閱讀每一天</Subtitle>
     </HeaderWrapper>
   );

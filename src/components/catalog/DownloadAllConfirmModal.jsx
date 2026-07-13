@@ -9,7 +9,13 @@ import {
   ModalSecondaryButton,
 } from '../ui/ModalBase';
 
-function DownloadAllConfirmModal({ chapterCount, onStay, onGoToDownloadPage, onClose }) {
+function DownloadAllConfirmModal({
+  chapterCount,
+  onStay,
+  onGoToDownloadPage,
+  onClose,
+  stayLabel = '留在目錄',
+}) {
   return (
     <Modal onClose={onClose}>
       <ModalTitleBar title="開始下載全部" onClose={onClose} />
@@ -22,7 +28,7 @@ function DownloadAllConfirmModal({ chapterCount, onStay, onGoToDownloadPage, onC
       </ModalBody>
       <ModalFooter>
         <ModalSecondaryButton type="button" onClick={onStay}>
-          留在目錄
+          {stayLabel}
         </ModalSecondaryButton>
         <ModalPrimaryButton type="button" onClick={onGoToDownloadPage}>
           前往下載頁

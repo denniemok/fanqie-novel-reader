@@ -125,16 +125,18 @@ export const DiscoverListCard = styled.div`
   box-shadow: var(--retro-shadow);
   position: relative;
 
-  &:hover {
-    border-color: var(--accent-color);
-    background-color: var(--hover-background-color);
-    transform: translate(-2px, -2px);
-    box-shadow: var(--retro-shadow-hover);
-  }
+  @media (hover: hover) {
+    &:hover {
+      border-color: var(--accent-color);
+      background-color: var(--hover-background-color);
+      transform: translate(-2px, -2px);
+      box-shadow: var(--retro-shadow-hover);
+    }
 
-  &:active {
-    transform: translate(1px, 1px);
-    box-shadow: none;
+    &:active {
+      transform: translate(1px, 1px);
+      box-shadow: none;
+    }
   }
 `;
 
@@ -246,24 +248,26 @@ export const DiscoverGridCard = styled.div`
     transition: opacity 0.25s ease;
   }
 
-  &:hover {
-    border-color: var(--accent-color);
-    background-color: var(--hover-background-color);
-    transform: translate(-2px, -2px);
-    box-shadow: var(--retro-shadow-hover);
+  @media (hover: hover) {
+    &:hover {
+      border-color: var(--accent-color);
+      background-color: var(--hover-background-color);
+      transform: translate(-2px, -2px);
+      box-shadow: var(--retro-shadow-hover);
 
-    &::after {
-      opacity: 0.5;
+      &::after {
+        opacity: 0.5;
+      }
+
+      img {
+        transform: scale(1.03);
+      }
     }
 
-    img {
-      transform: scale(1.03);
+    &:active {
+      transform: translate(1px, 1px);
+      box-shadow: none;
     }
-  }
-
-  &:active {
-    transform: translate(1px, 1px);
-    box-shadow: none;
   }
 `;
 

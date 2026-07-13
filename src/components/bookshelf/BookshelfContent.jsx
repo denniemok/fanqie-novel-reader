@@ -11,7 +11,7 @@ import { useDownloadManager } from '../../contexts/DownloadManager';
 import { useBookRefresh } from '../../hooks/book/useBookRefresh';
 import { buildCatalogUrl, ROUTES } from '../../utils/navigation';
 import { formatErrorMessage } from '../../utils/errors';
-import { startDownloadAllForBookSafe } from '../../utils/export/startDownloadAllForBook';
+import { getUncachedChaptersForBook } from '../../utils/export/startDownloadAllForBook';
 import { scrollPreservingUpdate } from '../../utils/scrollPreservingUpdate';
 import {
   getReadingHistory,
@@ -75,6 +75,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
   const [selectedBookIds, setSelectedBookIds] = useState(() => new Set());
   const [confirmDialog, setConfirmDialog] = useState(null);
   const [exportBookId, setExportBookId] = useState(null);
+  const [downloadConfirm, setDownloadConfirm] = useState(null);
 
   const {
     refreshingBookIds,
@@ -369,20 +370,36 @@ function BookshelfContent({ conversionMode = 'tw' }) {
     handleAddToCollection(Array.from(selectedBookIds));
   };
 
-  const handleBookDownload = useCallback(async (bookId) => {
-    const result = await startDownloadAllForBookSafe({
-      bookId,
-      startDownloadAll,
-      showToast,
-    });
-    if (result.ok) {
+  const handleBookDownloadRequest = useCallback(async (bookId) => {
+    try {
+      const { ok, uncachedItemIds, uncachedCount } = await getUncachedChaptersForBook(bookId);
+      if (!ok) {
+        showToast('無法取得章節目錄');
+        return;
+      }
+      if (uncachedCount === 0) {
+        showToast('所有章節已下載');
+        return;
+      }
+      setDownloadConfirm({ bookId, chapterCount: uncachedCount, uncachedItemIds });
+    } catch (err) {
+      showToast(formatErrorMessage(err, '無法開始下載，請稍後再試。'));
+    }
+  }, [showToast]);
+
+  const handleStartDownloadAll = useCallback((navigateToDownloadPage) => {
+    if (!downloadConfirm) return;
+    const { bookId, uncachedItemIds } = downloadConfirm;
+    startDownloadAll(bookId, uncachedItemIds);
+    setDownloadConfirm(null);
+    if (navigateToDownloadPage) {
       navigate(ROUTES.download);
     }
-  }, [navigate, showToast, startDownloadAll]);
+  }, [downloadConfirm, navigate, startDownloadAll]);
 
-  const handleGoToDownload = async () => {
+  const handleGoToDownload = () => {
     if (selectedBookIds.size !== 1) return;
-    await handleBookDownload(Array.from(selectedBookIds)[0]);
+    handleBookDownloadRequest(Array.from(selectedBookIds)[0]);
   };
 
   const handleBookExport = useCallback((bookId) => {
@@ -601,7 +618,7 @@ function BookshelfContent({ conversionMode = 'tw' }) {
             onBookDelete={handleBookDelete}
             onBookDeleteLocalData={handleDeleteBook}
             onBookAddToCollection={handleAddToCollection}
-            onBookDownload={handleBookDownload}
+            onBookDownload={handleBookDownloadRequest}
             onBookExport={handleBookExport}
           />
 
@@ -642,6 +659,10 @@ function BookshelfContent({ conversionMode = 'tw' }) {
             confirmDialog={confirmDialog}
             onConfirmDialog={handleConfirmDialog}
             onCloseConfirmDialog={closeConfirmDialog}
+            downloadConfirm={downloadConfirm}
+            onCloseDownloadConfirm={() => setDownloadConfirm(null)}
+            onStartDownloadStay={() => handleStartDownloadAll(false)}
+            onStartDownloadGoToPage={() => handleStartDownloadAll(true)}
             exportBookId={exportBookId}
             conversionMode={conversionMode}
             displayVariant={variant}

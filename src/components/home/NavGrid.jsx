@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { BookOpen, Compass, Megaphone, MessageCircleWarning, Info, Github, Download, Activity } from 'lucide-react';
-import { GITHUB_ISSUES_URL, GITHUB_README_URL, GITHUB_REPO_URL } from '../../utils/constants';
+import { BookOpen, Compass, Megaphone, MessageCircleWarning, Archive, Github, Download, Activity } from 'lucide-react';
+import { GITHUB_ISSUES_URL, GITHUB_REPO_URL } from '../../utils/constants';
 import { ROUTES, buildDefaultDiscoverUrl } from '../../utils/navigation';
 
 const ICON_SIZE = 40;
@@ -202,11 +202,11 @@ function NavGrid() {
         <TileLabel>回報</TileLabel>
         <TileSubLabel>問題回報</TileSubLabel>
       </TileLink>
-      <TileLink href={GITHUB_README_URL} target="_blank" rel="noopener noreferrer">
-        <Info size={ICON_SIZE} strokeWidth={2} aria-hidden />
-        <TileLabel>關於我們</TileLabel>
-        <TileSubLabel>專案介紹</TileSubLabel>
-      </TileLink>
+      <TileButton type="button" onClick={() => navigate(ROUTES.export)}>
+        <Archive size={ICON_SIZE} strokeWidth={2} aria-hidden />
+        <TileLabel>備份</TileLabel>
+        <TileSubLabel>匯出書架資料</TileSubLabel>
+      </TileButton>
       <TileLink href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer">
         <Github size={ICON_SIZE} strokeWidth={2} aria-hidden />
         <TileLabel>原始碼</TileLabel>

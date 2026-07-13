@@ -1,6 +1,7 @@
 import CollectionModal from '../collection/CollectionModal';
 import CollectionManagementModal from '../collection/CollectionManagementModal';
 import ConfirmModal from '../ui/ConfirmModal';
+import DownloadAllConfirmModal from '../catalog/DownloadAllConfirmModal';
 import ExportBookModalHost from '../export/ExportBookModalHost';
 import { getCatalogSortDirection } from '../../utils/storage';
 
@@ -22,6 +23,10 @@ function BookshelfModals({
   confirmDialog,
   onConfirmDialog,
   onCloseConfirmDialog,
+  downloadConfirm,
+  onCloseDownloadConfirm,
+  onStartDownloadStay,
+  onStartDownloadGoToPage,
   exportBookId,
   conversionMode,
   displayVariant,
@@ -61,6 +66,16 @@ function BookshelfModals({
           confirmLabel={confirmDialog.confirmLabel}
           onConfirm={onConfirmDialog}
           onCancel={onCloseConfirmDialog}
+        />
+      )}
+
+      {downloadConfirm && (
+        <DownloadAllConfirmModal
+          chapterCount={downloadConfirm.chapterCount}
+          stayLabel="留在書架"
+          onStay={onStartDownloadStay}
+          onGoToDownloadPage={onStartDownloadGoToPage}
+          onClose={onCloseDownloadConfirm}
         />
       )}
 

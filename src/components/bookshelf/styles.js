@@ -55,46 +55,11 @@ export const BookshelfManageActionBar = styled.div`
   }
 `;
 
-export const BookshelfManageExitButton = styled.button`
-  position: absolute;
-  top: -9px;
-  right: -9px;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: #3a3038;
-  color: var(--text-on-accent);
-  cursor: pointer;
-  box-shadow: var(--retro-shadow);
-  transition: background 0.1s, transform 0.1s;
-
-  &:hover {
-    background: #2a2230;
-    transform: scale(1.06);
-  }
-
-  &:active {
-    transform: scale(0.96);
-    box-shadow: none;
-  }
-
-  svg {
-    width: 13px;
-    height: 13px;
-  }
-`;
-
 export const BookshelfManageSelectionRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
   min-width: 0;
 `;
@@ -121,23 +86,25 @@ export const BookshelfManageSelectionButton = styled.button`
   min-width: 0;
   min-height: 0;
   border: none;
-  border-radius: var(--border-radius-xs);
+  border-radius: var(--border-radius-sm);
   background: transparent;
   color: var(--text-color);
   cursor: pointer;
   box-shadow: none;
   transition: color 0.1s, background 0.1s;
 
-  &:hover:not(:disabled) {
-    color: var(--accent-color);
-    background: color-mix(in srgb, var(--accent-color) 12%, transparent);
-    transform: none;
-    box-shadow: none;
-  }
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      color: var(--accent-color);
+      background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+      transform: none;
+      box-shadow: none;
+    }
 
-  &:active:not(:disabled) {
-    transform: none;
-    box-shadow: none;
+    &:active:not(:disabled) {
+      transform: none;
+      box-shadow: none;
+    }
   }
 
   &:disabled {
@@ -146,8 +113,8 @@ export const BookshelfManageSelectionButton = styled.button`
   }
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 26px;
+    height: 26px;
   }
 `;
 
@@ -169,7 +136,7 @@ export const BookshelfManageBarButton = styled(CardActionButton)`
 export const BookshelfManageSelectionButtons = styled.div`
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 0;
   flex-shrink: 0;
 `;
 
