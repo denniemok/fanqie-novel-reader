@@ -118,6 +118,10 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
     setDiscoverActiveTab({ primary: activePrimary, secondary: activeSecondary });
   }, [activePrimary, activeSecondary, redirectTo, searchRedirectTo]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activePrimary, activeSecondary, submittedQuery]);
+
   const filteredBooks = useMemo(() => {
     if (!hasActiveFilters) return books;
     return books.filter((book) => bookMatchesFilters(extractDiscoverBookFilterMeta(book), bookFilters));

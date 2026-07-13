@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import { useSearchParams, Navigate, useNavigate } from 'react-router-dom';
 import { fetchComments } from '../services/api';
 import { useBookLoader } from '../hooks/book/useBookLoader';
@@ -28,6 +28,10 @@ function Comments() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const error = bookError || commentsError;
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [page]);
 
   useEffect(() => {
     if (!bookId) return;
@@ -61,11 +65,15 @@ function Comments() {
   useErrorToast(error);
 
   const handlePrevPage = () => {
-    if (canGoPrev) navigate(buildCommentsUrl(bookId, page - 1));
+    if (!canGoPrev) return;
+    window.scrollTo(0, 0);
+    navigate(buildCommentsUrl(bookId, page - 1));
   };
 
   const handleNextPage = () => {
-    if (canGoNext) navigate(buildCommentsUrl(bookId, page + 1));
+    if (!canGoNext) return;
+    window.scrollTo(0, 0);
+    navigate(buildCommentsUrl(bookId, page + 1));
   };
 
   const handleRefresh = () => setRefreshKey((k) => k + 1);
@@ -78,9 +86,11 @@ function Comments() {
     return <Error message={error} href={buildCatalogUrl(bookId)} />;
   }
 
+  const isInitialLoad = loading && data === null;
+
   return (
     <PageWrapper>
-      {loading ? (
+      {isInitialLoad ? (
         <Loading onAbort={() => navigate(buildCatalogUrl(bookId))} />
       ) : (
         <>
@@ -98,6 +108,7 @@ function Comments() {
             onNextPage={handleNextPage}
             onRefresh={handleRefresh}
             conversionMode={conversionMode}
+            pageLoading={loading}
           />
         </>
       )}

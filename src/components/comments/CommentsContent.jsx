@@ -97,6 +97,14 @@ const PageInfo = styled.span`
   color: var(--text-color-secondary);
 `;
 
+const ListLoading = styled.p`
+  margin: 0;
+  padding: 48px 0;
+  text-align: center;
+  font-size: 15px;
+  color: var(--text-color-secondary);
+`;
+
 function CommentsContent({
   bookId,
   bookInfo,
@@ -110,6 +118,7 @@ function CommentsContent({
   onNextPage,
   onRefresh,
   conversionMode,
+  pageLoading = false,
 }) {
   return (
     <TopBarOffset>
@@ -119,7 +128,9 @@ function CommentsContent({
       <CommentsActionBar bookId={bookId} onRefresh={onRefresh} />
       <Section>
         <CommentStatsHeading commentCnt={commentCnt} convertedContext={convertedContext} />
-        {comments.length === 0 ? (
+        {pageLoading ? (
+          <ListLoading>載入中…</ListLoading>
+        ) : comments.length === 0 ? (
           <EmptyHint>暫無評論</EmptyHint>
         ) : (
           <CommentList>
@@ -136,7 +147,7 @@ function CommentsContent({
           <PaginationButton
             type="button"
             onClick={onPrevPage}
-            disabled={!canGoPrev}
+            disabled={!canGoPrev || pageLoading}
             title="上一頁"
           >
             <ChevronLeft size={18} />
@@ -145,7 +156,7 @@ function CommentsContent({
           <PaginationButton
             type="button"
             onClick={onNextPage}
-            disabled={!canGoNext}
+            disabled={!canGoNext || pageLoading}
             title="下一頁"
           >
             <ChevronRight size={18} />

@@ -57,6 +57,10 @@ function Catalog() {
   }, [bookId]);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [safePageParam]);
+
+  useEffect(() => {
     if (!bookInfo || safePageParam <= totalPages) return;
     navigate(buildCatalogUrl(bookId, totalPages), { replace: true });
   }, [bookInfo, bookId, safePageParam, totalPages, navigate]);
@@ -75,6 +79,7 @@ function Catalog() {
   const downloadingAll = isDownloadingAll(bookId);
 
   const goToPage = (pageIndex) => {
+    window.scrollTo(0, 0);
     navigate(buildCatalogUrl(bookId, pageIndex + 1));
   };
 
@@ -98,6 +103,7 @@ function Catalog() {
     const next = sortOrder === 'ascending' ? 'descending' : 'ascending';
     setCatalogSortDirection(next);
     setSortOrderState(next);
+    window.scrollTo(0, 0);
     navigate(buildCatalogUrl(bookId));
   };
 

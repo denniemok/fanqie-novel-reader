@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useLayoutEffect, useCallback, useState } from 'react';
 import { useSearchParams, Navigate, useNavigate } from 'react-router-dom';
 import ChapterTopBar from '../components/chapter/ChapterTopBar';
 import BottomBar from '../components/chapter/BottomBar';
@@ -40,7 +40,7 @@ function Chapter() {
     loadChapter(true);
   }, [loadChapter]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     window.scrollTo(0, 0);
   }, [itemId]);
 
@@ -58,9 +58,11 @@ function Chapter() {
     return <Error message={error} href={bookId ? buildCatalogUrl(bookId) : '/'} />;
   }
 
+  const isInitialLoad = loading && !chapterData;
+
   return (
-    <PageWrapper $withBottomPadding={false} $backgroundColor={loading ? undefined : readerBackgroundColor}>
-      {loading ? (
+    <PageWrapper $withBottomPadding={false} $backgroundColor={isInitialLoad ? undefined : readerBackgroundColor}>
+      {isInitialLoad ? (
         <Loading onAbort={() => navigate(bookId ? buildCatalogUrl(bookId) : '/')} />
       ) : (
         <>

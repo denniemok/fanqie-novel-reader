@@ -78,6 +78,9 @@ export function useChapterLoader(itemId, bookId) {
   useEffect(() => {
     if (!itemId) return;
     userFetchAbortRef.current?.abort();
+    setChapterData(null);
+    setLoading(true);
+    setError(null);
     const controller = new AbortController();
     loadChapter(false, controller.signal);
     return () => {
