@@ -94,8 +94,6 @@ export const API_OPTIONS = [
   // { value: 'in-1', label: 'in-1' },
   { value: 'sg-1', label: 'sg-1' },
   { value: 'sg-2', label: 'sg-2' },
-  { value: 'sg-3', label: 'sg-3' },
-  { value: 'sg-4', label: 'sg-4' },
   { value: 'old-1', label: 'old-1' },
 ];
 
