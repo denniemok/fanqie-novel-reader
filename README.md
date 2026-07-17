@@ -23,29 +23,36 @@
 > 專為電子書愛好者深度優化的「黑夜模式」與精緻的閱讀排版。
 
 <p align="center">
-  <img src="https://i.imgur.com/tyPeahq.gif" width="97%" alt="Demo">
+  <img src="https://i.imgur.com/8yRguCi.png" width="97%" alt="書架">
 </p>
 
 <p align="center">
-  <img src="https://i.imgur.com/iQXBAwn.png" width="24%" alt="書架">
-  <img src="https://i.imgur.com/qzPLZly.png" width="24%" alt="目錄">
-  <img src="https://i.imgur.com/NW1p9bj.png" width="24%" alt="評論">
-  <img src="https://i.imgur.com/4Fu72Do.png" width="24%" alt="閱讀">
+  <img src="https://i.imgur.com/9ZHai1v.png" width="24%" alt="書架">
+  <img src="https://i.imgur.com/Kc3stY1.png" width="24%" alt="書架">
+  <img src="https://i.imgur.com/oKOkgMl.png" width="24%" alt="書架">
+  <img src="https://i.imgur.com/EMLQ23n.jpg" width="24%" alt="新書">
+</p>
+
+<p align="center">
+  <img src="https://i.imgur.com/WWtr0VL.png" width="24%" alt="目錄">
+  <img src="https://i.imgur.com/MMm3E2z.png" width="24%" alt="評論">
+  <img src="https://i.imgur.com/4IaRy4M.png" width="24%" alt="閱讀">
+  <img src="https://i.imgur.com/cOJPBKK.png" width="24%" alt="下載">
 </p>
 
 <br>
 
 ## ✨ 核心優勢
 
-- **🔓 零門檻：** 無需註冊安裝，不受應用程式商店地域封鎖限制，網頁開啟即讀。
-- **🔍 探索新書：** 內建搜尋、榜單與推薦，也可直接貼上網址或書籍 ID 開始閱讀。
-- **🔤 專業繁簡轉換：** 提供詞彙級別精準轉換，支援臺灣繁體、香港繁體與原文簡體三種模式。
-- **🌓 護眼深度優化：** 預設高品質暗黑模式，字體、背景與亮度均可微調，適合長時間沈浸閱讀。
-- **🚫 徹底零廣告：** 物理性過濾所有廣告與追蹤器，還你一個更純淨、更專注的閱讀空間。
-- **📦 下載與匯出：** 支援背景異步預載，並可將小說匯出為 TXT 或 EPUB，方便放入 Kindle、Kobo 等電子書閱讀器。
-- **📡 API 狀態監控：** 即時檢測各鏡像源健康狀態，並可在設定中手動切換 API 來源。
-- **📱 PWA 支援：** 可安裝至手機桌面或電腦，享受類原生 App 的流暢操作與離線閱讀功能。
-- **💾 本地數據隱私：** 閱讀紀錄與下載章節皆儲存在您的設備中，隱私百分之百由您掌控。
+- **零門檻：** 無需註冊安裝，不受應用程式商店地域封鎖限制，網頁開啟即讀。
+- **探索新書：** 內建搜尋、榜單與推薦，也可直接貼上網址或書籍 ID 開始閱讀。
+- **專業繁簡轉換：** 提供詞彙級別精準轉換，支援臺灣繁體、香港繁體與原文簡體三種模式。
+- **護眼深度優化：** 預設高品質暗黑模式，字體、背景與亮度均可微調，適合長時間沈浸閱讀。
+- **徹底零廣告：** 物理性過濾所有廣告與追蹤器，還你一個更純淨、更專注的閱讀空間。
+- **下載與匯出：** 支援背景異步預載，並可將小說匯出為 TXT 或 EPUB，方便放入 Kindle、Kobo 等電子書閱讀器。
+- **API 狀態監控：** 即時檢測各鏡像源健康狀態，並可在設定中手動切換 API 來源。
+- **PWA 支援：** 可安裝至手機桌面或電腦，享受類原生 App 的流暢操作與離線閱讀功能。
+- **本地數據隱私：** 閱讀紀錄與下載章節皆儲存在您的設備中，隱私百分之百由您掌控。
 
 <br>
 
