@@ -123,6 +123,20 @@ function writeStoredBool(key, enabled) {
   return safeSetItem(key, enabled ? 'true' : 'false');
 }
 
+// ── Bookshelf write serialiser ────────────────────────────────────────────────
+// All mutations to the reading-history and collections documents run through a
+// single promise chain so concurrent read-modify-write calls never race.
+const _bookshelfWriteQueue = { tail: Promise.resolve() };
+
+function serialiseBookshelfWrite(fn) {
+  // Chain onto the previous tail. Pass fn as both the fulfillment and rejection
+  // handler so the queue keeps moving even if a prior write threw.
+  const next = _bookshelfWriteQueue.tail.then(fn, fn);
+  // Store a silent version as the new tail so future callers don't inherit errors.
+  _bookshelfWriteQueue.tail = next.then(() => {}, () => {});
+  return next;
+}
+
 /** @returns {Array|null} The same list when indexes match, a reordered copy when they differ, or null when out of range. */
 function reorderItems(list, fromIndex, toIndex) {
   if (
@@ -156,14 +170,16 @@ export async function deleteBooksData(bookIds) {
   );
   await Promise.all(itemIdsToRemove.map((itemId) => chapterCache.remove(itemId)));
 
-  const bidSet = new Set(bids);
-  const history = (await getReadingHistory()).filter((e) => !bidSet.has(e.bookId));
-  await saveReadingHistory(history);
-  const collections = (await getCollections()).map((c) => ({
-    ...c,
-    bookIds: c.bookIds.filter((id) => !bidSet.has(id)),
-  }));
-  await saveCollections(collections);
+  return serialiseBookshelfWrite(async () => {
+    const bidSet = new Set(bids);
+    const history = (await getReadingHistory()).filter((e) => !bidSet.has(e.bookId));
+    await saveReadingHistory(history);
+    const collections = (await getCollections()).map((c) => ({
+      ...c,
+      bookIds: c.bookIds.filter((id) => !bidSet.has(id)),
+    }));
+    await saveCollections(collections);
+  });
 }
 
 async function saveReadingHistory(history) {
@@ -172,9 +188,10 @@ async function saveReadingHistory(history) {
 
 export async function getReadingHistory() {
   const fromIdb = await getStoreItem(READING_HISTORY_KEY);
-  if (Array.isArray(fromIdb)) return fromIdb;
-  await saveReadingHistory([]);
-  return [];
+  // Return [] without auto-saving when the value isn't an array (e.g. first
+  // visit, or a corrupt/malformed import). The next write will persist the
+  // correct state; auto-saving here would race with concurrent mutators.
+  return Array.isArray(fromIdb) ? fromIdb : [];
 }
 
 export async function getLastReadChapter(bookId) {
@@ -187,62 +204,70 @@ export async function getLastReadChapter(bookId) {
 
 export async function setLastReadChapter(bookId, itemId) {
   if (!bookId) return false;
-  const now = Date.now();
-  const bid = String(bookId);
-  const history = (await getReadingHistory()).map((e) => ({ ...e }));
-  const existingIndex = history.findIndex((e) => e.bookId === bid);
-  const existing = existingIndex >= 0 ? history[existingIndex] : null;
+  return serialiseBookshelfWrite(async () => {
+    const now = Date.now();
+    const bid = String(bookId);
+    const history = (await getReadingHistory()).map((e) => ({ ...e }));
+    const existingIndex = history.findIndex((e) => e.bookId === bid);
+    const existing = existingIndex >= 0 ? history[existingIndex] : null;
 
-  if (itemId != null && itemId !== '') {
-    const itemIdStr = String(itemId);
-    if (existingIndex >= 0) {
-      history[existingIndex] = {
-        ...history[existingIndex],
-        itemId: itemIdStr,
-        lastReadAt: now,
-      };
-    } else {
-      history.unshift({ bookId: bid, itemId: itemIdStr, lastReadAt: now });
+    if (itemId != null && itemId !== '') {
+      const itemIdStr = String(itemId);
+      if (existingIndex >= 0) {
+        history[existingIndex] = {
+          ...history[existingIndex],
+          itemId: itemIdStr,
+          lastReadAt: now,
+        };
+      } else {
+        history.unshift({ bookId: bid, itemId: itemIdStr, lastReadAt: now });
+      }
+      return saveReadingHistory(history);
     }
+    if (existing) return true;
+    history.unshift({ bookId: bid, itemId: null, lastReadAt: now });
     return saveReadingHistory(history);
-  }
-  if (existing) return true;
-  history.unshift({ bookId: bid, itemId: null, lastReadAt: now });
-  return saveReadingHistory(history);
+  });
 }
 
 /** Add books to reading history (「全部」) without requiring a chapter read. */
 export async function addBooksToReadingHistory(bookIds) {
   const bids = normalizeBookIds(bookIds);
   if (!bids.length) return false;
-  const history = (await getReadingHistory()).map((e) => ({ ...e }));
-  const now = Date.now();
-  for (const bid of bids) {
-    const idx = history.findIndex((e) => e.bookId === bid);
-    if (idx >= 0) {
-      history[idx] = { ...history[idx], lastReadAt: now };
-    } else {
-      history.unshift({ bookId: bid, itemId: null, lastReadAt: now });
+  return serialiseBookshelfWrite(async () => {
+    const history = (await getReadingHistory()).map((e) => ({ ...e }));
+    const now = Date.now();
+    for (const bid of bids) {
+      const idx = history.findIndex((e) => e.bookId === bid);
+      if (idx >= 0) {
+        history[idx] = { ...history[idx], lastReadAt: now };
+      } else {
+        history.unshift({ bookId: bid, itemId: null, lastReadAt: now });
+      }
     }
-  }
-  return saveReadingHistory(history);
+    return saveReadingHistory(history);
+  });
 }
 
 /** Remove books from reading history only; cached data is kept. */
 export async function removeBooksFromReadingHistory(bookIds) {
   const bidSet = new Set(normalizeBookIds(bookIds));
   if (!bidSet.size) return false;
-  const history = (await getReadingHistory()).filter((e) => !bidSet.has(e.bookId));
-  return saveReadingHistory(history);
+  return serialiseBookshelfWrite(async () => {
+    const history = (await getReadingHistory()).filter((e) => !bidSet.has(e.bookId));
+    return saveReadingHistory(history);
+  });
 }
 
 /** Move entry from one index to another; order is user-controlled, not time-based. */
 export async function reorderReadingHistory(fromIndex, toIndex) {
-  const history = (await getReadingHistory()).map((e) => ({ ...e }));
-  const next = reorderItems(history, fromIndex, toIndex);
-  if (!next) return false;
-  if (next === history) return true;
-  return saveReadingHistory(next);
+  return serialiseBookshelfWrite(async () => {
+    const history = (await getReadingHistory()).map((e) => ({ ...e }));
+    const next = reorderItems(history, fromIndex, toIndex);
+    if (!next) return false;
+    if (next === history) return true;
+    return saveReadingHistory(next);
+  });
 }
 
 const FONT_FAMILY_VALUES = CHINESE_FONTS.map((font) => font.value);
@@ -383,9 +408,7 @@ export async function deleteChapter(itemId) {
 
 export async function getCollections() {
   const fromIdb = await getStoreItem(COLLECTIONS_KEY);
-  if (Array.isArray(fromIdb)) return fromIdb;
-  await saveCollections([]);
-  return [];
+  return Array.isArray(fromIdb) ? fromIdb : [];
 }
 
 export async function saveCollections(collections) {
@@ -394,71 +417,85 @@ export async function saveCollections(collections) {
 
 export async function createCollection(name) {
   if (!name?.trim()) return null;
-  const collections = await getCollections();
-  const newCollection = { id: `col_${Date.now()}`, name: name.trim(), bookIds: [] };
-  collections.push(newCollection);
-  await saveCollections(collections);
-  return newCollection;
+  return serialiseBookshelfWrite(async () => {
+    const collections = await getCollections();
+    const newCollection = { id: `col_${Date.now()}`, name: name.trim(), bookIds: [] };
+    collections.push(newCollection);
+    await saveCollections(collections);
+    return newCollection;
+  });
 }
 
 export async function deleteCollection(collectionId) {
-  const collections = (await getCollections()).filter((c) => c.id !== collectionId);
-  return saveCollections(collections);
+  return serialiseBookshelfWrite(async () => {
+    const collections = (await getCollections()).filter((c) => c.id !== collectionId);
+    return saveCollections(collections);
+  });
 }
 
 export async function reorderCollections(fromIndex, toIndex) {
-  const collections = await getCollections();
-  const next = reorderItems(collections, fromIndex, toIndex);
-  if (!next) return false;
-  if (next === collections) return true;
-  return saveCollections(next);
+  return serialiseBookshelfWrite(async () => {
+    const collections = await getCollections();
+    const next = reorderItems(collections, fromIndex, toIndex);
+    if (!next) return false;
+    if (next === collections) return true;
+    return saveCollections(next);
+  });
 }
 
 export async function renameCollection(collectionId, name) {
   if (!name?.trim()) return false;
-  const collections = (await getCollections()).map((c) =>
-    c.id === collectionId ? { ...c, name: name.trim() } : c
-  );
-  return saveCollections(collections);
+  return serialiseBookshelfWrite(async () => {
+    const collections = (await getCollections()).map((c) =>
+      c.id === collectionId ? { ...c, name: name.trim() } : c
+    );
+    return saveCollections(collections);
+  });
 }
 
 export async function addBooksToCollection(collectionId, bookIds) {
   const bids = normalizeBookIds(bookIds);
   if (!bids.length) return false;
-  const collections = await getCollections();
-  const updated = collections.map((c) => {
-    if (c.id !== collectionId) return c;
-    const next = [...c.bookIds];
-    for (const bid of bids) {
-      if (!next.includes(bid)) next.unshift(bid);
-    }
-    return { ...c, bookIds: next };
+  return serialiseBookshelfWrite(async () => {
+    const collections = await getCollections();
+    const updated = collections.map((c) => {
+      if (c.id !== collectionId) return c;
+      const next = [...c.bookIds];
+      for (const bid of bids) {
+        if (!next.includes(bid)) next.unshift(bid);
+      }
+      return { ...c, bookIds: next };
+    });
+    return saveCollections(updated);
   });
-  return saveCollections(updated);
 }
 
 export async function removeBooksFromCollection(collectionId, bookIds) {
   const bidSet = new Set(normalizeBookIds(bookIds));
   if (!bidSet.size) return false;
-  const collections = (await getCollections()).map((c) =>
-    c.id === collectionId
-      ? { ...c, bookIds: c.bookIds.filter((id) => !bidSet.has(id)) }
-      : c
-  );
-  return saveCollections(collections);
+  return serialiseBookshelfWrite(async () => {
+    const collections = (await getCollections()).map((c) =>
+      c.id === collectionId
+        ? { ...c, bookIds: c.bookIds.filter((id) => !bidSet.has(id)) }
+        : c
+    );
+    return saveCollections(collections);
+  });
 }
 
 /** Move a book within a collection's bookIds; order is user-controlled. */
 export async function reorderCollectionBooks(collectionId, fromIndex, toIndex) {
-  const collections = await getCollections();
-  const col = collections.find((c) => c.id === collectionId);
-  if (!col) return false;
-  const nextBookIds = reorderItems(col.bookIds, fromIndex, toIndex);
-  if (!nextBookIds) return false;
-  if (nextBookIds === col.bookIds) return true;
-  return saveCollections(
-    collections.map((c) => (c.id === collectionId ? { ...c, bookIds: nextBookIds } : c))
-  );
+  return serialiseBookshelfWrite(async () => {
+    const collections = await getCollections();
+    const col = collections.find((c) => c.id === collectionId);
+    if (!col) return false;
+    const nextBookIds = reorderItems(col.bookIds, fromIndex, toIndex);
+    if (!nextBookIds) return false;
+    if (nextBookIds === col.bookIds) return true;
+    return saveCollections(
+      collections.map((c) => (c.id === collectionId ? { ...c, bookIds: nextBookIds } : c))
+    );
+  });
 }
 
 // ── Bookshelf view mode ───────────────────────────────────────────────────────

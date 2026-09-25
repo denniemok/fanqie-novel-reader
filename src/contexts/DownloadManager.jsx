@@ -70,6 +70,9 @@ export function DownloadManagerProvider({ children }) {
   const activeCountRef = useRef(0);
   const batchCooldownRef = useRef(null);
   const abortControllersRef = useRef(new Map());
+  // Mirrors state.downloading but updated synchronously so processQueue /
+  // addToQueue never read a stale snapshot from a closed-over state value.
+  const downloadingRef = useRef(new Set());
   const { notifyError } = useToast();
 
   const syncQueueLength = useCallback(() => {
@@ -82,8 +85,11 @@ export function DownloadManagerProvider({ children }) {
       const task = queue.shift();
       if (!task) break;
       const { itemId, forceRefresh } = task;
-      if (state.downloading.has(itemId)) continue;
+      // Use ref — not state.downloading — so we always read the current set
+      // even when this callback is invoked from a stale closure in finally().
+      if (downloadingRef.current.has(itemId)) continue;
       activeCountRef.current += 1;
+      downloadingRef.current.add(itemId);
       dispatch({ type: 'START', itemId });
       const controller = new AbortController();
       abortControllersRef.current.set(itemId, controller);
@@ -108,16 +114,17 @@ export function DownloadManagerProvider({ children }) {
         .finally(() => {
           abortControllersRef.current.delete(itemId);
           activeCountRef.current -= 1;
+          downloadingRef.current.delete(itemId);
           dispatch({ type: 'END', itemId });
           processQueue();
         });
     }
     syncQueueLength();
-  }, [state.downloading, notifyError, syncQueueLength]);
+  }, [notifyError, syncQueueLength]);
 
   const addToQueue = useCallback((itemId, forceRefresh = false) => {
     if (!itemId) return;
-    if (state.downloading.has(itemId)) return;
+    if (downloadingRef.current.has(itemId)) return;
     const queue = queueRef.current;
     const existing = queue.find((t) => t.itemId === itemId);
     if (existing) {
@@ -127,7 +134,7 @@ export function DownloadManagerProvider({ children }) {
     queue.push({ itemId, forceRefresh });
     syncQueueLength();
     processQueue();
-  }, [state.downloading, processQueue, syncQueueLength]);
+  }, [processQueue, syncQueueLength]);
 
   const isDownloading = useCallback(
     (itemId) => state.downloading.has(itemId),
@@ -150,6 +157,9 @@ export function DownloadManagerProvider({ children }) {
     }
     abortControllersRef.current.forEach((controller) => controller.abort());
     abortControllersRef.current.clear();
+    // Ref is cleared here; the finally() blocks on aborted fetches will also
+    // call delete() but that is idempotent, so no double-counting.
+    downloadingRef.current.clear();
     dispatch({ type: 'STOP_DOWNLOAD_ALL' });
   }, []);
 

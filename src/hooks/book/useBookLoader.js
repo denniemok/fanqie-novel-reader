@@ -31,13 +31,23 @@ export function useBookLoader(bookId, { detailOnly = false, bookDataVersion = 0 
     if (!bookId || detailOnly) return;
 
     setError(null);
-    if (forceRefresh) {
-      setBookInfo(null);
-    }
+    // Do NOT clear bookInfo on force refresh — keep the existing catalog visible
+    // while the network request is in flight. It is cleared for the initial load
+    // by the effect below before this callback is invoked.
 
     fetchBookDetailAndDirectory(bookId, { forceRefresh, signal })
       .then((result) => applyDirectoryLoadResult(result, bookId, setBookInfo, setError, notifyWarning))
-      .catch((err) => handleBookError(err, setError));
+      .catch((err) => {
+        if (err.name === 'AbortError') return;
+        console.error('獲取書籍資訊失敗：', err);
+        const msg = formatErrorMessage(err, '獲取書籍資訊失敗，請檢查 bookId 是否正確，或者稍後再試。');
+        if (forceRefresh) {
+          // Refresh failed — keep displaying the existing catalog and notify via toast.
+          notifyWarning(msg);
+        } else {
+          setError(msg);
+        }
+      });
   }, [bookId, detailOnly, notifyWarning]);
 
   useEffect(() => {

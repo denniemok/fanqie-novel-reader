@@ -7,6 +7,8 @@ import {
   DIRECTORY_CACHE_KEY,
   CHAPTER_CACHE_KEY,
   DETAIL_CACHE_KEY,
+  READING_HISTORY_KEY,
+  COLLECTIONS_KEY,
 } from './constants';
 import { getAllStoreEntries, importStoreEntries } from './cache';
 import { triggerFileDownload } from './export/downloadFile';
@@ -58,6 +60,17 @@ export async function exportUserData() {
   return { ...summary, byteLength };
 }
 
+function validateBackupIndexedDB(indexedDB) {
+  const history = indexedDB[READING_HISTORY_KEY];
+  if (history !== undefined && !Array.isArray(history)) {
+    throw new Error('備份檔中的閱讀記錄格式無效，無法匯入。');
+  }
+  const collections = indexedDB[COLLECTIONS_KEY];
+  if (collections !== undefined && !Array.isArray(collections)) {
+    throw new Error('備份檔中的書單格式無效，無法匯入。');
+  }
+}
+
 function parseBackupFile(text) {
   let data;
   try {
@@ -71,6 +84,7 @@ function parseBackupFile(text) {
   if (data.version !== DATA_BACKUP_VERSION) {
     throw new Error(`不支援的備份版本（${data.version ?? '未知'}）。請更新網站後再試。`);
   }
+  validateBackupIndexedDB(data.indexedDB);
   return data;
 }
 

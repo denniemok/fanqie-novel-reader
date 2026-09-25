@@ -32,13 +32,13 @@ function Catalog() {
   const [sortOrder, setSortOrderState] = useState(getCatalogSortDirection);
   const [conversionMode] = useConversionMode();
   const { variant: displayVariant } = useBookDisplayVariant();
-  const [, setCatalogRefresh] = useState(0);
   const [uncachedItemIds, setUncachedItemIds] = useState([]);
   const [downloadAllConfirmOpen, setDownloadAllConfirmOpen] = useState(false);
   const [exportBookOpen, setExportBookOpen] = useState(false);
   const onChapterDeleted = (itemId) => {
-    if (itemId) setUncachedItemIds((prev) => prev.filter((id) => id !== itemId));
-    setCatalogRefresh((k) => k + 1);
+    // Chapter is now uncached after deletion — add it back to the uncached list
+    // so "下載全部" can re-download it. The old filter was inverted.
+    if (itemId) setUncachedItemIds((prev) => prev.includes(itemId) ? prev : [...prev, itemId]);
   };
 
   const itemDataList = bookInfo?.item_data_list ?? [];
@@ -113,7 +113,7 @@ function Catalog() {
     return <Navigate to={ROUTES.home} replace />;
   }
 
-  if (error) {
+  if (error && !bookInfo) {
     return <Error message={error} href={ROUTES.home} />;
   }
 

@@ -14,6 +14,9 @@ export function useChapterLoader(itemId, bookId) {
   const [loading, setLoading] = useState(true);
   const userFetchAbortRef = useRef(null);
   const requestIdRef = useRef(0);
+  // Tracks whether we have already-loaded data so refresh failures can keep
+  // the reader visible instead of replacing it with a full-page error.
+  const hasDataRef = useRef(false);
 
   const loadChapter = useCallback((forceRefresh = false, signal) => {
     if (!itemId) return;
@@ -52,6 +55,7 @@ export function useChapterLoader(itemId, bookId) {
     loadPromise
       .then(({ chapterData: data, bookInfo: info, partialLoadMessage }) => {
         if (requestId !== requestIdRef.current) return;
+        hasDataRef.current = true;
         setChapterData(data);
         setBookInfo(info);
         if (partialLoadMessage) notifyWarning(partialLoadMessage);
@@ -64,9 +68,14 @@ export function useChapterLoader(itemId, bookId) {
         if (err.name === 'AbortError') return;
         if (requestId !== requestIdRef.current) return;
         console.error('獲取章節內容失敗:', itemId, err);
-        setError(
-          formatErrorMessage(err, '獲取章節內容失敗，來到沒有內容的荒原，請返回目錄重試！')
-        );
+        const msg = formatErrorMessage(err, '獲取章節內容失敗，來到沒有內容的荒原，請返回目錄重試！');
+        if (forceRefresh && hasDataRef.current) {
+          // Refresh failed but the reader already has content — keep it visible
+          // and inform the user via a non-destructive warning toast.
+          notifyWarning(msg);
+        } else {
+          setError(msg);
+        }
         setLoading(false);
       });
   }, [itemId, bookId, notifyWarning]);
@@ -78,6 +87,7 @@ export function useChapterLoader(itemId, bookId) {
   useEffect(() => {
     if (!itemId) return;
     userFetchAbortRef.current?.abort();
+    hasDataRef.current = false;
     setChapterData(null);
     setLoading(true);
     setError(null);
