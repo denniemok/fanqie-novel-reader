@@ -166,8 +166,8 @@ function ReaderControlsPanel({
           {onFontFamilyChange && (
             <IconDropdown
               icon={<Type size={20} strokeWidth={2.5} />}
-              title="字體"
-              ariaLabel="選擇字體"
+              title="閱讀字體"
+              ariaLabel="選擇閱讀字體"
               options={CHINESE_FONTS}
               value={fontFamily}
               onChange={onFontFamilyChange}

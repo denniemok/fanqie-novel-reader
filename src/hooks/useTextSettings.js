@@ -4,6 +4,7 @@ import {
   setFontSize,
   getFontFamily,
   setFontFamily,
+  getUiFontMode,
   getTextBrightness,
   setTextBrightness,
   getReaderBackground,
@@ -20,6 +21,7 @@ import {
   TEXT_BRIGHTNESS_STEP,
 } from '../utils/constants';
 import { resolveReaderColors } from '../utils/readerColors';
+import { applyChromeFonts } from '../utils/uiFont';
 
 export function useFontSize() {
   const [fontSize, setFontSizeState] = useState(getFontSize);
@@ -40,8 +42,9 @@ export function useFontFamily() {
   const [fontFamily, setFontFamilyState] = useState(getFontFamily);
 
   const handleFontFamilyChange = (value) => {
-    setFontFamily(value);
+    if (!setFontFamily(value)) return;
     setFontFamilyState(value);
+    applyChromeFonts(getUiFontMode(), value);
   };
 
   return [fontFamily, handleFontFamilyChange];

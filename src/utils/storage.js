@@ -18,6 +18,9 @@ import {
   FONT_SIZE_MAX,
   FONT_SIZE_DEFAULT,
   FONT_FAMILY_KEY,
+  UI_FONT_MODE_KEY,
+  UI_FONT_MODE_BRAND,
+  UI_FONT_MODE_FOLLOW,
   CHINESE_FONTS,
   TRADITIONAL_CHINESE_KEY,
   BOOK_DISPLAY_VARIANT_KEY,
@@ -213,6 +216,25 @@ export function getFontFamily() {
 export function setFontFamily(value) {
   const valid = CHINESE_FONTS.some((f) => f.value === value);
   return valid ? safeSetItem(FONT_FAMILY_KEY, value) : false;
+}
+
+export function getUiFontMode() {
+  const raw = safeGetItem(UI_FONT_MODE_KEY);
+  if (raw === UI_FONT_MODE_BRAND) return UI_FONT_MODE_BRAND;
+  if (raw === UI_FONT_MODE_FOLLOW) return UI_FONT_MODE_FOLLOW;
+  const matched = CHINESE_FONTS.some((f) => f.value === raw);
+  return matched ? raw : UI_FONT_MODE_BRAND;
+}
+
+export function setUiFontMode(value) {
+  if (
+    value === UI_FONT_MODE_BRAND ||
+    value === UI_FONT_MODE_FOLLOW ||
+    CHINESE_FONTS.some((f) => f.value === value)
+  ) {
+    return safeSetItem(UI_FONT_MODE_KEY, value);
+  }
+  return false;
 }
 
 export function getTextBrightness() {

@@ -27,6 +27,7 @@ export const CATALOG_SORT_DIRECTION_KEY = 'catalogSortDir';
 export const CATALOG_MANAGE_MODE_KEY = 'catalogManageMode';
 export const FONT_SIZE_KEY = 'fontSize';
 export const FONT_FAMILY_KEY = 'fontFamily';
+export const UI_FONT_MODE_KEY = 'uiFontMode';
 export const TEXT_BRIGHTNESS_KEY = 'textBrightness';
 export const READER_BACKGROUND_KEY = 'readerBackground';
 export const READER_CUSTOM_BG_KEY = 'readerCustomBg';
@@ -110,6 +111,15 @@ export const CHINESE_FONTS = [
   { value: "'Noto Sans TC', 'Noto Sans SC', sans-serif", label: '思源黑體' },
   { value: "'Microsoft JhengHei', 'Heiti TC', 'Heiti SC', sans-serif", label: '微軟正黑體' },
 ].map((font) => ({ ...font, fontFamily: font.value }));
+
+/** Chrome typography: brand keeps UI + display stacks; follow mirrors reader font; else one family for both. */
+export const UI_FONT_MODE_BRAND = 'brand';
+export const UI_FONT_MODE_FOLLOW = 'follow';
+export const UI_FONT_MODE_OPTIONS = [
+  { value: UI_FONT_MODE_BRAND, label: '預設' },
+  { value: UI_FONT_MODE_FOLLOW, label: '跟隨閱讀字型' },
+  ...CHINESE_FONTS,
+];
 
 export const SEARCH_RESULT_LIMIT = 50;
 

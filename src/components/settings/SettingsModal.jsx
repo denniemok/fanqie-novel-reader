@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Activity, BookImage, Globe, Languages, Moon, Sun } from 'lucide-react';
+import { Activity, BookImage, Globe, Languages, Moon, Sun, Type } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Modal, ModalTitleBar, ModalBody, ModalText } from '../ui/ModalBase';
 import { MODAL_SELECT_PROPS, Section, SectionHeader, SelectField } from '../ui/ModalFormSection';
@@ -12,10 +12,12 @@ import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext'
 import { useBookshelfQuickAction } from '../../contexts/BookshelfQuickActionContext';
 import { useConversionMode } from '../../hooks/useConversionMode';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useUiFont } from '../../contexts/UiFontContext';
 import {
   API_OPTIONS,
   BOOK_DISPLAY_VARIANT_OPTIONS,
   BOOKSHELF_QUICK_ACTION_OPTIONS,
+  UI_FONT_MODE_OPTIONS,
   ZH_CONVERSION_OPTIONS,
 } from '../../utils/constants';
 import { ROUTES } from '../../utils/navigation';
@@ -89,6 +91,7 @@ function SettingsModal({ onClose }) {
   const { enabled: bookshelfQuickAction, setEnabled: setBookshelfQuickAction } = useBookshelfQuickAction();
   const [conversionMode, setConversionMode] = useConversionMode();
   const { theme, setTheme } = useTheme();
+  const { mode: uiFontMode, setMode: setUiFontMode } = useUiFont();
 
   const apiOptions = API_OPTIONS.map((opt) => ({
     ...opt,
@@ -124,6 +127,29 @@ function SettingsModal({ onClose }) {
               {...MODAL_SELECT_PROPS}
             />
           </SelectField>
+        </Section>
+
+        <Section>
+          <SectionHeader>
+            <Type size={16} strokeWidth={2.5} aria-hidden />
+            <span>介面字型</span>
+          </SectionHeader>
+          <SelectField>
+            <SelectDropdown
+              options={UI_FONT_MODE_OPTIONS}
+              value={uiFontMode}
+              onChange={setUiFontMode}
+              ariaLabel="選擇介面字型"
+              {...MODAL_SELECT_PROPS}
+              renderOption={(opt) => (
+                <span style={opt.fontFamily ? { fontFamily: opt.fontFamily } : undefined}>{opt.label}</span>
+              )}
+              renderValue={(opt) => (
+                <span style={opt.fontFamily ? { fontFamily: opt.fontFamily } : undefined}>{opt.label}</span>
+              )}
+            />
+          </SelectField>
+          <ModalText>影響按鈕、選單與標題等介面文字。正文請在閱讀頁調整字型。</ModalText>
         </Section>
 
         <Section>

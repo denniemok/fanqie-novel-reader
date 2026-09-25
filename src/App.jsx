@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ToastProvider } from './contexts/ToastContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { UiFontProvider } from './contexts/UiFontContext';
 import { BookDisplayVariantProvider } from './contexts/BookDisplayVariantContext';
 import { BookshelfQuickActionProvider } from './contexts/BookshelfQuickActionContext';
 import { ConversionModeProvider } from './contexts/ConversionModeContext';
@@ -26,32 +27,34 @@ function DiscoverRootRedirect() {
 function App() {
   return (
     <ThemeProvider>
-      <ConversionModeProvider>
-        <BookDisplayVariantProvider>
-          <BookshelfQuickActionProvider>
-            <ToastProvider>
-              <DownloadManagerProvider>
-                <Routes>
-                  <Route path={ROUTES.home} element={<Home />} />
-                  <Route path={ROUTES.bookshelf} element={<Bookshelf />} />
-                  <Route path={ROUTES.discover} element={<DiscoverRootRedirect />} />
-                  <Route path={`${ROUTES.discover}/:tab/:section?`} element={<Discover />} />
-                  <Route path={ROUTES.announcements} element={<Announcements />} />
-                  <Route path={ROUTES.download} element={<Download />} />
-                  <Route path={ROUTES.status} element={<Status />} />
-                  <Route path={ROUTES.catalog} element={<Catalog />} />
-                  <Route path={ROUTES.chapter} element={<Chapter />} />
-                  <Route path={ROUTES.comments} element={<Comments />} />
-                  <Route path={ROUTES.export} element={<Export />} />
-                  <Route path={ROUTES.import} element={<Import />} />
-                  <Route path={ROUTES.terms} element={<Terms />} />
-                  <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
-                </Routes>
-              </DownloadManagerProvider>
-            </ToastProvider>
-          </BookshelfQuickActionProvider>
-        </BookDisplayVariantProvider>
-      </ConversionModeProvider>
+      <UiFontProvider>
+        <ConversionModeProvider>
+          <BookDisplayVariantProvider>
+            <BookshelfQuickActionProvider>
+              <ToastProvider>
+                <DownloadManagerProvider>
+                  <Routes>
+                    <Route path={ROUTES.home} element={<Home />} />
+                    <Route path={ROUTES.bookshelf} element={<Bookshelf />} />
+                    <Route path={ROUTES.discover} element={<DiscoverRootRedirect />} />
+                    <Route path={`${ROUTES.discover}/:tab/:section?`} element={<Discover />} />
+                    <Route path={ROUTES.announcements} element={<Announcements />} />
+                    <Route path={ROUTES.download} element={<Download />} />
+                    <Route path={ROUTES.status} element={<Status />} />
+                    <Route path={ROUTES.catalog} element={<Catalog />} />
+                    <Route path={ROUTES.chapter} element={<Chapter />} />
+                    <Route path={ROUTES.comments} element={<Comments />} />
+                    <Route path={ROUTES.export} element={<Export />} />
+                    <Route path={ROUTES.import} element={<Import />} />
+                    <Route path={ROUTES.terms} element={<Terms />} />
+                    <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
+                  </Routes>
+                </DownloadManagerProvider>
+              </ToastProvider>
+            </BookshelfQuickActionProvider>
+          </BookDisplayVariantProvider>
+        </ConversionModeProvider>
+      </UiFontProvider>
     </ThemeProvider>
   );
 }
