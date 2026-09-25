@@ -17,12 +17,11 @@ export const safeAreaInsetBottom = css`
 `;
 
 /**
- * Flush fixed bottom bar (chapter nav, etc). Escapes the global border-box rule so the
- * safe-area padding adds to the box instead of squeezing the fixed content height.
+ * In-flow chapter bottom nav. Escapes the global border-box rule so safe-area padding
+ * adds to the box instead of squeezing the bar content height.
  */
-export const fixedBottomBar = (contentHeight = 56) => css`
+export const chapterBottomBar = (contentHeight = 56) => css`
   box-sizing: content-box;
-  bottom: 0;
   height: ${contentHeight}px;
   ${safeAreaInsetBottom}
 `;

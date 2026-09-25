@@ -32,7 +32,8 @@
   --topbar-shadow: 0 1px 0 rgba(91, 71, 81, 0.1), 0 10px 30px rgba(65, 45, 56, 0.08);
   --topbar-height: calc(70px + env(safe-area-inset-top));
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
-  --chapter-bottom-bar-height: 56px;
+  --chapter-top-bar-height: 100px;
+  --chapter-bottom-bar-height: 64px;
   --surface-raised: rgba(255, 252, 249, 0.78);
   --surface-muted: rgba(255, 252, 249, 0.48);
   --bg-wash-linear: linear-gradient(135deg, rgba(238, 231, 226, 0.42), rgba(246, 237, 235, 0.28));
@@ -100,7 +101,12 @@ html::before {
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { overflow-x: hidden; background-color: var(--background-color); }
+html {
+  overflow-x: hidden;
+  background-color: var(--background-color);
+  color-scheme: light;
+}
+[data-theme="dark"] { color-scheme: dark; }
 body {
   margin: 0;
   position: relative;

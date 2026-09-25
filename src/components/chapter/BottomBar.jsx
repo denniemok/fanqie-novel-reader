@@ -3,13 +3,11 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 import { buildChapterUrl } from '../../utils/navigation';
-import { fixedBottomBar } from '../../utils/styled/viewport';
+import { chapterBottomBar } from '../../utils/styled/viewport';
 
 const BottomBarWrapper = styled.div`
-  position: fixed;
-  left: 0;
-  right: 0;
-  ${fixedBottomBar(56)}
+  flex-shrink: 0;
+  ${chapterBottomBar(56)}
   display: flex;
   background-color: var(--topbar-bg);
   backdrop-filter: blur(12px);

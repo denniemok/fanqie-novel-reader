@@ -27,8 +27,8 @@ const Overlay = styled(ModalOverlay)`
 const Panel = styled.aside`
   position: fixed;
   right: max(12px, env(safe-area-inset-right));
-  top: calc(128px + env(safe-area-inset-top));
-  bottom: calc(8px + var(--chapter-bottom-bar-height, 56px) + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)));
+  top: calc(var(--chapter-top-bar-height, 100px) + 8px);
+  bottom: calc(var(--chapter-bottom-bar-height, 64px) + 8px);
   z-index: 960;
   display: flex;
   flex-direction: column;
@@ -44,13 +44,12 @@ const Panel = styled.aside`
 
   @media (max-width: 480px) {
     right: max(8px, env(safe-area-inset-right));
-    top: calc(118px + env(safe-area-inset-top));
     gap: 6px;
   }
 
   @media (max-height: 500px) {
-    top: calc(72px + env(safe-area-inset-top));
-    bottom: calc(var(--chapter-bottom-bar-height, 56px) - 8px + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)));
+    top: calc(var(--chapter-top-bar-height, 100px) + 4px);
+    bottom: calc(var(--chapter-bottom-bar-height, 64px) + 4px);
     gap: 4px;
     padding: 2px 0;
   }
@@ -64,6 +63,7 @@ const Section = styled.div`
   padding: 10px 8px;
   flex-shrink: 0;
   ${catalogPanelShell}
+  box-shadow: none;
 
   @media (max-width: 480px) {
     gap: 6px;

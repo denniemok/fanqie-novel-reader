@@ -14,12 +14,9 @@ const TopBarWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
+  flex-shrink: 0;
   background-color: var(--topbar-bg);
   backdrop-filter: blur(18px);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
   z-index: 1000;
   border-bottom: 1px solid var(--border-color);
 

@@ -2,21 +2,14 @@ import React from 'react';
 import styled from 'styled-components';
 import { maybeConvert } from '../../utils/text/zh-convert';
 import { FONT_SIZE_DEFAULT, TEXT_BRIGHTNESS_DEFAULT } from '../../utils/constants';
-import { minViewportHeight } from '../../utils/styled/viewport';
-
 const ReaderWrapper = styled.div`
   margin: 0 auto;
-  padding: 40px 24px 100px;
-  padding-top: calc(140px + env(safe-area-inset-top));
-  padding-bottom: calc(100px + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)));
+  padding: 32px 24px 40px;
   max-width: 800px;
   background: transparent;
-  ${minViewportHeight}
 
   @media (max-width: 480px) {
-    padding: 24px 16px 100px;
-    padding-top: calc(130px + env(safe-area-inset-top));
-    padding-bottom: calc(100px + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)));
+    padding: 24px 16px 32px;
   }
 
   p {

@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useCallback, useState } from 'react';
+import { useEffect, useLayoutEffect, useCallback, useRef, useState } from 'react';
+import styled from 'styled-components';
 import { useSearchParams, Navigate, useNavigate } from 'react-router-dom';
 import ChapterTopBar from '../components/chapter/ChapterTopBar';
 import BottomBar from '../components/chapter/BottomBar';
@@ -10,7 +11,23 @@ import PageWrapper from '../components/layout/PageWrapper';
 import { useConversionMode } from '../hooks/useConversionMode';
 import { useFontSize, useFontFamily, useTextBrightness, useReaderBackground } from '../hooks/useTextSettings';
 import { useChapterLoader } from '../hooks/book/useChapterLoader';
+import { useChapterChromeHeights } from '../hooks/useChapterChromeHeights';
 import { buildCatalogUrl, ROUTES } from '../utils/navigation';
+
+const ChapterFrame = styled.div`
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ReaderPane = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+`;
 
 function Chapter() {
   const [searchParams] = useSearchParams();
@@ -34,6 +51,9 @@ function Chapter() {
   } = useReaderBackground();
   const [conversionMode] = useConversionMode();
   const [readerControlsOpen, setReaderControlsOpen] = useState(false);
+  const readerPaneRef = useRef(null);
+  const chapterFrameRef = useRef(null);
+  useChapterChromeHeights(chapterFrameRef, !!chapterData);
 
   const handleRefresh = useCallback(() => {
     loadChapter(true);
@@ -41,6 +61,7 @@ function Chapter() {
 
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
+    readerPaneRef.current?.scrollTo(0, 0);
   }, [itemId]);
 
   useEffect(() => {
@@ -58,13 +79,17 @@ function Chapter() {
   const isInitialLoad = loading && !chapterData;
 
   return (
-    <PageWrapper $withBottomPadding={false} $backgroundColor={isInitialLoad ? undefined : readerBackgroundColor}>
+    <PageWrapper
+      $withBottomPadding={false}
+      $fillViewport={!isInitialLoad && !!chapterData}
+      $backgroundColor={isInitialLoad ? undefined : readerBackgroundColor}
+    >
       {isInitialLoad ? (
         <Loading onAbort={() => navigate(bookId ? buildCatalogUrl(bookId) : '/')} />
       ) : (
         <>
           {chapterData && (
-            <>
+            <ChapterFrame ref={chapterFrameRef}>
               <ChapterTopBar
                 chapterData={chapterData}
                 bookInfo={bookInfo}
@@ -91,16 +116,18 @@ function Chapter() {
                 onCustomBgChange={handleCustomBgChange}
                 onCustomTextChange={handleCustomTextChange}
               />
-              <Reader
-                chapterData={chapterData}
-                fontSize={fontSize}
-                fontFamily={fontFamily}
-                textBrightness={textBrightness}
-                readerTextColor={readerTextColor}
-                conversionMode={conversionMode}
-              />
+              <ReaderPane ref={readerPaneRef}>
+                <Reader
+                  chapterData={chapterData}
+                  fontSize={fontSize}
+                  fontFamily={fontFamily}
+                  textBrightness={textBrightness}
+                  readerTextColor={readerTextColor}
+                  conversionMode={conversionMode}
+                />
+              </ReaderPane>
               <BottomBar chapterData={chapterData} bookId={bookId} />
-            </>
+            </ChapterFrame>
           )}
         </>
       )}
