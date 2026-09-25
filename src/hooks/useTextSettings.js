@@ -23,19 +23,27 @@ import {
 import { resolveReaderColors } from '../utils/readerColors';
 import { applyChromeFonts } from '../utils/uiFont';
 
-export function useFontSize() {
-  const [fontSize, setFontSizeState] = useState(getFontSize);
+function useSteppedValue(readValue, writeValue, { min, max, step }) {
+  const [value, setValue] = useState(readValue);
 
-  const handleFontSizeChange = (delta) => {
-    setFontSizeState((prev) => {
-      const next = prev + delta * FONT_SIZE_STEP;
-      const clamped = Math.max(FONT_SIZE_MIN, Math.min(FONT_SIZE_MAX, next));
-      setFontSize(clamped);
+  const changeBy = (delta) => {
+    setValue((prev) => {
+      const next = prev + delta * step;
+      const clamped = Math.max(min, Math.min(max, next));
+      writeValue(clamped);
       return clamped;
     });
   };
 
-  return [fontSize, handleFontSizeChange];
+  return [value, changeBy];
+}
+
+export function useFontSize() {
+  return useSteppedValue(getFontSize, setFontSize, {
+    min: FONT_SIZE_MIN,
+    max: FONT_SIZE_MAX,
+    step: FONT_SIZE_STEP,
+  });
 }
 
 export function useFontFamily() {
@@ -51,18 +59,11 @@ export function useFontFamily() {
 }
 
 export function useTextBrightness() {
-  const [textBrightness, setTextBrightnessState] = useState(getTextBrightness);
-
-  const handleTextBrightnessChange = (delta) => {
-    setTextBrightnessState((prev) => {
-      const next = prev + delta * TEXT_BRIGHTNESS_STEP;
-      const clamped = Math.max(TEXT_BRIGHTNESS_MIN, Math.min(TEXT_BRIGHTNESS_MAX, next));
-      setTextBrightness(clamped);
-      return clamped;
-    });
-  };
-
-  return [textBrightness, handleTextBrightnessChange];
+  return useSteppedValue(getTextBrightness, setTextBrightness, {
+    min: TEXT_BRIGHTNESS_MIN,
+    max: TEXT_BRIGHTNESS_MAX,
+    step: TEXT_BRIGHTNESS_STEP,
+  });
 }
 
 export function useReaderBackground() {

@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 import { GripVertical, Loader2, Check } from 'lucide-react';
 import BookInfo from '../book/BookInfo';
-import { useBookLoader } from '../../hooks/book/useBookLoader';
-import { useErrorToast } from '../../hooks/useErrorToast';
+import { useBookshelfBookCard } from '../../hooks/bookshelf/useBookshelfBookCard';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { shimmerStyle } from '../../utils/styled/animations';
 import { CardLoadingOverlay } from '../book/CardActionButton';
@@ -203,13 +202,32 @@ function BookshelfBookListCard({
   bookDataVersion = 0,
   showActions = false,
 }) {
-  const { bookInfo, isLoading, refetch, isRefreshing: hookRefreshing, error } = useBookLoader(bookId, {
-    detailOnly: true,
+  const {
+    bookInfo,
+    isLoading,
+    isRefreshing,
+    handleCardClick,
+    showItemActions,
+    actionProps,
+  } = useBookshelfBookCard({
+    bookId,
     bookDataVersion,
+    bulkRefreshing,
+    reorderMode,
+    selectionMode,
+    onToggleSelect,
+    canClick,
+    onClick,
+    showActions,
+    isAllTab,
+    onAddToCollection,
+    onDownload,
+    onExport,
+    onRefreshClick,
+    onDeleteClick,
+    onDeleteLocalDataClick,
   });
-  const isRefreshing = hookRefreshing || bulkRefreshing;
   const useActionFooter = useMediaQuery(CARD_ACTION_FOOTER_MEDIA_QUERY);
-  useErrorToast(error);
 
   if (!bookInfo) {
     if (isLoading) {
@@ -228,31 +246,6 @@ function BookshelfBookListCard({
     }
     return null;
   }
-
-  const handleCardClick = () => {
-    if (reorderMode) return;
-    if (selectionMode) {
-      onToggleSelect?.();
-      return;
-    }
-    if (canClick && !canClick()) return;
-    onClick?.();
-  };
-
-  const showItemActions = showActions && !selectionMode && !reorderMode;
-  const actionProps = {
-    bookId,
-    bookInfo,
-    isAllTab,
-    isRefreshing,
-    onAddToCollection,
-    onDownload,
-    onExport,
-    onRefreshClick,
-    refetch,
-    onDeleteClick,
-    onDeleteLocalDataClick,
-  };
 
   return (
     <Card

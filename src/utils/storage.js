@@ -87,8 +87,61 @@ export function safeRemoveItem(key) {
   }
 }
 
+function normalizeBookIds(bookIds) {
+  return [...new Set((Array.isArray(bookIds) ? bookIds : [bookIds]).map(String).filter(Boolean))];
+}
+
+function readStoredChoice(key, allowed, fallback) {
+  const raw = safeGetItem(key);
+  return allowed.includes(raw) ? raw : fallback;
+}
+
+function writeStoredChoice(key, value, allowed) {
+  return allowed.includes(value) ? safeSetItem(key, value) : false;
+}
+
+function readStoredInt(key, { min, max, fallback }) {
+  const raw = safeGetItem(key);
+  if (raw == null) return fallback;
+  const n = parseInt(raw, 10);
+  return Number.isNaN(n) ? fallback : Math.max(min, Math.min(max, n));
+}
+
+function writeStoredInt(key, value, { min, max }) {
+  const clamped = Math.max(min, Math.min(max, value));
+  return safeSetItem(key, String(clamped));
+}
+
+function readStoredBool(key, fallback) {
+  const raw = safeGetItem(key);
+  if (raw === 'true') return true;
+  if (raw === 'false') return false;
+  return fallback;
+}
+
+function writeStoredBool(key, enabled) {
+  return safeSetItem(key, enabled ? 'true' : 'false');
+}
+
+/** @returns {Array|null} The same list when indexes match, a reordered copy when they differ, or null when out of range. */
+function reorderItems(list, fromIndex, toIndex) {
+  if (
+    fromIndex < 0
+    || toIndex < 0
+    || fromIndex >= list.length
+    || toIndex >= list.length
+  ) {
+    return null;
+  }
+  if (fromIndex === toIndex) return list;
+  const next = list.slice();
+  const [item] = next.splice(fromIndex, 1);
+  next.splice(toIndex, 0, item);
+  return next;
+}
+
 export async function deleteBooksData(bookIds) {
-  const bids = [...new Set((Array.isArray(bookIds) ? bookIds : [bookIds]).map(String).filter(Boolean))];
+  const bids = normalizeBookIds(bookIds);
   if (!bids.length) return;
 
   const itemIdsToRemove = [];
@@ -160,7 +213,7 @@ export async function setLastReadChapter(bookId, itemId) {
 
 /** Add books to reading history (「全部」) without requiring a chapter read. */
 export async function addBooksToReadingHistory(bookIds) {
-  const bids = [...new Set((Array.isArray(bookIds) ? bookIds : [bookIds]).map(String).filter(Boolean))];
+  const bids = normalizeBookIds(bookIds);
   if (!bids.length) return false;
   const history = (await getReadingHistory()).map((e) => ({ ...e }));
   const now = Date.now();
@@ -177,7 +230,7 @@ export async function addBooksToReadingHistory(bookIds) {
 
 /** Remove books from reading history only; cached data is kept. */
 export async function removeBooksFromReadingHistory(bookIds) {
-  const bidSet = new Set((Array.isArray(bookIds) ? bookIds : [bookIds]).map(String).filter(Boolean));
+  const bidSet = new Set(normalizeBookIds(bookIds));
   if (!bidSet.size) return false;
   const history = (await getReadingHistory()).filter((e) => !bidSet.has(e.bookId));
   return saveReadingHistory(history);
@@ -186,67 +239,51 @@ export async function removeBooksFromReadingHistory(bookIds) {
 /** Move entry from one index to another; order is user-controlled, not time-based. */
 export async function reorderReadingHistory(fromIndex, toIndex) {
   const history = (await getReadingHistory()).map((e) => ({ ...e }));
-  if (fromIndex < 0 || fromIndex >= history.length || toIndex < 0 || toIndex >= history.length) {
-    return false;
-  }
-  if (fromIndex === toIndex) return true;
-  const [item] = history.splice(fromIndex, 1);
-  history.splice(toIndex, 0, item);
-  return saveReadingHistory(history);
+  const next = reorderItems(history, fromIndex, toIndex);
+  if (!next) return false;
+  if (next === history) return true;
+  return saveReadingHistory(next);
 }
 
+const FONT_FAMILY_VALUES = CHINESE_FONTS.map((font) => font.value);
+const UI_FONT_MODE_VALUES = [UI_FONT_MODE_BRAND, UI_FONT_MODE_FOLLOW, ...FONT_FAMILY_VALUES];
+const FONT_SIZE_RANGE = { min: FONT_SIZE_MIN, max: FONT_SIZE_MAX, fallback: FONT_SIZE_DEFAULT };
+const TEXT_BRIGHTNESS_RANGE = {
+  min: TEXT_BRIGHTNESS_MIN,
+  max: TEXT_BRIGHTNESS_MAX,
+  fallback: TEXT_BRIGHTNESS_DEFAULT,
+};
+
 export function getFontSize() {
-  const raw = safeGetItem(FONT_SIZE_KEY);
-  if (raw == null) return FONT_SIZE_DEFAULT;
-  const n = parseInt(raw, 10);
-  return Number.isNaN(n) ? FONT_SIZE_DEFAULT : Math.max(FONT_SIZE_MIN, Math.min(FONT_SIZE_MAX, n));
+  return readStoredInt(FONT_SIZE_KEY, FONT_SIZE_RANGE);
 }
 
 export function setFontSize(size) {
-  const clamped = Math.max(FONT_SIZE_MIN, Math.min(FONT_SIZE_MAX, size));
-  return safeSetItem(FONT_SIZE_KEY, String(clamped));
+  return writeStoredInt(FONT_SIZE_KEY, size, FONT_SIZE_RANGE);
 }
 
 export function getFontFamily() {
-  const raw = safeGetItem(FONT_FAMILY_KEY);
-  const valid = CHINESE_FONTS.some((f) => f.value === raw);
-  return valid ? raw : CHINESE_FONTS[0].value;
+  return readStoredChoice(FONT_FAMILY_KEY, FONT_FAMILY_VALUES, FONT_FAMILY_VALUES[0]);
 }
 
 export function setFontFamily(value) {
-  const valid = CHINESE_FONTS.some((f) => f.value === value);
-  return valid ? safeSetItem(FONT_FAMILY_KEY, value) : false;
+  return writeStoredChoice(FONT_FAMILY_KEY, value, FONT_FAMILY_VALUES);
 }
 
 export function getUiFontMode() {
-  const raw = safeGetItem(UI_FONT_MODE_KEY);
-  if (raw === UI_FONT_MODE_BRAND) return UI_FONT_MODE_BRAND;
-  if (raw === UI_FONT_MODE_FOLLOW) return UI_FONT_MODE_FOLLOW;
-  const matched = CHINESE_FONTS.some((f) => f.value === raw);
-  return matched ? raw : UI_FONT_MODE_BRAND;
+  return readStoredChoice(UI_FONT_MODE_KEY, UI_FONT_MODE_VALUES, UI_FONT_MODE_BRAND);
 }
 
 export function setUiFontMode(value) {
-  if (
-    value === UI_FONT_MODE_BRAND ||
-    value === UI_FONT_MODE_FOLLOW ||
-    CHINESE_FONTS.some((f) => f.value === value)
-  ) {
-    return safeSetItem(UI_FONT_MODE_KEY, value);
-  }
-  return false;
+  return writeStoredChoice(UI_FONT_MODE_KEY, value, UI_FONT_MODE_VALUES);
 }
 
 export function getTextBrightness() {
-  const raw = safeGetItem(TEXT_BRIGHTNESS_KEY);
-  if (raw == null) return TEXT_BRIGHTNESS_DEFAULT;
-  const n = parseInt(raw, 10);
-  return Number.isNaN(n) ? TEXT_BRIGHTNESS_DEFAULT : Math.max(TEXT_BRIGHTNESS_MIN, Math.min(TEXT_BRIGHTNESS_MAX, n));
+  return readStoredInt(TEXT_BRIGHTNESS_KEY, TEXT_BRIGHTNESS_RANGE);
 }
 
 export function setTextBrightness(value) {
-  const clamped = Math.max(TEXT_BRIGHTNESS_MIN, Math.min(TEXT_BRIGHTNESS_MAX, value));
-  return safeSetItem(TEXT_BRIGHTNESS_KEY, String(clamped));
+  return writeStoredInt(TEXT_BRIGHTNESS_KEY, value, TEXT_BRIGHTNESS_RANGE);
 }
 
 export function getReaderBackground() {
@@ -274,60 +311,53 @@ export function setReaderCustomColors({ bg, text }) {
   return ok;
 }
 
+const CONVERSION_MODES = ['original', 'tw', 'hk'];
+const BOOK_DISPLAY_VARIANTS = ['new', 'old'];
+const CATALOG_SORT_DIRECTIONS = ['ascending', 'descending'];
+
 /** @returns {'original'|'tw'|'hk'} Default: 'tw' */
 export function getConversionMode() {
-  const raw = safeGetItem(TRADITIONAL_CHINESE_KEY);
-  if (raw == null) return 'tw';
-  if (raw === 'original' || raw === 'tw' || raw === 'hk') return raw;
-  return 'tw';
+  return readStoredChoice(TRADITIONAL_CHINESE_KEY, CONVERSION_MODES, 'tw');
 }
 
 export function setConversionMode(mode) {
-  const valid = mode === 'original' || mode === 'tw' || mode === 'hk';
-  return valid ? safeSetItem(TRADITIONAL_CHINESE_KEY, mode) : false;
+  return writeStoredChoice(TRADITIONAL_CHINESE_KEY, mode, CONVERSION_MODES);
 }
 
 /** @returns {'new'|'old'} Default: 'new' */
 export function getBookDisplayVariant() {
-  const raw = safeGetItem(BOOK_DISPLAY_VARIANT_KEY);
-  return raw === 'old' ? 'old' : 'new';
+  return readStoredChoice(BOOK_DISPLAY_VARIANT_KEY, BOOK_DISPLAY_VARIANTS, 'new');
 }
 
 export function setBookDisplayVariant(variant) {
-  const valid = variant === 'new' || variant === 'old';
-  return valid ? safeSetItem(BOOK_DISPLAY_VARIANT_KEY, variant) : false;
+  return writeStoredChoice(BOOK_DISPLAY_VARIANT_KEY, variant, BOOK_DISPLAY_VARIANTS);
 }
 
 /** @returns {'ascending'|'descending'} Default: 'ascending' */
 export function getCatalogSortDirection() {
-  const raw = safeGetItem(CATALOG_SORT_DIRECTION_KEY);
-  return raw === 'descending' ? 'descending' : 'ascending';
+  return readStoredChoice(CATALOG_SORT_DIRECTION_KEY, CATALOG_SORT_DIRECTIONS, 'ascending');
 }
 
 export function setCatalogSortDirection(direction) {
-  const valid = direction === 'ascending' || direction === 'descending';
-  return valid ? safeSetItem(CATALOG_SORT_DIRECTION_KEY, direction) : false;
+  return writeStoredChoice(CATALOG_SORT_DIRECTION_KEY, direction, CATALOG_SORT_DIRECTIONS);
 }
 
 /** @returns {boolean} Default: true */
 export function getCatalogManageMode() {
-  const raw = safeGetItem(CATALOG_MANAGE_MODE_KEY);
-  if (raw === 'false') return false;
-  return true;
+  return readStoredBool(CATALOG_MANAGE_MODE_KEY, true);
 }
 
 export function setCatalogManageMode(enabled) {
-  return safeSetItem(CATALOG_MANAGE_MODE_KEY, enabled ? 'true' : 'false');
+  return writeStoredBool(CATALOG_MANAGE_MODE_KEY, enabled);
 }
 
 /** @returns {boolean} Default: false */
 export function getBookshelfQuickAction() {
-  const raw = safeGetItem(BOOKSHELF_QUICK_ACTION_KEY);
-  return raw === 'true';
+  return readStoredBool(BOOKSHELF_QUICK_ACTION_KEY, false);
 }
 
 export function setBookshelfQuickAction(enabled) {
-  return safeSetItem(BOOKSHELF_QUICK_ACTION_KEY, enabled ? 'true' : 'false');
+  return writeStoredBool(BOOKSHELF_QUICK_ACTION_KEY, enabled);
 }
 
 export async function isChapterCached(itemId) {
@@ -378,18 +408,9 @@ export async function deleteCollection(collectionId) {
 
 export async function reorderCollections(fromIndex, toIndex) {
   const collections = await getCollections();
-  if (
-    fromIndex < 0
-    || fromIndex >= collections.length
-    || toIndex < 0
-    || toIndex >= collections.length
-  ) {
-    return false;
-  }
-  if (fromIndex === toIndex) return true;
-  const next = [...collections];
-  const [item] = next.splice(fromIndex, 1);
-  next.splice(toIndex, 0, item);
+  const next = reorderItems(collections, fromIndex, toIndex);
+  if (!next) return false;
+  if (next === collections) return true;
   return saveCollections(next);
 }
 
@@ -402,7 +423,7 @@ export async function renameCollection(collectionId, name) {
 }
 
 export async function addBooksToCollection(collectionId, bookIds) {
-  const bids = [...new Set((Array.isArray(bookIds) ? bookIds : [bookIds]).map(String).filter(Boolean))];
+  const bids = normalizeBookIds(bookIds);
   if (!bids.length) return false;
   const collections = await getCollections();
   const updated = collections.map((c) => {
@@ -417,7 +438,7 @@ export async function addBooksToCollection(collectionId, bookIds) {
 }
 
 export async function removeBooksFromCollection(collectionId, bookIds) {
-  const bidSet = new Set((Array.isArray(bookIds) ? bookIds : [bookIds]).map(String).filter(Boolean));
+  const bidSet = new Set(normalizeBookIds(bookIds));
   if (!bidSet.size) return false;
   const collections = (await getCollections()).map((c) =>
     c.id === collectionId
@@ -432,28 +453,24 @@ export async function reorderCollectionBooks(collectionId, fromIndex, toIndex) {
   const collections = await getCollections();
   const col = collections.find((c) => c.id === collectionId);
   if (!col) return false;
-  const bookIds = [...col.bookIds];
-  if (fromIndex < 0 || fromIndex >= bookIds.length || toIndex < 0 || toIndex >= bookIds.length) {
-    return false;
-  }
-  if (fromIndex === toIndex) return true;
-  const [item] = bookIds.splice(fromIndex, 1);
-  bookIds.splice(toIndex, 0, item);
+  const nextBookIds = reorderItems(col.bookIds, fromIndex, toIndex);
+  if (!nextBookIds) return false;
+  if (nextBookIds === col.bookIds) return true;
   return saveCollections(
-    collections.map((c) => (c.id === collectionId ? { ...c, bookIds } : c))
+    collections.map((c) => (c.id === collectionId ? { ...c, bookIds: nextBookIds } : c))
   );
 }
 
 // ── Bookshelf view mode ───────────────────────────────────────────────────────
 
+const VIEW_MODES = ['list', 'grid'];
+
 function getViewMode(key) {
-  const raw = safeGetItem(key);
-  return raw === 'grid' ? 'grid' : 'list';
+  return readStoredChoice(key, VIEW_MODES, 'list');
 }
 
 function setViewMode(key, mode) {
-  const valid = mode === 'list' || mode === 'grid';
-  return valid ? safeSetItem(key, mode) : false;
+  return writeStoredChoice(key, mode, VIEW_MODES);
 }
 
 export function getBookshelfViewMode() {
@@ -472,50 +489,45 @@ export function setDiscoverViewMode(mode) {
   return setViewMode(DISCOVER_VIEW_MODE_KEY, mode);
 }
 
+const BOOKSHELF_SORT_VALUES = ['manual', 'rating', 'update', 'chapters', 'words'];
+const SORT_DIRECTIONS = ['asc', 'desc'];
+
 /** @returns {'manual'|'rating'|'update'|'chapters'|'words'} */
 export function getBookshelfSort() {
-  const raw = safeGetItem(BOOKSHELF_SORT_KEY);
-  const valid = ['manual', 'rating', 'update', 'chapters', 'words'];
-  return valid.includes(raw) ? raw : 'manual';
+  return readStoredChoice(BOOKSHELF_SORT_KEY, BOOKSHELF_SORT_VALUES, 'manual');
 }
 
 export function setBookshelfSort(sort) {
-  const valid = ['manual', 'rating', 'update', 'chapters', 'words'];
-  return valid.includes(sort) ? safeSetItem(BOOKSHELF_SORT_KEY, sort) : false;
+  return writeStoredChoice(BOOKSHELF_SORT_KEY, sort, BOOKSHELF_SORT_VALUES);
 }
 
 /** @returns {'asc'|'desc'} */
 export function getBookshelfSortDirection() {
-  const raw = safeGetItem(BOOKSHELF_SORT_DIRECTION_KEY);
-  return raw === 'asc' ? 'asc' : 'desc';
+  return readStoredChoice(BOOKSHELF_SORT_DIRECTION_KEY, SORT_DIRECTIONS, 'desc');
 }
 
 export function setBookshelfSortDirection(direction) {
-  const valid = direction === 'asc' || direction === 'desc';
-  return valid ? safeSetItem(BOOKSHELF_SORT_DIRECTION_KEY, direction) : false;
+  return writeStoredChoice(BOOKSHELF_SORT_DIRECTION_KEY, direction, SORT_DIRECTIONS);
 }
 
 const DISCOVER_SORT_VALUES = ['default', 'rating', 'update', 'words'];
 
 /** @returns {'default'|'rating'|'update'|'words'} */
 export function getDiscoverSort() {
-  const raw = safeGetItem(DISCOVER_SORT_KEY);
-  return DISCOVER_SORT_VALUES.includes(raw) ? raw : 'default';
+  return readStoredChoice(DISCOVER_SORT_KEY, DISCOVER_SORT_VALUES, 'default');
 }
 
 export function setDiscoverSort(sort) {
-  return DISCOVER_SORT_VALUES.includes(sort) ? safeSetItem(DISCOVER_SORT_KEY, sort) : false;
+  return writeStoredChoice(DISCOVER_SORT_KEY, sort, DISCOVER_SORT_VALUES);
 }
 
 /** @returns {'asc'|'desc'} */
 export function getDiscoverSortDirection() {
-  const raw = safeGetItem(DISCOVER_SORT_DIRECTION_KEY);
-  return raw === 'asc' ? 'asc' : 'desc';
+  return readStoredChoice(DISCOVER_SORT_DIRECTION_KEY, SORT_DIRECTIONS, 'desc');
 }
 
 export function setDiscoverSortDirection(direction) {
-  const valid = direction === 'asc' || direction === 'desc';
-  return valid ? safeSetItem(DISCOVER_SORT_DIRECTION_KEY, direction) : false;
+  return writeStoredChoice(DISCOVER_SORT_DIRECTION_KEY, direction, SORT_DIRECTIONS);
 }
 
 export function getBookshelfActiveTab() {
@@ -597,14 +609,14 @@ export function setDiscoverFilterState(state) {
   return setBookFilterState(DISCOVER_FILTERS_KEY, state);
 }
 
+const THEME_VALUES = ['light', 'dark'];
+
 /** @returns {'light'|'dark'|null} Explicit user choice, or null to follow system. */
 export function getStoredTheme() {
-  const raw = safeGetItem(THEME_KEY);
-  return raw === 'light' || raw === 'dark' ? raw : null;
+  return readStoredChoice(THEME_KEY, THEME_VALUES, null);
 }
 
 export function setTheme(theme) {
-  if (theme !== 'light' && theme !== 'dark') return false;
-  return safeSetItem(THEME_KEY, theme);
+  return writeStoredChoice(THEME_KEY, theme, THEME_VALUES);
 }
 
