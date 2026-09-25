@@ -2,6 +2,10 @@ import styled from 'styled-components';
 import { useAnnouncements } from '../../hooks/useAnnouncements';
 import { HomeNotice, HomeNoticeLabel } from './HomeNotice';
 
+const Notice = styled(HomeNotice)`
+  margin-top: 12px;
+`;
+
 const Message = styled.p`
   margin: 0;
 
@@ -28,10 +32,10 @@ function PinnedNotice() {
   if (!pinnedNotices.length) return null;
 
   return pinnedNotices.map((notice, index) => (
-    <HomeNotice key={`${notice.date}-${index}`} role="alert">
+    <Notice key={`${notice.date}-${index}`} role="alert">
       <HomeNoticeLabel>置頂公告（{notice.date}）</HomeNoticeLabel>
       <Message>{notice.message}</Message>
-    </HomeNotice>
+    </Notice>
   ));
 }
 
