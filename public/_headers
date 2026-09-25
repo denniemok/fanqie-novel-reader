@@ -1,14 +1,7 @@
-# Netlify / Cloudflare Pages–style static headers (copied to dist via public/)
-# https://docs.netlify.com/routing/headers/
+# Cloudflare Pages static headers (copied to dist via public/)
+# https://developers.cloudflare.com/pages/configuration/headers/
 
-# Always fetch fresh so unregister logic cannot be stuck behind a long-lived cache
-/sw.js
-  Cache-Control: no-store
-
-/sw-cleaner.js
-  Cache-Control: no-store
-
-# Encourage revalidation of the HTML shell after deploys (hashed assets unchanged)
+# Revalidate the HTML shell after deploys (hashed assets stay cached)
 /
   Cache-Control: no-cache
 
