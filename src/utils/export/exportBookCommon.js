@@ -4,7 +4,7 @@ import { getChapterTitle } from '../chapter-helpers';
 import { addBlankLine } from '../text/text';
 import { sortChaptersByNumber } from '../sorting';
 import { resolveBookDisplay } from '../book/bookInfo';
-import { fetchHeicCoverAsJpeg, isHeicCoverUrl } from '../book/coverUrl';
+import { browserCoverUrl, fetchHeicCoverAsJpeg, isHeicCoverUrl } from '../book/coverUrl';
 
 /** Shown when export runs but no chapters are cached locally. */
 export const EXPORT_NO_CACHED_CHAPTERS_MSG = '沒有已下載的章節，請先下載後再匯出。';
@@ -127,6 +127,12 @@ async function loadCoverFromUrl(url) {
  */
 export async function fetchExportCoverImage(url) {
   if (!url) return null;
+
+  const origin = browserCoverUrl(url);
+  if (origin) {
+    const viaOrigin = await loadCoverFromUrl(origin);
+    if (viaOrigin) return viaOrigin;
+  }
 
   const direct = await loadCoverFromUrl(url);
   if (direct) return direct;

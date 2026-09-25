@@ -1,68 +1,92 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { convertHeicCoverUrl, isHeicCoverUrl } from '../../utils/book/coverUrl';
+import { convertHeicCoverUrl, coverDisplayAttempts } from '../../utils/book/coverUrl';
+
+function queueFor(url, fallbackUrl) {
+  const queue = coverDisplayAttempts(url);
+  if (fallbackUrl && fallbackUrl !== url) {
+    queue.push(...coverDisplayAttempts(fallbackUrl));
+  }
+  return queue;
+}
 
 export function useCoverImageSrc(url, fallbackUrl = null) {
-  const [src, setSrc] = useState(url || null);
-  const [loading, setLoading] = useState(false);
+  const initialQueue = queueFor(url, fallbackUrl);
+  const first = initialQueue[0];
+  const [src, setSrc] = useState(first?.type === 'url' ? first.src : null);
+  const [loading, setLoading] = useState(first?.type === 'heic');
   const [failed, setFailed] = useState(false);
-  const triedConvertRef = useRef(false);
-  const triedFallbackRef = useRef(false);
-  const activeUrlRef = useRef(url);
+  const genRef = useRef(0);
+  const queueRef = useRef(initialQueue.slice(first ? 1 : 0));
+
+  const playNext = useCallback((gen) => {
+    if (genRef.current !== gen) return;
+    const next = queueRef.current.shift();
+    if (!next) {
+      if (genRef.current !== gen) return;
+      setLoading(false);
+      setSrc(null);
+      setFailed(true);
+      return;
+    }
+
+    if (next.type === 'url') {
+      if (genRef.current !== gen) return;
+      setLoading(false);
+      setFailed(false);
+      setSrc(next.src);
+      return;
+    }
+
+    if (genRef.current !== gen) return;
+    setLoading(true);
+    setFailed(false);
+    setSrc(null);
+    void convertHeicCoverUrl(next.src).then((displayUrl) => {
+      if (genRef.current !== gen) return;
+      if (displayUrl) {
+        setLoading(false);
+        setSrc(displayUrl);
+        return;
+      }
+      playNext(gen);
+    });
+  }, []);
 
   useEffect(() => {
-    activeUrlRef.current = url;
-    triedConvertRef.current = false;
-    triedFallbackRef.current = false;
-    setSrc(url || null);
-    setLoading(false);
+    const gen = ++genRef.current;
+    const queue = queueFor(url, fallbackUrl);
+    const head = queue[0];
+    queueRef.current = queue.slice(head ? 1 : 0);
     setFailed(false);
-  }, [url, fallbackUrl]);
+
+    if (!head) {
+      setSrc(null);
+      setLoading(false);
+      return;
+    }
+
+    if (head.type === 'url') {
+      setSrc(head.src);
+      setLoading(false);
+      return;
+    }
+
+    setSrc(null);
+    setLoading(true);
+    void convertHeicCoverUrl(head.src).then((displayUrl) => {
+      if (genRef.current !== gen) return;
+      if (displayUrl) {
+        setLoading(false);
+        setSrc(displayUrl);
+        return;
+      }
+      playNext(gen);
+    });
+  }, [url, fallbackUrl, playNext]);
 
   const onError = useCallback(() => {
-    const currentUrl = activeUrlRef.current;
-    if (!currentUrl) {
-      setFailed(true);
-      return;
-    }
-
-    const switchToFallback = () => {
-      if (!fallbackUrl || currentUrl === fallbackUrl || triedFallbackRef.current) return false;
-      triedFallbackRef.current = true;
-      triedConvertRef.current = false;
-      activeUrlRef.current = fallbackUrl;
-      setSrc(fallbackUrl);
-      setLoading(false);
-      return true;
-    };
-
-    if (!isHeicCoverUrl(currentUrl)) {
-      if (switchToFallback()) return;
-      setFailed(true);
-      return;
-    }
-
-    if (triedConvertRef.current) {
-      if (switchToFallback()) return;
-      setFailed(true);
-      return;
-    }
-
-    triedConvertRef.current = true;
-
-    setLoading(true);
-
-    void convertHeicCoverUrl(currentUrl).then((displayUrl) => {
-      if (activeUrlRef.current !== currentUrl) return;
-      setLoading(false);
-      if (displayUrl) {
-        setSrc(displayUrl);
-      } else if (switchToFallback()) {
-        return;
-      } else {
-        setFailed(true);
-      }
-    });
-  }, [fallbackUrl]);
+    playNext(genRef.current);
+  }, [playNext]);
 
   return { src, loading, failed, onError };
 }

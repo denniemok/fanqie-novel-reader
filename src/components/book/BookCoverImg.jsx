@@ -18,11 +18,12 @@ function BookCoverImg({
 
   if (!url || failed) return null;
 
-  if (loading && Placeholder) {
-    return <Placeholder aria-busy="true">轉換中</Placeholder>;
+  if (loading || !src) {
+    if (loading && Placeholder) {
+      return <Placeholder aria-busy="true">轉換中</Placeholder>;
+    }
+    return null;
   }
-
-  if (!src) return null;
 
   return (
     <ImgComponent
