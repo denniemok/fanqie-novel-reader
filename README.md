@@ -19,11 +19,8 @@
 
 ## 📸 介面預覽
 
-> [!TIP]
-> 專為電子書愛好者深度優化的「黑夜模式」與精緻的閱讀排版。
-
 <p align="center">
-  <img src="https://i.imgur.com/9qHDfgT.png" width="97%" alt="書架">
+  <img src="https://i.imgur.com/GDPRzVT.jpg" width="97%" alt="書架">
 </p>
 
 <br>
