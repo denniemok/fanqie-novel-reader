@@ -204,7 +204,7 @@ function SettingsModal({ onClose }) {
               {...MODAL_SELECT_PROPS}
             />
           </SelectField>
-          <ModalText>僅影響閱讀內容（書名、正文、評論等），不影響介面。</ModalText>
+          <ModalText>僅影響書名、正文、評論等內容，不影響介面。</ModalText>
         </Section>
 
         <Section>
