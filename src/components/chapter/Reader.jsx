@@ -13,6 +13,7 @@ const ReaderWrapper = styled.article`
   max-width: 780px;
   background: transparent;
   font-family: ${(p) => p.$fontFamily ?? DEFAULT_READER_FONT};
+  overflow-wrap: anywhere;
 
   @media (max-width: 480px) {
     padding: 36px 20px 48px;
@@ -25,7 +26,7 @@ const ReaderWrapper = styled.article`
     font-size: ${(p) => p.$fontSize ?? FONT_SIZE_DEFAULT}px;
     color: var(--reader-ink);
     text-align: justify;
-    text-indent: 2em;
+    text-indent: ${(p) => (p.$indent ? '2em' : '0')};
     letter-spacing: 0.05em;
     hanging-punctuation: allow-end;
   }
@@ -67,6 +68,7 @@ function Reader({
   fontSize = FONT_SIZE_DEFAULT,
   fontFamily = DEFAULT_READER_FONT,
   textBrightness = TEXT_BRIGHTNESS_DEFAULT,
+  indent = false,
   readerTextColor,
   conversionMode = 'tw',
   headingRef,
@@ -94,6 +96,7 @@ function Reader({
       $fontSize={fontSize}
       $fontFamily={fontFamily}
       $textBrightness={textBrightness}
+      $indent={indent}
       $textColor={readerTextColor}
     >
       {title && (

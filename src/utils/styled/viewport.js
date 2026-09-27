@@ -1,19 +1,24 @@
 import { css } from 'styled-components';
 
+/**
+ * Large viewport, so the page paints under Safari's collapsing address bar
+ * instead of stopping short and leaving a strip of empty space.
+ * `--browser-chrome-bottom` is the covered strip, measured in index.html.
+ */
+const viewportBottomInset = 'max(var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)), var(--browser-chrome-bottom, 0px))';
+
 export const viewportHeight = css`
   height: 100vh;
-  height: 100svh;
-  height: 100dvh;
+  height: 100lvh;
 `;
 
 export const minViewportHeight = css`
   min-height: 100vh;
-  min-height: 100svh;
-  min-height: 100dvh;
+  min-height: 100lvh;
 `;
 
 export const safeAreaInsetBottom = css`
-  padding-bottom: var(--safe-area-bottom, env(safe-area-inset-bottom, 0px));
+  padding-bottom: ${viewportBottomInset};
 `;
 
 /**

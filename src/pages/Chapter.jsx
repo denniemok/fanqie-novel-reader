@@ -9,13 +9,14 @@ import Error from '../components/ui/Error';
 import Loading from '../components/ui/Loading';
 import PageWrapper from '../components/layout/PageWrapper';
 import { useConversionMode } from '../hooks/useConversionMode';
-import { useFontSize, useFontFamily, useTextBrightness, useReaderBackground } from '../hooks/useTextSettings';
+import { useFontSize, useFontFamily, useTextBrightness, useReaderIndent, useReaderBackground } from '../hooks/useTextSettings';
 import { useChapterLoader } from '../hooks/book/useChapterLoader';
 import { useChapterChromeHeights } from '../hooks/useChapterChromeHeights';
 import { buildCatalogUrl, ROUTES } from '../utils/navigation';
 
 const ChapterFrame = styled.div`
   flex: 1;
+  min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -23,7 +24,9 @@ const ChapterFrame = styled.div`
 
 const ReaderPane = styled.div`
   flex: 1;
+  min-width: 0;
   min-height: 0;
+  overflow-x: clip;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
@@ -39,6 +42,7 @@ function Chapter() {
   const [fontSize, handleFontSizeChange] = useFontSize();
   const [fontFamily, handleFontFamilyChange] = useFontFamily();
   const [textBrightness, handleTextBrightnessChange] = useTextBrightness();
+  const [indent, toggleIndent] = useReaderIndent();
   const {
     readerBackground,
     readerBackgroundColor,
@@ -131,6 +135,8 @@ function Chapter() {
                 onFontFamilyChange={handleFontFamilyChange}
                 textBrightness={textBrightness}
                 onTextBrightnessChange={handleTextBrightnessChange}
+                indent={indent}
+                onIndentToggle={toggleIndent}
                 readerBackground={readerBackground}
                 onReaderBackgroundChange={handleReaderBackgroundChange}
                 readerCustomBg={readerCustomBg}
@@ -145,6 +151,7 @@ function Chapter() {
                   fontSize={fontSize}
                   fontFamily={fontFamily}
                   textBrightness={textBrightness}
+                  indent={indent}
                   readerTextColor={readerTextColor}
                   conversionMode={conversionMode}
                   headingRef={chapterHeadingRef}

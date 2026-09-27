@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
-import { Minus, Plus, Sun, Moon, Type, Palette, RefreshCw } from 'lucide-react';
+import { Minus, Plus, Sun, Moon, Type, Palette, ListIndentIncrease, RefreshCw } from 'lucide-react';
 import { ModalOverlay } from '../ui/ModalBase';
 import { IconButton } from '../ui/IconButton';
 import IconDropdown from '../ui/IconDropdown';
@@ -67,7 +67,6 @@ const Section = styled.div`
   flex-shrink: 0;
   ${catalogPanelShell}
   background: var(--dropdown-bg);
-  box-shadow: var(--panel-shadow);
 
   @media (max-width: 480px) {
     gap: 6px;
@@ -128,6 +127,8 @@ function ReaderControlsPanel({
   onFontFamilyChange,
   textBrightness,
   onTextBrightnessChange,
+  indent = false,
+  onIndentToggle,
   readerBackground,
   onReaderBackgroundChange,
   readerCustomBg,
@@ -180,6 +181,18 @@ function ReaderControlsPanel({
               onChange={onFontFamilyChange}
               menuPlacement="left"
             />
+          )}
+          {onIndentToggle && (
+            <IconButton
+              type="button"
+              title="首行縮排"
+              aria-label="首行縮排"
+              aria-pressed={indent}
+              $active={indent}
+              onClick={onIndentToggle}
+            >
+              <ListIndentIncrease size={20} strokeWidth={2.5} />
+            </IconButton>
           )}
           {onTextBrightnessChange && (
             <IconButton

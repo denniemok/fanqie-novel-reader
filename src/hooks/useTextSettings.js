@@ -9,6 +9,8 @@ import {
   setTextBrightness,
   getReaderBackground,
   setReaderBackground,
+  getReaderIndent,
+  setReaderIndent,
   getReaderCustomColors,
   setReaderCustomColors,
 } from '../utils/storage';
@@ -59,6 +61,20 @@ export function useFontFamily() {
   };
 
   return [fontFamily, handleFontFamilyChange];
+}
+
+export function useReaderIndent() {
+  const [indent, setIndent] = useState(getReaderIndent);
+
+  const toggleIndent = () => {
+    setIndent((prev) => {
+      const next = !prev;
+      setReaderIndent(next);
+      return next;
+    });
+  };
+
+  return [indent, toggleIndent];
 }
 
 export function useTextBrightness() {

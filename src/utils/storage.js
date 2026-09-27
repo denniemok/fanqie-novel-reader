@@ -30,6 +30,7 @@ import {
   TEXT_BRIGHTNESS_MAX,
   TEXT_BRIGHTNESS_DEFAULT,
   READER_BACKGROUND_KEY,
+  READER_INDENT_KEY,
   READER_CUSTOM_BG_KEY,
   READER_CUSTOM_TEXT_KEY,
   READER_CUSTOM_BG_DEFAULT,
@@ -324,6 +325,15 @@ export function getReaderBackground() {
 
 export function setReaderBackground(value) {
   return isValidReaderBackground(value) ? safeSetItem(READER_BACKGROUND_KEY, value) : false;
+}
+
+/** @returns {boolean} Default: false */
+export function getReaderIndent() {
+  return readStoredBool(READER_INDENT_KEY, false);
+}
+
+export function setReaderIndent(enabled) {
+  return writeStoredBool(READER_INDENT_KEY, enabled);
 }
 
 export function getReaderCustomColors() {

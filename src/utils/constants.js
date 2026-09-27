@@ -30,6 +30,7 @@ export const FONT_FAMILY_KEY = 'fontFamily';
 export const UI_FONT_MODE_KEY = 'uiFontMode';
 export const TEXT_BRIGHTNESS_KEY = 'textBrightness';
 export const READER_BACKGROUND_KEY = 'readerBackground';
+export const READER_INDENT_KEY = 'readerIndent';
 export const READER_CUSTOM_BG_KEY = 'readerCustomBg';
 export const READER_CUSTOM_TEXT_KEY = 'readerCustomText';
 export const TRADITIONAL_CHINESE_KEY = 'traditionalChinese';

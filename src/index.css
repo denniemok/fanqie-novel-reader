@@ -114,13 +114,25 @@ html {
   background-color: var(--background-color);
   color-scheme: light;
 }
+/* A viewport-locked page must not scroll the layout viewport, or Safari
+   reveals the strip behind the address bar as empty padding. */
+html:has([data-fill-viewport]) {
+  height: 100vh;
+  height: 100lvh;
+  overflow: hidden;
+}
+html:has([data-fill-viewport]) body {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
 [data-theme="dark"] { color-scheme: dark; }
 body {
   margin: 0;
   position: relative;
   z-index: 1;
   min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 100lvh;
   font-family: var(--ui-font-family);
   /* Songti strokes are hairline-thin; medium weight keeps small UI text legible. */
   font-weight: 500;
