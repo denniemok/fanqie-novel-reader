@@ -242,44 +242,29 @@ function IconDropdown({
     <Menu ref={menuRef} role="listbox" aria-label={ariaLabel} style={menuStyle}>
       {options.map((opt) => {
         const edit = onEditOption?.(opt);
-        const select = () => {
-          onChange(opt.value);
-          setOpen(false);
-        };
-        const label = (
-          <>
+        const selected = value === opt.value;
+        const option = (
+          <Option
+            role="option"
+            aria-selected={selected}
+            $active={selected}
+            $fontFamily={opt.fontFamily}
+            $inRow={Boolean(edit)}
+            onClick={() => {
+              onChange(opt.value);
+              setOpen(false);
+            }}
+          >
             <OptionLabel>{opt.label}</OptionLabel>
             {opt.status && <ApiOverallBadge status={opt.status} compact />}
-          </>
+          </Option>
         );
 
-        if (!edit) {
-          return (
-            <Option
-              key={opt.value}
-              role="option"
-              aria-selected={value === opt.value}
-              $active={value === opt.value}
-              $fontFamily={opt.fontFamily}
-              onClick={select}
-            >
-              {label}
-            </Option>
-          );
-        }
+        if (!edit) return <React.Fragment key={opt.value}>{option}</React.Fragment>;
 
         return (
-          <OptionRow key={opt.value} $active={value === opt.value}>
-            <Option
-              role="option"
-              aria-selected={value === opt.value}
-              $active={value === opt.value}
-              $fontFamily={opt.fontFamily}
-              $inRow
-              onClick={select}
-            >
-              {label}
-            </Option>
+          <OptionRow key={opt.value} $active={selected}>
+            {option}
             <OptionEdit
               type="button"
               title={edit.title}

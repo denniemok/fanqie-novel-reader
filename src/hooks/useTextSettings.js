@@ -84,26 +84,20 @@ export function useReaderBackground() {
     setReaderBackgroundState(value);
   };
 
-  const handleCustomBgChange = (bg) => {
-    const next = { ...customColors, bg };
-    setReaderCustomColors({ bg });
-    setCustomColorsState(next);
+  const writeCustomColors = (patch) => {
+    setReaderCustomColors(patch);
+    setCustomColorsState((prev) => ({ ...prev, ...patch }));
   };
 
-  const handleCustomTextChange = (text) => {
-    const next = { ...customColors, text };
-    setReaderCustomColors({ text });
-    setCustomColorsState(next);
-  };
+  const handleCustomBgChange = (bg) => writeCustomColors({ bg });
+
+  const handleCustomTextChange = (text) => writeCustomColors({ text });
 
   /** Copy a preset's paper and ink into custom, then select custom so it can be edited. */
   const handleCustomizeFromPreset = (preset) => {
     if (!isValidHexColor(preset?.value) || !isValidHexColor(preset?.textColor)) return;
-    const next = { bg: preset.value, text: preset.textColor };
-    setReaderCustomColors(next);
-    setCustomColorsState(next);
-    setReaderBackground(READER_BACKGROUND_CUSTOM);
-    setReaderBackgroundState(READER_BACKGROUND_CUSTOM);
+    writeCustomColors({ bg: preset.value, text: preset.textColor });
+    handleReaderBackgroundChange(READER_BACKGROUND_CUSTOM);
   };
 
   return {
