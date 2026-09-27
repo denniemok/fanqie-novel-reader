@@ -11,11 +11,12 @@ const InputGroup = styled.div`
   gap: 16px;
   padding: 24px;
   box-sizing: border-box;
-  background-color: var(--background-color2);
+  background-color: var(--card-surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: var(--retro-border-width) solid var(--border-color);
-  border-radius: 0;
+  border-radius: var(--border-radius);
   width: 100%;
-  box-shadow: var(--retro-shadow);
 `;
 
 const FormEl = styled.form`
@@ -32,12 +33,11 @@ const FormEl = styled.form`
     padding: 14px 20px;
     background-color: var(--background-color);
     border: var(--retro-border-width) solid var(--border-color);
-    border-radius: 0;
+    border-radius: var(--border-radius-sm);
     color: var(--text-color);
     font-size: 16px;
     transition: var(--transition-default);
     font-family: inherit;
-    box-shadow: var(--retro-shadow);
 
     &:focus {
       outline: none;
@@ -55,25 +55,22 @@ const FormEl = styled.form`
     background-color: var(--accent-color);
     color: var(--text-on-accent);
     border: var(--retro-border-width) solid var(--accent-color);
-    border-radius: 0;
-    font-size: 16px;
-    font-weight: 600;
-    font-family: var(--display-font-family);
+    border-radius: var(--border-radius-sm);
+    font-size: 15px;
+    font-weight: 500;
+    font-family: var(--ui-font-family);
     cursor: pointer;
     transition: var(--transition-default);
     white-space: nowrap;
-    box-shadow: var(--retro-shadow);
-    letter-spacing: 0.06em;
+    letter-spacing: 0.12em;
 
     &:hover {
       background-color: var(--accent-hover);
-      transform: translate(-2px, -2px) rotate(-0.5deg);
-      box-shadow: var(--retro-shadow-hover);
+      border-color: var(--accent-hover);
     }
 
     &:active {
-      transform: translate(1px, 1px);
-      box-shadow: none;
+      transform: scale(0.98);
     }
   }
 `;

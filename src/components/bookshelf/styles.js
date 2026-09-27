@@ -6,15 +6,17 @@ import { floatingBottom } from '../../utils/styled/viewport';
 export const Wrapper = styled(PageContent)``;
 
 export const ReorderHint = styled.div`
-  font-size: 15px;
+  font-size: 14px;
   font-family: var(--ui-font-family);
+  letter-spacing: 0.04em;
   color: var(--accent-color);
   padding: 12px 16px;
-  border: 1px dashed var(--accent-color);
-  background: rgba(212, 165, 116, 0.08);
+  border: 1px solid color-mix(in srgb, var(--accent-color) 30%, transparent);
+  border-radius: var(--border-radius-sm);
+  background: var(--accent-soft);
   width: 100%;
   text-align: center;
-  line-height: 1.55;
+  line-height: 1.6;
 `;
 
 export const BookshelfManageActionBar = styled.div`
@@ -31,22 +33,13 @@ export const BookshelfManageActionBar = styled.div`
   width: max-content;
   max-width: calc(100vw - 32px);
   box-sizing: border-box;
-  background: color-mix(in srgb, var(--accent-color) 14%, var(--topbar-bg));
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: var(--retro-border-width) solid color-mix(in srgb, var(--accent-color) 55%, var(--border-color));
-  box-shadow: var(--topbar-shadow), var(--panel-shadow);
-  border-radius: var(--border-radius-sm);
+  background: var(--topbar-bg);
+  backdrop-filter: saturate(1.4) blur(20px);
+  -webkit-backdrop-filter: saturate(1.4) blur(20px);
+  border: var(--retro-border-width) solid var(--border-color);
+  box-shadow: var(--panel-shadow);
+  border-radius: var(--border-radius);
   overflow: visible;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--accent-color) 22%, transparent);
-  }
 
   @media (max-width: 480px) {
     gap: 6px;
@@ -66,7 +59,8 @@ export const BookshelfManageSelectionRow = styled.div`
 
 export const BookshelfManageActionCount = styled.span`
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
+  letter-spacing: 0.04em;
   font-family: var(--ui-font-family);
   color: var(--accent-color);
   white-space: nowrap;
@@ -119,7 +113,6 @@ export const BookshelfManageSelectionButton = styled.button`
 `;
 
 export const BookshelfManageBarButton = styled(CardActionButton)`
-  border-radius: 0;
   width: 40px;
   height: 40px;
   min-width: 40px;
@@ -148,5 +141,5 @@ export const BookshelfManageActionButtons = styled.div`
   gap: 4px;
   min-width: 0;
   padding-top: 8px;
-  border-top: 1px solid color-mix(in srgb, var(--accent-color) 28%, transparent);
+  border-top: 1px solid var(--border-color);
 `;

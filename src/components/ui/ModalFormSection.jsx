@@ -26,9 +26,8 @@ export const SectionHeader = styled.div`
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.14em;
   color: var(--text-color-secondary);
 
   svg {

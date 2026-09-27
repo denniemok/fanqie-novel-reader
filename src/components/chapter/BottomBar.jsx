@@ -1,53 +1,71 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { buildChapterUrl } from '../../utils/navigation';
 import { chapterBottomBar } from '../../utils/styled/viewport';
 
-const BottomBarWrapper = styled.div`
+const BottomBarWrapper = styled.nav`
   flex-shrink: 0;
   ${chapterBottomBar(56)}
   display: flex;
+  align-items: stretch;
   background-color: var(--topbar-bg);
-  backdrop-filter: blur(12px);
-  justify-content: space-around;
-  align-items: center;
+  backdrop-filter: saturate(1.4) blur(20px);
+  -webkit-backdrop-filter: saturate(1.4) blur(20px);
   z-index: 1000;
   border-top: 1px solid var(--border-color);
-
-  a,
-  span {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-decoration: none;
-    color: var(--text-color-secondary);
-    width: 100%;
-    min-height: 44px;
-    height: 100%;
-    transition: all 0.2s ease;
-  }
-
-  a:hover {
-    color: var(--accent-color);
-    background-color: var(--hover-background-color);
-  }
 `;
 
-const IconWrapper = styled.span`
+const navItem = css`
+  flex: 1;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  opacity: ${(p) => (p.$disabled ? 0.2 : 1)};
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  text-decoration: none;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  color: var(--text-color-secondary);
+  transition: var(--transition-default);
+
+  &:not(:first-child) {
+    border-left: 1px solid var(--border-color);
+  }
 
   svg {
-    width: 28px;
-    height: 28px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
   }
 `;
+
+const NavLink = styled(Link)`
+  ${navItem}
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--accent-color);
+      background-color: var(--hover-background-color);
+    }
+  }
+`;
+
+const NavDisabled = styled.span`
+  ${navItem}
+  opacity: 0.3;
+`;
+
+function ChapterNav({ itemId, bookId, label, direction }) {
+  const icon = direction === 'prev' ? <ChevronLeft aria-hidden /> : <ChevronRight aria-hidden />;
+  const content = direction === 'prev' ? <>{icon}{label}</> : <>{label}{icon}</>;
+  return itemId ? (
+    <NavLink to={buildChapterUrl(itemId, bookId)} title={label}>{content}</NavLink>
+  ) : (
+    <NavDisabled aria-disabled="true">{content}</NavDisabled>
+  );
+}
 
 function BottomBar({ chapterData, bookId }) {
   if (!chapterData) return null;
@@ -55,33 +73,9 @@ function BottomBar({ chapterData, bookId }) {
   const { pre_item_id, next_item_id } = chapterData.novel_data ?? {};
 
   return (
-    <BottomBarWrapper>
-      {pre_item_id ? (
-        <Link to={buildChapterUrl(pre_item_id, bookId)} title="上一章">
-          <IconWrapper>
-            <ChevronLeft size={28} strokeWidth={2} />
-          </IconWrapper>
-        </Link>
-      ) : (
-        <span>
-          <IconWrapper $disabled>
-            <ChevronLeft size={28} strokeWidth={2} />
-          </IconWrapper>
-        </span>
-      )}
-      {next_item_id ? (
-        <Link to={buildChapterUrl(next_item_id, bookId)} title="下一章">
-          <IconWrapper>
-            <ChevronRight size={28} strokeWidth={2} />
-          </IconWrapper>
-        </Link>
-      ) : (
-        <span>
-          <IconWrapper $disabled>
-            <ChevronRight size={28} strokeWidth={2} />
-          </IconWrapper>
-        </span>
-      )}
+    <BottomBarWrapper aria-label="章節導覽">
+      <ChapterNav itemId={pre_item_id} bookId={bookId} label="上一章" direction="prev" />
+      <ChapterNav itemId={next_item_id} bookId={bookId} label="下一章" direction="next" />
     </BottomBarWrapper>
   );
 }

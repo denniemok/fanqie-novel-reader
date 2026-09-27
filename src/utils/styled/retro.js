@@ -1,35 +1,37 @@
 import { css } from 'styled-components';
 
-export const retroGlassBorder = css`
-  border: var(--retro-border-width) solid color-mix(in srgb, var(--border-color) 85%, transparent);
+/*
+ * Shared surface/control mixins. Flat by design: structure comes from hairline
+ * borders and tinted fills; hover never lifts or rotates, it only tints.
+ */
+
+const retroGlassBorder = css`
+  border: var(--retro-border-width) solid var(--border-color);
 `;
 
-export const retroGlassSurface = css`
-  background: color-mix(in srgb, var(--background-color2) 48%, transparent);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+const retroGlassSurface = css`
+  background: var(--surface-muted);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 `;
 
-export const retroShadowUnit = css`
-  box-shadow: var(--retro-shadow);
+const retroShadowUnit = css`
   transition: var(--transition-default);
 `;
 
-/** Shared border + shadow + hover lift for toolbar groupings (tabs, search bar). */
+/** Shared border + hover tint for toolbar groupings (tabs, search bar). */
 export const toolbarRetroUnit = css`
   ${retroGlassBorder}
   ${retroShadowUnit}
 
   @media (hover: hover) {
     &:hover {
-      border-color: var(--accent-color);
-      transform: translateY(-1px);
-      box-shadow: var(--retro-shadow-hover);
+      border-color: var(--border-strong);
     }
   }
 `;
 
-/** Retro glass control base for square nav buttons and dropdown triggers. */
+/** Glass control base for square nav buttons and dropdown triggers. */
 export const retroGlassControlBase = css`
   ${retroGlassBorder}
   ${retroGlassSurface}
@@ -38,84 +40,71 @@ export const retroGlassControlBase = css`
 
 export const retroGlassControlHover = css`
   &:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--catalog-glass-hover) 75%, transparent);
-    border-color: var(--accent-color);
+    background: var(--surface-raised);
+    border-color: var(--border-strong);
     color: var(--accent-color);
-    transform: translateY(-1px);
-    box-shadow: var(--retro-shadow-hover);
-  }
-
-  &:active:not(:disabled) {
-    transform: none;
-    box-shadow: var(--retro-shadow);
   }
 `;
 
-/** Retro glass button with hover/active lift (dropdown triggers, icon buttons). */
+/** Glass button with hover/focus tint (dropdown triggers). */
 export const retroGlassButtonStyles = css`
   ${retroGlassControlBase}
 
   &:hover,
-  &:focus {
-    border-color: var(--accent-color);
-    transform: translateY(-1px);
-    box-shadow: var(--retro-shadow-hover);
-  }
-
-  &:active {
-    transform: none;
-    box-shadow: var(--retro-shadow);
+  &:focus-visible {
+    border-color: var(--border-strong);
+    background: var(--surface-raised);
   }
 `;
 
-export const retroDashedCardStyles = css`
-  padding: 18px 20px;
+export const retroCardStyles = css`
+  padding: 20px 22px;
   background: var(--card-surface);
-  border-radius: var(--border-radius-sm);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--border-radius);
   border: var(--retro-border-width) solid var(--border-color);
   font-size: 14px;
   color: var(--text-color);
-  line-height: 1.65;
-  box-shadow: var(--retro-shadow);
+  line-height: 1.8;
 `;
 
-export const retroTagStyles = css`
+const retroTagStyles = css`
   b {
     display: inline-block;
     color: var(--accent-color);
     font-weight: 600;
     font-size: 12px;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     background: var(--accent-soft);
-    padding: 2px 8px;
+    padding: 1px 8px;
     border-radius: var(--border-radius-xs);
     margin-right: 4px;
   }
 `;
 
 export const retroTagCardStyles = css`
-  ${retroDashedCardStyles}
+  ${retroCardStyles}
   ${retroTagStyles}
 `;
 
 export const catalogPanelShell = css`
-  border-radius: var(--border-radius-sm);
-  border: var(--retro-border-width) solid color-mix(in srgb, var(--border-color) 75%, transparent);
-  box-shadow: var(--retro-shadow);
+  border-radius: var(--border-radius);
+  border: var(--retro-border-width) solid var(--border-color);
   background: var(--catalog-glass-bg);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   overflow: hidden;
 `;
 
 export const catalogInsetBarSurface = css`
-  background: color-mix(in srgb, var(--background-color2) 35%, transparent);
+  background: color-mix(in srgb, var(--background-color) 45%, transparent);
 `;
 
-export const catalogDashedDividerBottom = css`
-  border-bottom: 1px dashed color-mix(in srgb, var(--border-color) 80%, transparent);
+export const catalogDividerBottom = css`
+  border-bottom: 1px solid var(--border-color);
 `;
 
-export const catalogDashedDividerTop = css`
-  border-top: 1px dashed color-mix(in srgb, var(--border-color) 80%, transparent);
+export const catalogDividerTop = css`
+  border-top: 1px solid var(--border-color);
 `;

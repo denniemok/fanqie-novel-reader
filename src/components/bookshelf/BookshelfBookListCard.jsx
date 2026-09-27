@@ -4,6 +4,7 @@ import BookInfo from '../book/BookInfo';
 import { useBookshelfBookCard } from '../../hooks/bookshelf/useBookshelfBookCard';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { shimmerStyle } from '../../utils/styled/animations';
+import { bookCardSurface } from '../../utils/styled/bookCard';
 import { CardLoadingOverlay } from '../book/CardActionButton';
 import { BookQuickActions } from '../book/BookQuickActions';
 import {
@@ -21,10 +22,9 @@ const SkeletonCard = styled.div`
   box-sizing: border-box;
   padding: 20px;
   gap: 20px;
-  border-radius: var(--border-radius-sm);
-  background-color: var(--background-color2);
+  border-radius: var(--border-radius);
+  background-color: var(--card-surface);
   border: var(--retro-border-width) solid var(--border-color);
-  box-shadow: var(--retro-shadow);
 
   @media (max-width: 480px) {
     padding: 16px;
@@ -36,7 +36,7 @@ const SkeletonCover = styled.div`
   width: 100px;
   height: 134px;
   flex-shrink: 0;
-  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-xs);
   background-color: var(--cover-bg);
   ${shimmerStyle}
 
@@ -69,34 +69,21 @@ const Card = styled.div`
   box-sizing: border-box;
   align-items: stretch;
   gap: 0;
-  border-radius: var(--border-radius-sm);
-  background: var(--card-surface);
-  border: var(--retro-border-width) solid ${(p) => (p.$selected ? 'var(--accent-color)' : 'var(--border-color)')};
+  ${bookCardSurface}
   cursor: pointer;
-  transition: var(--transition-default);
   position: relative;
   overflow: hidden;
   pointer-events: ${(p) => (p.$disabled ? 'none' : 'auto')};
   opacity: ${(p) => (p.$disabled ? 0.7 : 1)};
-  box-shadow: ${(p) => (p.$selected ? '0 0 0 2px color-mix(in srgb, var(--accent-color) 35%, transparent)' : 'var(--retro-shadow)')};
 
-  @media (hover: hover) {
-    &:hover {
-      border-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--border-color)' : 'var(--accent-color)')};
-      background-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--background-color2)' : 'var(--hover-background-color)')};
-      transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(-2px, -2px)')};
-      box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : 'var(--retro-shadow-hover)')};
-    }
-
-    &:active {
-      transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(1px, 1px)')};
-      box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : 'none')};
-    }
-  }
+  ${(p) => p.$selected && `
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 1px var(--accent-color);
+  `}
 
   ${(p) => p.$isDragging && `
-    outline: 2px dashed var(--accent-color);
-    outline-offset: -2px;
+    outline: 1px dashed var(--accent-color);
+    outline-offset: -4px;
   `}
 `;
 
@@ -127,7 +114,7 @@ const DragHandle = styled.div`
   flex-shrink: 0;
   width: 36px;
   align-self: stretch;
-  background: var(--background-color);
+  background: transparent;
   border-right: 1px solid var(--border-color);
   color: var(--text-color-secondary);
   touch-action: none;
@@ -252,7 +239,7 @@ function BookshelfBookListCard({
       onClick={handleCardClick}
       $disabled={isRefreshing}
       $isDragging={isDragging}
-      $reorderMode={reorderMode}
+      $still={reorderMode || isDragging}
       $selected={selectionMode && isSelected}
     >
       {isRefreshing && (

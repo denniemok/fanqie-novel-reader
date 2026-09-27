@@ -6,7 +6,7 @@ import { GrayButton } from '../ui/GrayButton';
 import { CardSpinningIcon } from '../book/CardActionButton';
 import SettingsModal from '../settings/SettingsModal';
 import { refreshApiStatus, useApiStatusStore } from '../../hooks/api/useApiStatus';
-import { retroDashedCardStyles } from '../../utils/styled/retro';
+import { retroCardStyles } from '../../utils/styled/retro';
 import { Section } from '../../utils/styled/sections';
 import { thinScrollbarStyles } from '../../utils/styled/scrollbars';
 import ApiOverallBadge from '../settings/ApiOverallBadge';
@@ -19,7 +19,7 @@ const ENDPOINTS = [
 ];
 
 const MetaCard = styled.div`
-  ${retroDashedCardStyles}
+  ${retroCardStyles}
   font-size: 14px;
   line-height: 1.6;
   color: var(--text-color-secondary);
@@ -57,12 +57,11 @@ const MetaActionButton = styled(GrayButton)`
     opacity: 0.6;
     cursor: not-allowed;
     transform: none;
-    box-shadow: var(--retro-shadow);
   }
 `;
 
 const TableWrap = styled.div`
-  ${retroDashedCardStyles}
+  ${retroCardStyles}
   padding: 0;
   max-width: 100%;
 
@@ -154,7 +153,7 @@ const Table = styled.table`
     }
 
     th {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: 0.02em;
     }
   }
@@ -168,8 +167,6 @@ const ApiName = styled.span`
   word-break: break-all;
 `;
 
-const STATUS_GREEN = '#4a9a4a';
-
 const EndpointCell = styled.div`
   display: flex;
   flex-direction: column;
@@ -182,9 +179,9 @@ const StatusRow = styled.div`
   align-items: flex-start;
   gap: 4px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.3;
-  color: ${({ $ok }) => ($ok ? STATUS_GREEN : 'color-mix(in srgb, #e55 85%, var(--text-color))')};
+  color: ${({ $ok }) => ($ok ? 'var(--toast-success-color)' : 'var(--toast-error-color)')};
   cursor: ${({ $hasError }) => ($hasError ? 'help' : 'default')};
 
   svg {
@@ -194,7 +191,7 @@ const StatusRow = styled.div`
 `;
 
 const Latency = styled.span`
-  font-size: 10px;
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
   color: var(--text-color-secondary);
   line-height: 1.3;
@@ -299,7 +296,7 @@ function StatusContent() {
                               $hasError={Boolean(errorDetail)}
                               title={errorDetail || undefined}
                             >
-                              {ok ? <Check size={14} strokeWidth={2.5} color={STATUS_GREEN} /> : <X size={14} strokeWidth={2.5} />}
+                              {ok ? <Check size={14} strokeWidth={2.5} /> : <X size={14} strokeWidth={2.5} />}
                               {ok ? '正常' : '失敗'}
                             </StatusRow>
                             {result?.latency_ms != null && (

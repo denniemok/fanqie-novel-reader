@@ -39,11 +39,12 @@ const AttachedLabel = styled.span`
   align-items: center;
   padding: 0 12px;
   border-right: 1px solid var(--border-color);
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   font-family: var(--ui-font-family);
   color: var(--text-color-secondary);
-  background: var(--background-color2);
+  background: transparent;
   border-radius: ${(p) => (p.$square ? '0' : 'var(--border-radius-sm) 0 0 var(--border-radius-sm)')};
   white-space: nowrap;
   flex-shrink: 0;
@@ -72,14 +73,14 @@ const Trigger = styled.button`
   color: var(--text-color);
   font-family: var(--ui-font-family);
   font-size: 14px;
-  font-weight: ${(p) => (p.$bold ? 700 : 'inherit')};
+  font-weight: ${(p) => (p.$bold ? 500 : 'inherit')};
   cursor: pointer;
-  transition: border-color 0.2s ease;
+  transition: var(--transition-default);
   text-align: left;
   box-sizing: border-box;
 
   &:hover {
-    border-color: var(--accent-color);
+    border-color: var(--border-strong);
   }
 
   &:focus {
@@ -104,6 +105,7 @@ const Trigger = styled.button`
     p.$embedded &&
     `
     border: none;
+    background: transparent;
     border-radius: ${p.$square ? '0' : p.$hasTrailing ? '0' : '0 var(--border-radius-sm) var(--border-radius-sm) 0'};
 
     &:hover,
@@ -150,12 +152,11 @@ const menuSurfaceStyles = css`
   overflow-y: auto;
   overflow-x: hidden;
   background-color: var(--dropdown-bg);
-  backdrop-filter: blur(12px);
-  border: ${(p) => (p.$retro ? 'var(--retro-border-width)' : '1px')} solid
-    ${(p) => (p.$retro ? 'color-mix(in srgb, var(--border-color) 85%, transparent)' : 'var(--border-color)')};
-  border-radius: ${(p) => (p.$square ? '0' : 'var(--border-radius-sm)')};
-  box-shadow: ${(p) => (p.$retro ? 'var(--retro-shadow)' : 'var(--panel-shadow)')};
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--panel-shadow);
   padding: 4px;
+  animation: fadeInUp 0.18s var(--ease-out);
   ${thinScrollbarStyles}
 `;
 
@@ -202,7 +203,7 @@ const Option = styled.button`
   text-align: left;
   background: none;
   border: none;
-  border-radius: ${(p) => (p.$square ? '0' : 'var(--border-radius-xs)')};
+  border-radius: var(--border-radius-xs);
   cursor: pointer;
   transition: background 0.2s;
   font-family: var(--ui-font-family);

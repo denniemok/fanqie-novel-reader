@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="theme-color" content="#eee7e2" />
+    <meta name="theme-color" content="#f1ede6" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <title>番閱 | 無廣告小說閱讀器</title>
     <meta name="description" content="專為追求純粹的你打造的小說閱讀器：詞彙級繁簡轉換、零廣告、護眼暗黑模式、PWA 離線閱讀與 TXT 匯出。貼上書籍網址即可開始閱讀，無需註冊。" />
@@ -52,7 +52,8 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+TC:wght@400;600&family=Noto+Sans+SC:wght@400;600&family=LXGW+WenKai+TC:wght@400;700&family=LXGW+WenKai:wght@400;700&display=swap" rel="stylesheet" />
+    <!-- UI default font only (CHINESE_FONTS[0].webFont); reader fonts load on demand via src/utils/fontLoader.js -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <script>
       try {
         var stored = localStorage.getItem('theme');
@@ -60,7 +61,7 @@
         if (isDark) {
           document.documentElement.setAttribute('data-theme', 'dark');
           var m = document.querySelector('meta[name="theme-color"]');
-          if (m) m.setAttribute('content', '#19151e');
+          if (m) m.setAttribute('content', '#0f131b');
         }
       } catch (e) {}
     </script>

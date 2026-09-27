@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { toolbarRetroUnit } from '../../utils/styled/retro';
 import { HorizontalScrollInner } from '../ui/HorizontalScrollArea';
 
@@ -16,36 +16,64 @@ export const TOOLBAR_SORT_DROPDOWN_PROPS = {
   triggerBold: true,
 };
 
+/** Rounded glass container shared by toolbar groupings; children stay transparent. */
+const toolbarGroup = css`
+  border-radius: var(--border-radius-sm);
+  background: var(--card-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  ${toolbarRetroUnit}
+`;
+
+/** Segmented-control item colours: soft accent tint when active. */
+const segmentColors = css`
+  background: ${(p) => (p.$active ? 'var(--accent-soft)' : 'transparent')};
+  color: ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--text-color-secondary)')};
+  font-weight: ${(p) => (p.$active ? 600 : 500)};
+
+  @media (hover: hover) {
+    &:hover:not([disabled]) {
+      background: ${(p) => (p.$active ? 'var(--accent-soft)' : 'var(--hover-background-color)')};
+      color: ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--text-color)')};
+    }
+  }
+`;
+
 export const TabBar = styled(HorizontalScrollInner)`
   align-items: stretch;
   gap: 0;
-  ${toolbarRetroUnit}
+  ${toolbarGroup}
+`;
+
+/** Tab bar with trailing action buttons (e.g. manage collections, refresh) on one line. */
+export const TabRow = styled.div`
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+
+  > ${TabBar} {
+    flex: 1;
+    min-width: 0;
+  }
 `;
 
 export const Tab = styled.button`
   flex-shrink: 0;
-  padding: 13px 18px;
-  min-height: 44px;
-  background: ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--background-color2)')};
-  color: ${(p) => (p.$active ? 'var(--text-on-accent)' : 'var(--text-color-secondary)')};
+  padding: 11px 20px;
+  /* Bar border adds 2px, so the bar matches TOOLBAR_CONTROL_HEIGHT. */
+  min-height: calc(${TOOLBAR_CONTROL_HEIGHT} - 2px);
   border: none;
   border-right: 1px solid var(--border-color);
   font-size: 14px;
-  font-weight: 700;
   font-family: var(--ui-font-family);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   cursor: pointer;
   transition: var(--transition-default);
   white-space: nowrap;
   max-width: 180px;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  &:hover {
-    background: ${(p) => (p.$active ? 'var(--accent-hover)' : 'var(--hover-background-color)')};
-    color: ${(p) => (p.$active ? 'var(--text-on-accent)' : 'var(--text-color)')};
-  }
+  ${segmentColors}
 `;
 
 export const TabInner = styled.span`
@@ -75,16 +103,11 @@ export const SearchBar = styled.div`
   min-width: 0;
   height: ${TOOLBAR_CONTROL_HEIGHT};
   box-sizing: border-box;
-  padding: 0 12px;
-  background: var(--surface-muted);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  ${toolbarRetroUnit}
+  padding: 0 14px;
+  ${toolbarGroup}
 
   &:focus-within {
     border-color: var(--accent-color);
-    transform: none;
-    box-shadow: var(--retro-shadow-hover);
   }
 
   svg.search-icon {
@@ -177,7 +200,7 @@ export const ViewToggle = styled.div`
   height: ${TOOLBAR_CONTROL_HEIGHT};
   box-sizing: border-box;
   overflow: hidden;
-  ${toolbarRetroUnit}
+  ${toolbarGroup}
 `;
 
 export const ToolbarRight = styled.div`
@@ -195,21 +218,18 @@ export const SortUnit = styled.div`
   align-items: stretch;
   height: ${TOOLBAR_CONTROL_HEIGHT};
   box-sizing: border-box;
-  border-radius: 0;
   overflow: visible;
   margin-right: auto;
-  ${toolbarRetroUnit}
+  ${toolbarGroup}
 `;
 
 export const SortTrailingBtn = styled.button`
   padding: 0 12px;
   height: 100%;
   box-sizing: border-box;
-  background: ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--background-color2)')};
-  color: ${(p) => (p.$active ? 'var(--text-on-accent)' : 'var(--accent-color)')};
   border: none;
   border-left: 1px solid var(--border-color);
-  border-radius: 0;
+  border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -217,20 +237,16 @@ export const SortTrailingBtn = styled.button`
   gap: 5px;
   flex-shrink: 0;
   font-size: 14px;
-  font-weight: 700;
   font-family: var(--ui-font-family);
   line-height: 1;
   white-space: nowrap;
-  transition: background 0.2s ease;
+  transition: var(--transition-default);
+  ${segmentColors}
 
   svg {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
-  }
-
-  &:hover {
-    background: ${(p) => (p.$active ? 'var(--accent-hover)' : 'var(--hover-background-color)')};
   }
 
   @media (max-width: 480px) {
@@ -251,8 +267,6 @@ export const BtnLabel = styled.span`
 export const ToggleBtn = styled.button`
   padding: 0 14px;
   height: 100%;
-  background: ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--background-color2)')};
-  color: ${(p) => (p.$active ? 'var(--text-on-accent)' : 'var(--text-color-secondary)')};
   border: none;
   cursor: pointer;
   display: flex;
@@ -260,10 +274,10 @@ export const ToggleBtn = styled.button`
   justify-content: center;
   gap: 6px;
   font-size: 14px;
-  font-weight: 700;
   font-family: var(--ui-font-family);
   line-height: 1;
   transition: var(--transition-default);
+  ${segmentColors}
 
   svg {
     width: 16px;
@@ -272,10 +286,6 @@ export const ToggleBtn = styled.button`
 
   &:not(:last-child) {
     border-right: 1px solid var(--border-color);
-  }
-
-  &:hover:not([disabled]) {
-    background: ${(p) => (p.$active ? 'var(--accent-hover)' : 'var(--hover-background-color)')};
   }
 
   @media (max-width: 480px) {

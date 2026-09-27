@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import SimpleTextModal from '../ui/SimpleTextModal';
 import { formatExpandedAbstract } from '../../utils/text/text';
@@ -10,11 +10,14 @@ import { HorizontalScrollArea, HorizontalScrollInner } from '../ui/HorizontalScr
 
 const InfoWrapper = styled.div`
   display: flex;
-  padding: 32px 24px;
+  padding: 28px;
   align-items: flex-start;
-  gap: 24px;
-  background-color: var(--background-color2);
-  border-bottom: var(--retro-border-width) solid var(--border-color);
+  gap: 28px;
+  background-color: var(--card-surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: var(--retro-border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
 
   @media (max-width: 480px) {
     padding: 20px 16px;
@@ -24,11 +27,10 @@ const InfoWrapper = styled.div`
   &.variant-card {
     border-bottom: none;
     border: var(--retro-border-width) solid var(--border-color);
-    border-radius: 0;
+    border-radius: var(--border-radius);
     margin-bottom: 24px;
     padding: 24px;
     gap: 20px;
-    box-shadow: var(--retro-shadow);
 
     @media (max-width: 480px) {
       padding: 16px;
@@ -41,6 +43,9 @@ const InfoWrapper = styled.div`
     gap: 20px;
     background: none;
     border: none;
+    border-radius: 0;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border-bottom: none;
     flex: 1;
     min-width: 0;
@@ -62,20 +67,10 @@ const CoverWrapper = styled.div`
     width: 116px;
     height: 155px;
     object-fit: cover;
-    border-radius: 0;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--retro-shadow);
+    border-radius: var(--border-radius-xs);
+    box-shadow: var(--cover-shadow);
     background-color: var(--cover-bg);
-    opacity: 0.9;
     display: block;
-    transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.25s ease;
-  }
-
-  @media (hover: hover) {
-    &:hover img {
-      transform: scale(1.02) rotate(-0.5deg);
-      box-shadow: var(--retro-shadow-hover);
-    }
   }
 
   @media (max-width: 480px) {
@@ -103,7 +98,6 @@ const CoverWrapper = styled.div`
     img {
       width: 100px;
       height: 134px;
-      box-shadow: var(--retro-shadow);
     }
 
     @media (max-width: 480px) {
@@ -116,7 +110,8 @@ const CoverWrapper = styled.div`
 `;
 
 const CoverMeta = styled.div`
-  font-size: 11px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
   color: var(--text-color-secondary);
   text-align: center;
   width: 100%;
@@ -135,12 +130,12 @@ const CoverPlaceholder = styled.div`
   width: 116px;
   height: 155px;
   background-color: var(--cover-bg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--retro-shadow);
+  border-radius: var(--border-radius-xs);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  letter-spacing: 0.1em;
+  font-size: 12px;
   color: var(--text-color-secondary);
 
   @media (max-width: 480px) {
@@ -201,9 +196,10 @@ const TitleBlock = styled.div`
     align-self: stretch;
     overflow: hidden;
     color: var(--text-color);
-    font-size: 20px;
-    font-weight: 900;
-    line-height: 1.3;
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    line-height: 1.4;
     margin: 0;
     font-family: var(--display-font-family);
     text-transform: none;
@@ -220,10 +216,11 @@ const TitleBlock = styled.div`
     -webkit-line-clamp: 1;
     align-self: stretch;
     overflow: hidden;
-    color: var(--accent-color);
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1;
+    color: var(--text-color-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
     margin: 0;
     font-family: inherit;
 
@@ -237,10 +234,11 @@ const TitleText = styled.span`
   white-space: nowrap;
   flex-shrink: 0;
   color: var(--text-color);
-  font-size: 22px;
+  font-size: 24px;
   font-family: var(--display-font-family);
   font-weight: 600;
-  line-height: 1.3;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
   text-transform: none;
 
   @media (max-width: 480px) {
@@ -251,10 +249,11 @@ const TitleText = styled.span`
 const AuthorText = styled.span`
   display: block;
   width: 100%;
-  color: var(--accent-color);
+  color: var(--text-color-secondary);
   font-size: 14px;
-  font-weight: 700;
-  line-height: 1;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
   font-family: inherit;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -270,7 +269,7 @@ const Abstract = styled.p`
   color: var(--text-color-secondary);
   font-size: 14px;
   font-weight: 400;
-  line-height: 1.6;
+  line-height: 1.8;
   word-break: break-word;
   white-space: normal;
   margin: 0;
@@ -290,7 +289,7 @@ const ShowMore = styled.button`
   border: none;
   padding: 0;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.6;
   color: var(--accent-color);
   cursor: pointer;
@@ -341,38 +340,22 @@ const MetaRow = styled(HorizontalScrollRow)`
 const MetaTag = styled.span`
   display: inline-flex;
   align-items: center;
-  padding: 4px 6px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: var(--border-radius-xs);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
   white-space: nowrap;
   flex-shrink: 0;
-  border: 1px solid var(--border-color);
-  background: var(--surface-muted);
+  border: none;
+  color: var(--text-color-secondary);
+  background: color-mix(in srgb, var(--text-color) 6%, transparent);
   font-family: inherit;
 
   &.meta-score {
-    color: #a7b8a7;
-  }
-
-  &.meta-category {
-    color: #8fa3a3;
-  }
-
-  &.meta-subinfo {
-    color: #a38fa3;
-  }
-
-  &.meta-word-number {
-    color: #a3a38f;
-  }
-
-  &.meta-creation-status {
-    color: #8fa38f;
-  }
-
-  &.meta-publish-time {
-    color: #888880;
+    color: var(--accent-color);
+    background: var(--accent-soft);
+    font-weight: 500;
   }
 
   &.meta-chapters {
@@ -392,17 +375,12 @@ const Footer = styled.div`
 
 function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapterCount = true }) {
   const [showFullAbstract, setShowFullAbstract] = useState(false);
-  const [imgError, setImgError] = useState(false);
   const { variant: displayVariant } = useBookDisplayVariant();
   
   const bookInfoData = bookInfo?.book_info || bookInfo || {};
   const { book_name, thumb_url, fallback_thumb_url } = resolveBookDisplay(bookInfoData, displayVariant);
   const { author, abstract, tags, score, category, sub_info, word_number, creation_status, last_publish_time } = bookInfoData;
   const chapter_count = bookInfo?.chapter_count ?? null;
-
-  useEffect(() => {
-    setImgError(false);
-  }, [thumb_url, displayVariant]);
 
   const convertedAbstract = useConvertedText(abstract, conversionMode);
   const convertedBookName = useConvertedText(book_name, conversionMode);
@@ -426,19 +404,14 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
     <InfoWrapper className={wrapperClass}>
       {thumb_url && (
           <CoverWrapper>
-          {imgError ? (
-            <CoverPlaceholder>無封面</CoverPlaceholder>
-          ) : (
-            <BookCoverImg
-              url={thumb_url}
-              fallbackUrl={fallback_thumb_url}
-              Placeholder={CoverPlaceholder}
-              alt="書籍封面"
-              width="128"
-              height="128"
-              onFailed={() => setImgError(true)}
-            />
-          )}
+          <BookCoverImg
+            url={thumb_url}
+            fallbackUrl={fallback_thumb_url}
+            Placeholder={CoverPlaceholder}
+            alt="書籍封面"
+            width="128"
+            height="128"
+          />
           {showChapterCount && (
             <CoverMeta>
               {chapter_count ? `共 ${chapter_count} 章節` : '暫無章節資訊'}

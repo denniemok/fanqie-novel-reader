@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { catalogInsetBarSurface, catalogPanelShell } from '../../utils/styled/retro';
 
 const Panel = styled.section`
-  margin: 12px 6px;
   ${catalogPanelShell}
 `;
 

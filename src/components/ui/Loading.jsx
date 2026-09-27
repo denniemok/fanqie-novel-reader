@@ -3,9 +3,15 @@ import styled, { keyframes } from 'styled-components';
 import { GrayButton } from './GrayButton';
 import { viewportHeight } from '../../utils/styled/viewport';
 
-const bounce = keyframes`
-  0%, 80%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
-  40% { transform: translateY(-10px) scale(1.15); opacity: 1; }
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+/* Slow, soft breathing so the dots feel calm rather than blinking. */
+const pulse = keyframes`
+  0%, 100% { transform: scale(0.75); opacity: 0.25; }
+  50% { transform: scale(1); opacity: 0.85; }
 `;
 
 const LoadingWrapper = styled.div`
@@ -15,35 +21,40 @@ const LoadingWrapper = styled.div`
   justify-content: center;
   ${viewportHeight}
   gap: 16px;
+  /* Hold back briefly so fast (cached) loads never flash the indicator. */
+  animation: ${fadeIn} 0.5s ease 0.3s backwards;
 
   p {
+    margin: 0;
     font-family: var(--display-font-family);
-    font-size: 1.05rem;
+    font-size: 1rem;
     color: var(--text-color);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.2em;
   }
 
   .counter {
-    font-size: 0.9rem;
+    font-family: var(--ui-font-family);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
     color: var(--text-color-secondary);
+    font-variant-numeric: tabular-nums;
   }
 `;
 
 const DotsRow = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
+  margin-bottom: 4px;
   justify-content: center;
 `;
 
 const Dot = styled.span`
-  width: 14px;
-  height: 14px;
-  border-radius: 50% !important;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
   background: var(--accent-color);
-  animation: ${bounce} 1.2s ease-in-out infinite;
-  animation-delay: ${(p) => p.$delay}s;
-  box-shadow: 0 2px 6px rgba(160, 120, 130, 0.35);
+  animation: ${pulse} 1.5s ease-in-out ${(p) => p.$delay}s infinite both;
 `;
 
 const AbortButton = styled(GrayButton)`
@@ -62,8 +73,8 @@ function Loading({ onAbort }) {
     <LoadingWrapper>
       <DotsRow>
         <Dot $delay={0} />
-        <Dot $delay={0.15} />
-        <Dot $delay={0.3} />
+        <Dot $delay={0.25} />
+        <Dot $delay={0.5} />
       </DotsRow>
       <p>載入中…</p>
       <p className="counter">{seconds} 秒</p>

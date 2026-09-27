@@ -17,7 +17,7 @@ const Item = styled.div`
 `;
 
 const Label = styled.span`
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-color-secondary);
   text-align: center;

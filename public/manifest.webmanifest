@@ -1,8 +1,8 @@
 {
   "name": "番閱",
   "short_name": "番閱",
-  "theme_color": "#f0e9e4",
-  "background_color": "#121212",
+  "theme_color": "#f1ede6",
+  "background_color": "#f1ede6",
   "display": "standalone",
   "start_url": "/",
   "icons": [

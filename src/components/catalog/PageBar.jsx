@@ -1,7 +1,7 @@
 import { ArrowDownZA, ArrowUpAZ, ChevronLeft, ChevronRight, ListChecks } from 'lucide-react';
 import styled from 'styled-components';
 import SelectDropdown from '../ui/SelectDropdown';
-import { retroGlassControlBase, retroGlassControlHover, catalogInsetBarSurface, catalogDashedDividerBottom, catalogDashedDividerTop } from '../../utils/styled/retro';
+import { retroGlassControlBase, retroGlassControlHover, catalogInsetBarSurface, catalogDividerBottom, catalogDividerTop } from '../../utils/styled/retro';
 import { DropdownOptionLine } from '../../utils/styled/dropdown';
 
 const Bar = styled.div`
@@ -10,11 +10,11 @@ const Bar = styled.div`
   gap: 12px;
   padding: 12px 16px;
   ${catalogInsetBarSurface}
-  ${catalogDashedDividerBottom}
+  ${catalogDividerBottom}
 
   &:last-child {
     border-bottom: none;
-    ${catalogDashedDividerTop}
+    ${catalogDividerTop}
   }
 `;
 
@@ -34,7 +34,7 @@ const NavButton = styled.button`
   width: 40px;
   height: 40px;
   box-sizing: border-box;
-  border-radius: 0;
+  border-radius: var(--border-radius-sm);
   color: var(--text-color);
   cursor: pointer;
   flex-shrink: 0;
@@ -42,25 +42,17 @@ const NavButton = styled.button`
   ${retroGlassControlHover}
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
   }
 
   ${(p) =>
     p.$active &&
     `
-    background: var(--accent-color);
-    border-color: var(--accent-color);
-    color: var(--text-on-accent);
-  `}
-
-  ${(p) =>
-    p.$active &&
-    `
-    &:hover:not(:disabled) {
-      background: var(--accent-hover);
-      border-color: var(--accent-hover);
-      color: var(--text-on-accent);
+    &, &:hover:not(:disabled) {
+      background: var(--accent-soft);
+      border-color: color-mix(in srgb, var(--accent-color) 40%, transparent);
+      color: var(--accent-color);
     }
   `}
 
@@ -103,7 +95,6 @@ function PageDropdown({ pageOptions, currentPage, onPageSelect, openUpward = fal
       ariaLabel={`第 ${selected.pageNumber} 頁，${selected.rangeStart} - ${selected.rangeEnd}`}
       menuAriaLabel="章節頁面"
       openUpward={openUpward}
-      square
       retro
       triggerMinHeight={40}
       renderValue={(opt) => <PageOptionLabel pageNumber={opt.pageNumber} />}

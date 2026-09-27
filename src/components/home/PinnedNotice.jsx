@@ -13,15 +13,13 @@ const Message = styled.p`
     display: inline-block;
     color: var(--accent-color);
     text-decoration: none;
-    border: 1px solid var(--accent-color);
-    padding: 0px 6px 1px;
-    line-height: 1.2;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent-color) 40%, transparent);
+    line-height: 1.3;
     vertical-align: baseline;
-    background: var(--background-color2);
+    transition: border-color 0.2s ease;
 
     &:hover {
-      background: var(--accent-color);
-      color: var(--text-on-accent);
+      border-bottom-color: var(--accent-color);
     }
   }
 `;

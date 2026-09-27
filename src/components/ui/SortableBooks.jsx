@@ -40,8 +40,8 @@ const SortableItem = styled.div`
     display: ${(p) => (p.$showDropIndicator ? 'block' : 'none')};
     position: absolute;
     inset: -3px;
-    border: 3px solid var(--accent-color);
-    box-shadow: 0 0 8px var(--accent-color);
+    border: 2px solid var(--accent-color);
+    border-radius: calc(var(--border-radius) + 3px);
     pointer-events: none;
     z-index: 3;
   }

@@ -3,6 +3,7 @@ import {
   READER_BACKGROUND_CUSTOM,
   READER_CUSTOM_BG_DEFAULT,
   READER_CUSTOM_TEXT_DEFAULT,
+  READER_BACKGROUND_THEME_DEFAULT,
 } from './constants';
 
 const HEX_COLOR_RE = /^#[0-9a-fA-F]{6}$/;
@@ -25,7 +26,7 @@ export function resolveReaderColors(selection, customColors = {}) {
   }
 
   const preset = READER_BACKGROUND_OPTIONS.find((o) => o.value === selection);
-  const fallback = READER_BACKGROUND_OPTIONS[0];
+  const fallback = READER_BACKGROUND_OPTIONS.find((o) => o.value === READER_BACKGROUND_THEME_DEFAULT.light);
   return {
     background: preset?.value ?? fallback.value,
     textColor: preset?.textColor ?? fallback.textColor,

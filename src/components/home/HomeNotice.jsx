@@ -4,15 +4,17 @@ export const homeNoticeStyles = css`
   width: 100%;
   margin-bottom: 16px;
   box-sizing: border-box;
-  padding: 14px 16px;
-  background: color-mix(in srgb, var(--accent-color) 8%, var(--background-color2));
-  border: var(--retro-border-width) solid color-mix(in srgb, var(--accent-color) 55%, var(--border-color));
+  padding: 16px 20px;
+  background: var(--surface-raised);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: var(--retro-border-width) solid var(--border-color);
+  border-left: 3px solid var(--accent-color);
   border-radius: var(--border-radius-sm);
-  box-shadow: var(--retro-shadow);
   font-size: 14px;
-  line-height: 1.65;
+  line-height: 1.8;
   color: var(--text-color);
-  animation: fadeInUp 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) backwards;
+  animation: fadeInUp 0.5s var(--ease-out) backwards;
 `;
 
 export const HomeNotice = styled.div`
@@ -23,7 +25,7 @@ export const HomeNoticeLabel = styled.strong`
   display: block;
   margin-bottom: 4px;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-weight: 500;
+  letter-spacing: 0.2em;
   color: var(--accent-color);
 `;

@@ -24,18 +24,18 @@ const Section = styled.section`
 `;
 
 const StatusCard = styled.div`
-  padding: 20px;
+  padding: 20px 22px;
   background: var(--card-surface);
-  border-radius: var(--border-radius-sm);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: var(--border-radius);
   border: var(--retro-border-width) solid var(--border-color);
-  box-shadow: var(--retro-shadow);
   display: flex;
   flex-direction: column;
   gap: 14px;
 `;
 
 const IdleCard = styled(StatusCard)`
-  border-style: dashed;
   align-items: center;
   text-align: center;
   padding: 28px 20px;
@@ -67,17 +67,18 @@ const TitleLink = styled.button`
   border: none;
   background: none;
   font: inherit;
+  font-family: var(--display-font-family);
   font-size: 16px;
   font-weight: 600;
-  color: var(--accent-color);
+  letter-spacing: 0.04em;
+  color: var(--text-color);
   text-align: left;
   cursor: pointer;
-  line-height: 1.35;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  line-height: 1.45;
+  transition: color 0.2s ease;
 
   &:hover {
-    color: var(--accent-hover);
+    color: var(--accent-color);
   }
 `;
 
@@ -123,7 +124,7 @@ const StatItem = styled.div`
 `;
 
 const StatLabel = styled.span`
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-color-secondary);
   letter-spacing: 0.04em;
 `;

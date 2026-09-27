@@ -1,32 +1,30 @@
-import { useEffect } from 'react';
 import { useCoverImageSrc } from '../../hooks/book/useCoverImageSrc';
 
+/**
+ * Cover image with fallbacks and self-healing retries (see useCoverImageSrc).
+ * Stays mounted after a failure so it can recover; renders Placeholder meanwhile.
+ */
 function BookCoverImg({
   url,
   fallbackUrl = null,
   alt = '',
   ImgComponent = 'img',
   Placeholder = null,
-  onFailed,
   ...props
 }) {
-  const { src, loading, failed, onError } = useCoverImageSrc(url, fallbackUrl);
+  const { src, loading, failed, onError, attemptKey } = useCoverImageSrc(url, fallbackUrl);
 
-  useEffect(() => {
-    if (failed) onFailed?.();
-  }, [failed, onFailed]);
-
-  if (!url || failed) return null;
+  if (!url || failed) {
+    return Placeholder ? <Placeholder>無封面</Placeholder> : null;
+  }
 
   if (loading || !src) {
-    if (loading && Placeholder) {
-      return <Placeholder aria-busy="true">轉換中</Placeholder>;
-    }
-    return null;
+    return loading && Placeholder ? <Placeholder aria-busy="true">載入中</Placeholder> : null;
   }
 
   return (
     <ImgComponent
+      key={attemptKey}
       src={src}
       alt={alt}
       referrerPolicy="no-referrer"

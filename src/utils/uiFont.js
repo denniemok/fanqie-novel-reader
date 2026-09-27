@@ -1,8 +1,8 @@
-import { CHINESE_FONTS, UI_FONT_MODE_BRAND, UI_FONT_MODE_FOLLOW } from './constants';
+import { CHINESE_FONTS, UI_FONT_MODE_DEFAULT, UI_FONT_MODE_FOLLOW } from './constants';
+import { loadWebFont } from './fontLoader';
 
 export function isValidUiFontMode(mode) {
   return (
-    mode === UI_FONT_MODE_BRAND ||
     mode === UI_FONT_MODE_FOLLOW ||
     CHINESE_FONTS.some((font) => font.value === mode)
   );
@@ -10,7 +10,7 @@ export function isValidUiFontMode(mode) {
 
 /** @returns {{ ui: string, display: string } | null} null means use CSS :root defaults */
 export function resolveChromeFonts(mode, readerFontFamily) {
-  if (mode === UI_FONT_MODE_BRAND || !isValidUiFontMode(mode)) {
+  if (mode === UI_FONT_MODE_DEFAULT || !isValidUiFontMode(mode)) {
     return null;
   }
   if (mode === UI_FONT_MODE_FOLLOW) {
@@ -29,6 +29,7 @@ export function applyChromeFonts(mode, readerFontFamily) {
     root.style.removeProperty('--display-font-family');
     return;
   }
+  loadWebFont(resolved.ui);
   root.style.setProperty('--ui-font-family', resolved.ui);
   root.style.setProperty('--display-font-family', resolved.display);
 }

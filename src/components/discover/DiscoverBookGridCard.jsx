@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useConvertedText } from '../../hooks/useConvertedText';
 import { normalizeDiscoverBookInfo, resolveBookDisplay } from '../../utils/book/bookInfo';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
@@ -25,11 +24,6 @@ function DiscoverBookGridCard({ book, conversionMode, onClick, sortBy = 'default
   const convertedAuthor = useConvertedText(info.author, conversionMode);
   const convertedCategory = useConvertedText(info.category, conversionMode);
   const convertedWordCount = useConvertedText(info.word_number, conversionMode);
-  const [imgError, setImgError] = useState(false);
-
-  useEffect(() => {
-    setImgError(false);
-  }, [thumb_url, variant]);
 
   const coverMetaLines = getCoverMetaEntries(sortBy, {
     score: info.score,
@@ -48,19 +42,14 @@ function DiscoverBookGridCard({ book, conversionMode, onClick, sortBy = 'default
       onKeyDown={cardKeyDownHandler(onClick)}
     >
       <CoverWrapper>
-        {thumb_url && !imgError ? (
-          <BookCoverImg
-            url={thumb_url}
-            fallbackUrl={fallback_thumb_url}
-            ImgComponent={CoverImg}
-            Placeholder={CoverPlaceholder}
-            alt=""
-            loading="lazy"
-            onFailed={() => setImgError(true)}
-          />
-        ) : (
-          <CoverPlaceholder>無封面</CoverPlaceholder>
-        )}
+        <BookCoverImg
+          url={thumb_url}
+          fallbackUrl={fallback_thumb_url}
+          ImgComponent={CoverImg}
+          Placeholder={CoverPlaceholder}
+          alt=""
+          loading="lazy"
+        />
         {coverMetaLines.length > 0 && (
           <CoverMetaOverlayBottom>
             {coverMetaLines.map(({ key, text }) => (

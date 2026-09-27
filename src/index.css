@@ -1,89 +1,97 @@
+/*
+ * Design tokens — "paper & ink".
+ * Light: rice paper + vermilion seal ink, tuned to the morning water-town backdrop.
+ * Dark: night-blue ink + lantern glow, tuned to the evening backdrop.
+ * Flat by default: hairline borders carry structure; shadows only on floating layers.
+ */
 :root {
-  --background-color: #eee7e2;
-  --background-color2: #f8f3ef;
-  --background-color-fx: rgba(138, 91, 111, 0.08);
-  --text-color: #302a33;
-  --text-color-secondary: #766b74;
-  --text-color-fx: #302a33;
-  --text-on-accent: #fffafb;
-  --accent-color: #a95670;
-  --accent-hover: #c36e89;
-  --accent-soft: #ead7dd;
-  --border-color: rgba(91, 71, 81, 0.18);
-  --hover-background-color: #f0e6e7;
-  --hover-text-color: #251f27;
-  --retro-shadow: 0 8px 26px rgba(65, 45, 56, 0.1);
-  --retro-shadow-hover: 0 14px 34px rgba(65, 45, 56, 0.17);
+  --background-color: #f1ede6;
+  --background-color2: #fbf9f5;
+  --background-color-fx: rgba(163, 74, 58, 0.06);
+  --text-color: #2a2723;
+  --text-color-secondary: #756e64;
+  --text-color-fx: #2a2723;
+  --text-on-accent: #fffaf5;
+  --accent-color: #a34a3a;
+  --accent-hover: #8c3c2e;
+  --accent-soft: #f3e4de;
+  --border-color: rgba(42, 39, 35, 0.12);
+  --border-strong: rgba(42, 39, 35, 0.22);
+  --hover-background-color: #f4efe8;
+  --hover-text-color: #1d1b18;
+  --retro-shadow: none;
+  --retro-shadow-hover: none;
   --retro-border-width: 1px;
   --border-radius: 14px;
   --border-radius-sm: 10px;
-  --border-radius-xs: 7px;
-  --border-radius-sketch: 14px;
-  --ui-font-family: 'LXGW WenKai TC', 'Noto Sans TC', sans-serif;
-  --display-font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
-  --transition-default: all 0.22s ease;
-  --topbar-bg: rgba(248, 243, 239, 0.78);
-  --catalog-glass-bg: rgba(255, 251, 248, 0.48);
-  --catalog-glass-hover: rgba(255, 251, 248, 0.76);
-  --overlay-bg: rgba(49, 35, 45, 0.3);
-  --panel-shadow: 0 14px 40px rgba(65, 45, 56, 0.12);
-  --dropdown-bg: #f8f3ef;
-  --cover-bg: #e2d4d3;
-  --topbar-shadow: 0 1px 0 rgba(91, 71, 81, 0.1), 0 10px 30px rgba(65, 45, 56, 0.08);
-  --topbar-height: calc(70px + env(safe-area-inset-top));
+  --border-radius-xs: 6px;
+  --border-radius-sketch: 10px;
+  --ui-font-family: 'Noto Serif TC', 'Noto Serif SC', 'Songti TC', 'PMingLiU', serif;
+  --display-font-family: 'Noto Serif TC', 'Noto Serif SC', 'Songti TC', serif;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-default: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.25s var(--ease-out);
+  --topbar-bg: rgba(251, 249, 245, 0.8);
+  --catalog-glass-bg: rgba(251, 249, 245, 0.82);
+  --catalog-glass-hover: rgba(255, 254, 251, 0.95);
+  --overlay-bg: rgba(33, 30, 26, 0.32);
+  --panel-shadow: 0 1px 2px rgba(42, 39, 35, 0.04), 0 18px 48px -12px rgba(42, 39, 35, 0.16);
+  --dropdown-bg: #fbf9f5;
+  --cover-bg: #e6e0d6;
+  --cover-shadow: 0 1px 2px rgba(42, 39, 35, 0.08), 0 8px 20px -8px rgba(42, 39, 35, 0.28);
+  --topbar-shadow: none;
+  --topbar-height: calc(64px + env(safe-area-inset-top));
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
   --chapter-top-bar-height: 100px;
   --chapter-bottom-bar-height: 64px;
-  --surface-raised: rgba(255, 252, 249, 0.78);
-  --surface-muted: rgba(255, 252, 249, 0.48);
-  --bg-wash-linear: linear-gradient(135deg, rgba(238, 231, 226, 0.42), rgba(246, 237, 235, 0.28));
-  --bg-wash-vignette: radial-gradient(ellipse 90% 80% at 50% 34%, transparent 0%, rgba(238, 231, 226, 0.18) 100%);
-  --bg-wash-accent: radial-gradient(ellipse 72% 50% at 50% 0%, rgba(169, 86, 112, 0.05), transparent 70%);
-  --selection-bg: rgba(169, 86, 112, 0.24);
+  --surface-raised: rgba(251, 249, 245, 0.9);
+  --surface-muted: rgba(251, 249, 245, 0.76);
+  --bg-wash-linear: linear-gradient(180deg, rgba(241, 237, 230, 0.3) 0%, rgba(241, 237, 230, 0.62) 42%, rgba(241, 237, 230, 0.86) 100%);
+  --bg-wash-vignette: radial-gradient(ellipse 110% 90% at 50% 20%, transparent 40%, rgba(241, 237, 230, 0.4) 100%);
+  --bg-wash-accent: linear-gradient(transparent, transparent);
+  --selection-bg: rgba(163, 74, 58, 0.18);
   --page-bg-photo: url('/bg-light.webp');
-  --card-surface: linear-gradient(145deg, rgba(255, 252, 249, 0.86), rgba(246, 237, 235, 0.74));
+  --card-surface: rgba(251, 249, 245, 0.88);
   --toast-info-color: var(--accent-color);
-  --toast-success-color: #4d7a57;
-  --toast-error-color: #b84a4a;
-  --toast-warning-color: #9a7340;
+  --toast-success-color: #4c7a5a;
+  --toast-error-color: #b0473b;
+  --toast-warning-color: #976f35;
 }
 
 [data-theme="dark"] {
-  --background-color: #19151e;
-  --background-color2: #251e2a;
-  --background-color-fx: rgba(223, 132, 162, 0.08);
-  --text-color: #ded2d9;
-  --text-color-secondary: #a99aa5;
-  --text-color-fx: #ded2d9;
-  --text-on-accent: #fff8fa;
-  --accent-color: #df809f;
-  --accent-hover: #f0a1ba;
-  --accent-soft: #46313e;
-  --border-color: rgba(240, 220, 232, 0.14);
-  --hover-background-color: #302735;
-  --hover-text-color: #fff7fb;
-  --retro-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
-  --retro-shadow-hover: 0 16px 42px rgba(0, 0, 0, 0.42);
-  --topbar-bg: rgba(25, 21, 30, 0.76);
-  --catalog-glass-bg: rgba(36, 29, 42, 0.56);
-  --catalog-glass-hover: rgba(50, 40, 57, 0.82);
-  --overlay-bg: rgba(10, 7, 13, 0.6);
-  --panel-shadow: 0 16px 44px rgba(0, 0, 0, 0.38);
-  --dropdown-bg: #251e2a;
-  --cover-bg: #312735;
-  --topbar-shadow: 0 1px 0 rgba(255, 240, 249, 0.08), 0 10px 30px rgba(0, 0, 0, 0.34);
-  --surface-raised: rgba(38, 31, 44, 0.8);
-  --surface-muted: rgba(38, 31, 44, 0.55);
-  --bg-wash-linear: linear-gradient(135deg, rgba(15, 12, 19, 0.52), rgba(26, 20, 31, 0.46));
-  --bg-wash-vignette: radial-gradient(ellipse 90% 80% at 50% 34%, transparent 0%, rgba(10, 7, 13, 0.35) 100%);
-  --bg-wash-accent: radial-gradient(ellipse 72% 50% at 50% 0%, rgba(223, 128, 159, 0.06), transparent 70%);
-  --selection-bg: rgba(223, 128, 159, 0.32);
+  --background-color: #0f131b;
+  --background-color2: #161b25;
+  --background-color-fx: rgba(224, 162, 124, 0.07);
+  --text-color: #e7e2d9;
+  --text-color-secondary: #9ba1ac;
+  --text-color-fx: #e7e2d9;
+  --text-on-accent: #1c1510;
+  --accent-color: #e0a27c;
+  --accent-hover: #ecb896;
+  --accent-soft: #33291f;
+  --border-color: rgba(231, 226, 217, 0.1);
+  --border-strong: rgba(231, 226, 217, 0.2);
+  --hover-background-color: #1d2330;
+  --hover-text-color: #f6f2ea;
+  --topbar-bg: rgba(15, 19, 27, 0.78);
+  --catalog-glass-bg: rgba(22, 27, 37, 0.84);
+  --catalog-glass-hover: rgba(29, 35, 48, 0.94);
+  --overlay-bg: rgba(5, 7, 11, 0.62);
+  --panel-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 24px 56px -12px rgba(0, 0, 0, 0.6);
+  --dropdown-bg: #161b25;
+  --cover-bg: #1f2531;
+  --cover-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 24px -8px rgba(0, 0, 0, 0.7);
+  --surface-raised: rgba(22, 27, 37, 0.88);
+  --surface-muted: rgba(22, 27, 37, 0.72);
+  --bg-wash-linear: linear-gradient(180deg, rgba(15, 19, 27, 0.35) 0%, rgba(15, 19, 27, 0.66) 42%, rgba(15, 19, 27, 0.88) 100%);
+  --bg-wash-vignette: radial-gradient(ellipse 110% 90% at 50% 20%, transparent 40%, rgba(8, 10, 15, 0.5) 100%);
+  --bg-wash-accent: linear-gradient(transparent, transparent);
+  --selection-bg: rgba(224, 162, 124, 0.26);
   --page-bg-photo: url('/bg-dark.webp');
-  --card-surface: linear-gradient(145deg, rgba(42, 34, 48, 0.86), rgba(30, 24, 35, 0.78));
+  --card-surface: rgba(22, 27, 37, 0.86);
   --toast-info-color: var(--accent-color);
-  --toast-success-color: #6faa7a;
-  --toast-error-color: #e07a7a;
-  --toast-warning-color: #c9a05a;
+  --toast-success-color: #86b894;
+  --toast-error-color: #e8907f;
+  --toast-warning-color: #d6ad68;
 }
 
 html::before {
@@ -114,10 +122,14 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   font-family: var(--ui-font-family);
+  /* Songti strokes are hairline-thin; medium weight keeps small UI text legible. */
+  font-weight: 500;
   background: transparent;
   color: var(--text-color);
-  line-height: 1.65;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   -webkit-text-size-adjust: 100%;
   overscroll-behavior-y: none;
@@ -128,10 +140,12 @@ body {
 button:focus-visible, a:focus-visible, [role="button"]:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 3px; }
 a, span, h1, h2, h3, h4, h5, h6, p, li { color: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+button, input, select, textarea { font-family: inherit; font-weight: inherit; }
+/* One stroke weight for every icon keeps the line work consistent. */
+svg.lucide { stroke-width: 1.75; }
 
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes homeCardEntrance { from { transform: translateY(12px); } to { transform: translateY(0); } }
-@keyframes toastIn { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes homeCardEntrance { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
-@media (orientation: portrait) { html::before { background-position: center, center, center, center; } }
-@media (max-width: 480px) { :root { --topbar-height: calc(66px + env(safe-area-inset-top)); } }
+

@@ -53,7 +53,27 @@ function Chapter() {
   const [readerControlsOpen, setReaderControlsOpen] = useState(false);
   const readerPaneRef = useRef(null);
   const chapterFrameRef = useRef(null);
+  const chapterHeadingRef = useRef(null);
+  const [chapterTitleInBar, setChapterTitleInBar] = useState(true);
   useChapterChromeHeights(chapterFrameRef, !!chapterData);
+
+  // Show the chapter title in the top bar only once the in-page heading has scrolled
+  // out of view above the reader, so the title is never on screen twice.
+  useEffect(() => {
+    const heading = chapterHeadingRef.current;
+    const pane = readerPaneRef.current;
+    if (!heading || !pane) {
+      setChapterTitleInBar(true);
+      return undefined;
+    }
+    setChapterTitleInBar(false);
+    const observer = new IntersectionObserver(([entry]) => {
+      const scrolledPast = entry.boundingClientRect.bottom <= (entry.rootBounds?.top ?? 0);
+      setChapterTitleInBar(!entry.isIntersecting && scrolledPast);
+    }, { root: pane });
+    observer.observe(heading);
+    return () => observer.disconnect();
+  }, [chapterData, conversionMode]);
 
   const handleRefresh = useCallback(() => {
     loadChapter(true);
@@ -98,6 +118,7 @@ function Chapter() {
                 conversionMode={conversionMode}
                 readerControlsOpen={readerControlsOpen}
                 onReaderControlsToggle={() => setReaderControlsOpen((open) => !open)}
+                showChapterTitle={chapterTitleInBar}
               />
               <ReaderControlsPanel
                 open={readerControlsOpen}
@@ -124,6 +145,7 @@ function Chapter() {
                   textBrightness={textBrightness}
                   readerTextColor={readerTextColor}
                   conversionMode={conversionMode}
+                  headingRef={chapterHeadingRef}
                 />
               </ReaderPane>
               <BottomBar chapterData={chapterData} bookId={bookId} />

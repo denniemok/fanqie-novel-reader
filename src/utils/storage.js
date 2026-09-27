@@ -19,7 +19,7 @@ import {
   FONT_SIZE_DEFAULT,
   FONT_FAMILY_KEY,
   UI_FONT_MODE_KEY,
-  UI_FONT_MODE_BRAND,
+  UI_FONT_MODE_DEFAULT,
   UI_FONT_MODE_FOLLOW,
   CHINESE_FONTS,
   TRADITIONAL_CHINESE_KEY,
@@ -30,7 +30,6 @@ import {
   TEXT_BRIGHTNESS_MAX,
   TEXT_BRIGHTNESS_DEFAULT,
   READER_BACKGROUND_KEY,
-  READER_BACKGROUND_OPTIONS,
   READER_CUSTOM_BG_KEY,
   READER_CUSTOM_TEXT_KEY,
   READER_CUSTOM_BG_DEFAULT,
@@ -38,6 +37,7 @@ import {
   THEME_KEY,
 } from './constants';
 import { isValidHexColor, isValidReaderBackground } from './readerColors';
+import { isFontAvailable } from './fontDetect';
 import { normalizeBookFilterState } from './book/bookFilters';
 import { directoryCache, chapterCache, detailCache, getStoreItem, setStoreItem } from './cache';
 
@@ -271,7 +271,8 @@ export async function reorderReadingHistory(fromIndex, toIndex) {
 }
 
 const FONT_FAMILY_VALUES = CHINESE_FONTS.map((font) => font.value);
-const UI_FONT_MODE_VALUES = [UI_FONT_MODE_BRAND, UI_FONT_MODE_FOLLOW, ...FONT_FAMILY_VALUES];
+// Legacy 'brand' values are no longer listed, so they fall back to the 思源宋體 default.
+const UI_FONT_MODE_VALUES = [UI_FONT_MODE_FOLLOW, ...FONT_FAMILY_VALUES];
 const FONT_SIZE_RANGE = { min: FONT_SIZE_MIN, max: FONT_SIZE_MAX, fallback: FONT_SIZE_DEFAULT };
 const TEXT_BRIGHTNESS_RANGE = {
   min: TEXT_BRIGHTNESS_MIN,
@@ -287,8 +288,11 @@ export function setFontSize(size) {
   return writeStoredInt(FONT_SIZE_KEY, size, FONT_SIZE_RANGE);
 }
 
+// A stored system font this device lacks falls back to the default; the stored choice
+// is kept so it applies again on a device that has the font.
 export function getFontFamily() {
-  return readStoredChoice(FONT_FAMILY_KEY, FONT_FAMILY_VALUES, FONT_FAMILY_VALUES[0]);
+  const value = readStoredChoice(FONT_FAMILY_KEY, FONT_FAMILY_VALUES, FONT_FAMILY_VALUES[0]);
+  return isFontAvailable(value) ? value : FONT_FAMILY_VALUES[0];
 }
 
 export function setFontFamily(value) {
@@ -296,7 +300,8 @@ export function setFontFamily(value) {
 }
 
 export function getUiFontMode() {
-  return readStoredChoice(UI_FONT_MODE_KEY, UI_FONT_MODE_VALUES, UI_FONT_MODE_BRAND);
+  const mode = readStoredChoice(UI_FONT_MODE_KEY, UI_FONT_MODE_VALUES, UI_FONT_MODE_DEFAULT);
+  return isFontAvailable(mode) ? mode : UI_FONT_MODE_DEFAULT;
 }
 
 export function setUiFontMode(value) {
@@ -311,9 +316,10 @@ export function setTextBrightness(value) {
   return writeStoredInt(TEXT_BRIGHTNESS_KEY, value, TEXT_BRIGHTNESS_RANGE);
 }
 
+/** @returns stored preset/custom value, or null when the reader has not chosen one */
 export function getReaderBackground() {
   const raw = safeGetItem(READER_BACKGROUND_KEY);
-  return isValidReaderBackground(raw) ? raw : READER_BACKGROUND_OPTIONS[0].value;
+  return isValidReaderBackground(raw) ? raw : null;
 }
 
 export function setReaderBackground(value) {

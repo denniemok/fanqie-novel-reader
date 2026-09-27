@@ -38,23 +38,39 @@ export const BOOKSHELF_QUICK_ACTION_KEY = 'bookshelfQuickAction';
 export const THEME_KEY = 'theme';
 
 export const READER_BACKGROUND_CUSTOM = 'custom';
+/** Reader background used until the reader picks one; follows the UI theme. */
+export const READER_BACKGROUND_THEME_DEFAULT = { light: '#f0e9e4', dark: '#151b26' };
 export const READER_CUSTOM_BG_DEFAULT = '#f0e9e4';
 export const READER_CUSTOM_TEXT_DEFAULT = '#1a1a1a';
 
-/** Reader background presets: { value: hex | 'custom', label, textColor? } */
+/**
+ * Reader background presets: { value: hex | 'custom', label, textColor? }.
+ * `value` is persisted, so existing hexes must stay stable; text colours may be tuned.
+ * Text uses warm ink rather than pure black/white (≥ 8.5:1 contrast, less glare over long reads).
+ * Ordered light to dark, with similar tones grouped together in the picker.
+ */
+const READER_INK = '#2b2723';
 export const READER_BACKGROUND_OPTIONS = [
-  { value: '#e8dce4', label: '淡粉', textColor: '#1a1a1a' },
-  { value: '#e4e0e8', label: '薰衣草', textColor: '#1a1a1a' },
-  { value: '#d4ccc8', label: '薄暮', textColor: '#1a1a1a' },
-  { value: '#f0e9e4', label: '暖紙', textColor: '#1a1a1a' },
-  { value: '#fffef5', label: '米白', textColor: '#1a1a1a' },
-  { value: '#ffffff', label: '純白', textColor: '#1a1a1a' },
-  { value: '#e0e0e0', label: '淺灰', textColor: '#1a1a1a' },
-  { value: '#ede5d0', label: '米黃', textColor: '#1a1a1a' },
-  { value: '#c0d0c0', label: '青綠', textColor: '#1a1a1a' },
-  { value: '#2c2630', label: '深夜', textColor: '#e0e0e0' },
-  { value: '#1a1a1a', label: '灰黑', textColor: '#e0e0e0' },
-  { value: '#0a0a0a', label: '深黑', textColor: '#e0e0e0' },
+  // 白色／紙色
+  { value: '#ffffff', label: '純白', textColor: READER_INK },
+  { value: '#fffef5', label: '米白', textColor: READER_INK },
+  { value: '#f0e9e4', label: '暖紙', textColor: READER_INK },
+  // 暖黃
+  { value: '#ede5d0', label: '米黃', textColor: READER_INK },
+  { value: '#f3e7cf', label: '羊皮紙', textColor: '#43362a' },
+  // 灰色
+  { value: '#e0e0e0', label: '淺灰', textColor: READER_INK },
+  { value: '#d4ccc8', label: '薄暮', textColor: READER_INK },
+  // 淺彩色
+  { value: '#e8dce4', label: '淡粉', textColor: READER_INK },
+  { value: '#e4e0e8', label: '薰衣草', textColor: READER_INK },
+  { value: '#c0d0c0', label: '青綠', textColor: '#23302a' },
+  // 深色
+  { value: '#28221c', label: '夜茶', textColor: '#d9ccb8' },
+  { value: '#2c2630', label: '深夜', textColor: '#ddd4dc' },
+  { value: '#151b26', label: '夜藍', textColor: '#c5ccd6' },
+  { value: '#1a1a1a', label: '灰黑', textColor: '#d4cfc6' },
+  { value: '#0a0a0a', label: '深黑', textColor: '#bfbab2' },
   { value: READER_BACKGROUND_CUSTOM, label: '自訂' },
 ];
 
@@ -97,22 +113,40 @@ export const API_OPTIONS = [
   { value: 'sg-2', label: 'sg-2' },
 ];
 
-/** Chinese fonts for reader: { value: CSS font-family, label: display name, fontFamily: preview in dropdown } */
+/**
+ * Chinese fonts: { value: CSS font-family (persisted — keep existing strings stable),
+ * label, webFont?: Google Fonts css2 `family=` query, loaded on demand by utils/fontLoader,
+ * system?: installed-only font, hidden where the device lacks it (utils/fontDetect) }.
+ * Grouped by style so similar faces sit together in the pickers.
+ * The first entry is the UI default and is preloaded in index.html.
+ */
 export const CHINESE_FONTS = [
-  { value: "'Noto Serif TC', 'Noto Serif SC', sans-serif", label: '思源宋體' },
-  { value: "'PMingLiU', 'Songti TC', 'Songti SC', sans-serif", label: '新細明體' },
-  { value: "'STSong', '华文宋体', 'STFangsong', sans-serif", label: '華文宋體' },
-  { value: "'BiauKai', '標楷體', 'Kaiti TC', 'Kaiti SC', sans-serif", label: '標楷體' },
-  { value: "'LXGW WenKai TC', 'LXGW WenKai', sans-serif", label: '霞鷸文楷' },
-  { value: "'Noto Sans TC', 'Noto Sans SC', sans-serif", label: '思源黑體' },
-  { value: "'Microsoft JhengHei', 'Heiti TC', 'Heiti SC', sans-serif", label: '微軟正黑體' },
+  // 宋體
+  { value: "'Noto Serif TC', 'Noto Serif SC', sans-serif", label: '思源宋體', webFont: 'Noto+Serif+TC:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700' },
+  { value: "'Chiron Sung HK', 'Noto Serif TC', 'Noto Serif SC', serif", label: '昭源宋體', webFont: 'Chiron+Sung+HK:wght@400..700' },
+  { value: "'STSong', '华文宋体', 'STFangsong', sans-serif", label: '華文宋體', system: true },
+  // 明體
+  { value: "'PMingLiU', 'Songti TC', 'Songti SC', sans-serif", label: '新細明體', system: true },
+  { value: "'Cactus Classical Serif', 'Noto Serif TC', 'Noto Serif SC', serif", label: '仙人掌明體', webFont: 'Cactus+Classical+Serif' },
+  // 楷體
+  { value: "'BiauKai', '標楷體', 'Kaiti TC', 'Kaiti SC', sans-serif", label: '標楷體', system: true },
+  { value: "'LXGW WenKai TC', 'LXGW WenKai', sans-serif", label: '霞鷸文楷', webFont: 'LXGW+WenKai+TC:wght@400;700&family=LXGW+WenKai:wght@400;700' },
+  { value: "'Iansui', 'LXGW WenKai TC', 'Noto Serif TC', sans-serif", label: '芫荽', webFont: 'Iansui' },
+  // 黑體
+  { value: "'Noto Sans TC', 'Noto Sans SC', sans-serif", label: '思源黑體', webFont: 'Noto+Sans+TC:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700' },
+  { value: "'Chiron Hei HK', 'Noto Sans TC', 'Noto Sans SC', sans-serif", label: '昭源黑體', webFont: 'Chiron+Hei+HK:wght@400..700' },
+  { value: "'Microsoft JhengHei', 'Heiti TC', 'Heiti SC', sans-serif", label: '微軟正黑體', system: true },
+  // 圓體
+  { value: "'Huninn', 'Noto Sans TC', 'Noto Sans SC', sans-serif", label: '粉圓', webFont: 'Huninn' },
 ].map((font) => ({ ...font, fontFamily: font.value }));
 
-/** Chrome typography: brand keeps UI + display stacks; follow mirrors reader font; else one family for both. */
-export const UI_FONT_MODE_BRAND = 'brand';
+/**
+ * Chrome typography: default is 思源宋體 (served by the CSS :root font stacks);
+ * follow mirrors the reader font; any other font sets one family for both.
+ */
+export const UI_FONT_MODE_DEFAULT = CHINESE_FONTS[0].value;
 export const UI_FONT_MODE_FOLLOW = 'follow';
 export const UI_FONT_MODE_OPTIONS = [
-  { value: UI_FONT_MODE_BRAND, label: '預設' },
   { value: UI_FONT_MODE_FOLLOW, label: '跟隨閱讀字型' },
   ...CHINESE_FONTS,
 ];

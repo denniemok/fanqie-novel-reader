@@ -4,15 +4,12 @@ import { retroGlassControlBase, retroGlassControlHover } from '../../utils/style
 const solidStyles = css`
   background: var(--card-surface);
   border: var(--retro-border-width) solid var(--border-color);
-  box-shadow: var(--retro-shadow);
 
   @media (hover: hover) {
     &:hover:not(:disabled) {
-      background: ${(p) => (p.$active ? 'var(--accent-hover)' : 'var(--accent-color)')};
-      color: var(--text-on-accent);
-      border-color: ${(p) => (p.$active ? 'var(--accent-hover)' : 'var(--accent-color)')};
-      transform: translate(-1px, -1px) rotate(-1deg);
-      box-shadow: var(--retro-shadow-hover);
+      background: ${(p) => (p.$active ? 'var(--accent-hover)' : 'var(--hover-background-color)')};
+      color: ${(p) => (p.$active ? 'var(--text-on-accent)' : 'var(--accent-color)')};
+      border-color: ${(p) => (p.$active ? 'var(--accent-hover)' : 'var(--border-strong)')};
     }
   }
 `;
@@ -23,8 +20,6 @@ const glassStyles = css`
   @media (hover: hover) {
     &:hover:not(:disabled) {
       ${retroGlassControlHover}
-      background: color-mix(in srgb, var(--accent-soft) 80%, transparent);
-      color: var(--accent-color);
     }
   }
 `;
@@ -65,13 +60,11 @@ export const IconButton = styled.button`
   `}
 
   &:active:not(:disabled) {
-    transform: translate(1px, 1px);
-    box-shadow: none;
+    transform: scale(0.96);
   }
 
   &:disabled {
     opacity: 0.35;
     cursor: not-allowed;
-    box-shadow: none;
   }
 `;

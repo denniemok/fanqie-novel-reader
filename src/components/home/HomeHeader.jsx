@@ -6,32 +6,45 @@ const Header = styled.header`
   margin-left: auto;
   margin-right: auto;
   box-sizing: border-box;
-  padding-left: 24px;
-  padding-right: 24px;
-  padding-top: calc(76px + env(safe-area-inset-top));
-  margin-bottom: 24px;
-  animation: fadeInUp 0.5s ease backwards;
+  padding: calc(120px + env(safe-area-inset-top)) 24px 0;
+  margin-bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: fadeInUp 0.7s var(--ease-out) backwards;
 
   @media (max-width: 480px) {
-    padding: calc(44px + env(safe-area-inset-top)) 16px 0;
-    margin-bottom: 18px;
+    padding: calc(88px + env(safe-area-inset-top)) 16px 0;
+    margin-bottom: 36px;
   }
 `;
 
 const Title = styled.h1`
   margin: 0;
+  /* Offset trailing letter-spacing so the glyphs stay optically centred. */
+  padding-left: 0.32em;
   font-family: var(--display-font-family);
-  font-size: clamp(32px, 6vw, 52px);
+  font-size: clamp(40px, 8vw, 60px);
   font-weight: 600;
-  letter-spacing: 0.08em;
-  line-height: 1.15;
+  letter-spacing: 0.32em;
+  line-height: 1.1;
+  color: var(--text-color);
 `;
 
 const Subtitle = styled.p`
-  margin: 12px 0 0;
+  margin: 20px 0 0;
+  padding-left: 0.24em;
   color: var(--text-color-secondary);
+  font-family: var(--display-font-family);
   font-size: 15px;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.24em;
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+    letter-spacing: 0.16em;
+    padding-left: 0.16em;
+  }
 `;
 
 const SettingsButtonSlot = styled.div`

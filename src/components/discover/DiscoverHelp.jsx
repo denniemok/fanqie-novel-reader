@@ -15,40 +15,43 @@ const HelpGrid = styled.div`
 `;
 
 const HelpCard = styled.div`
-  padding: 20px;
-  background-color: var(--background-color2);
+  padding: 22px;
+  background-color: var(--card-surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: var(--retro-border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: var(--retro-shadow);
 
   h3 {
     font-size: 16px;
-    font-weight: 900;
+    font-weight: 600;
+    letter-spacing: 0.08em;
     margin: 0;
     color: var(--text-color);
-    text-transform: uppercase;
-    font-family: inherit;
+    font-family: var(--display-font-family);
   }
 
   p {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--text-color-secondary);
-    line-height: 1.6;
+    line-height: 1.8;
     margin: 0;
     font-family: inherit;
 
     span {
       color: var(--accent-color);
-      font-weight: 900;
+      font-weight: 600;
     }
   }
 
   .code-box {
     padding: 10px 14px;
     background-color: var(--background-color);
-    font-family: inherit;
+    border-radius: var(--border-radius-xs);
+    font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
     font-size: 12px;
     color: var(--text-color-secondary);
     overflow-x: auto;
@@ -56,7 +59,7 @@ const HelpCard = styled.div`
 
     span {
       color: var(--accent-color);
-      font-weight: 900;
+      font-weight: 600;
     }
   }
 `;

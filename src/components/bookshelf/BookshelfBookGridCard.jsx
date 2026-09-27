@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { GripHorizontal, Loader2, Check } from 'lucide-react';
 import { useBookshelfBookCard } from '../../hooks/bookshelf/useBookshelfBookCard';
@@ -6,6 +6,7 @@ import { useConvertedText } from '../../hooks/useConvertedText';
 import { resolveBookDisplay } from '../../utils/book/bookInfo';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 import { shimmerStyle } from '../../utils/styled/animations';
+import { bookCardSurface, bookCardCoverZoom, bookCoverImage, coverMetaBadge, bookCardTitle, bookCardAuthor } from '../../utils/styled/bookCard';
 import { getCoverMetaEntries } from '../../utils/coverMetaLines';
 import { CardLoadingOverlay, CardActionButton } from '../book/CardActionButton';
 import BookCoverImg from '../book/BookCoverImg';
@@ -23,11 +24,10 @@ const SkeletonCard = styled.div`
   flex-direction: column;
   height: 100%;
   box-sizing: border-box;
-  background-color: var(--background-color2);
+  background-color: var(--card-surface);
   border: var(--retro-border-width) solid var(--border-color);
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--border-radius);
   overflow: hidden;
-  box-shadow: var(--retro-shadow);
 `;
 
 const SkeletonCover = styled.div`
@@ -54,48 +54,22 @@ const Card = styled.div`
   flex-direction: column;
   height: 100%;
   box-sizing: border-box;
-  background: var(--card-surface);
-  border: var(--retro-border-width) solid ${(p) => (p.$selected ? 'var(--accent-color)' : 'var(--border-color)')};
-  border-radius: var(--border-radius-sm);
+  ${bookCardSurface}
+  ${bookCardCoverZoom}
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  box-shadow: ${(p) => (p.$selected ? '0 0 0 2px color-mix(in srgb, var(--accent-color) 35%, transparent)' : 'var(--retro-shadow)')};
-  transition: var(--transition-default);
   opacity: ${(p) => (p.$disabled ? 0.7 : 1)};
   pointer-events: ${(p) => (p.$disabled ? 'none' : 'auto')};
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 50% 0%, var(--accent-soft) 0%, transparent 55%);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease;
-  }
-
-  @media (hover: hover) {
-    &:hover {
-      border-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--border-color)' : 'var(--accent-color)')};
-      background-color: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--background-color2)' : 'var(--hover-background-color)')};
-      transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(-2px, -2px)')};
-      box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : 'var(--retro-shadow-hover)')};
-
-      &::after {
-        opacity: ${(p) => (p.$reorderMode || p.$isDragging ? 0 : 0.5)};
-      }
-    }
-
-    &:active {
-      transform: ${(p) => (p.$reorderMode || p.$isDragging ? 'none' : 'translate(1px, 1px)')};
-      box-shadow: ${(p) => (p.$reorderMode || p.$isDragging ? 'var(--retro-shadow)' : 'none')};
-    }
-  }
+  ${(p) => p.$selected && `
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 1px var(--accent-color);
+  `}
 
   ${(p) => p.$isDragging && `
-    outline: 2px dashed var(--accent-color);
-    outline-offset: -2px;
+    outline: 1px dashed var(--accent-color);
+    outline-offset: -4px;
   `}
 `;
 
@@ -105,7 +79,7 @@ const DragHandleTop = styled.div`
   justify-content: center;
   flex-shrink: 0;
   height: 28px;
-  background: var(--background-color2);
+  background: transparent;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-color-secondary);
   touch-action: none;
@@ -116,7 +90,7 @@ const DragHandleTop = styled.div`
   &:active {
     cursor: grabbing;
     color: var(--accent-color);
-    background: var(--background-color);
+    background: var(--hover-background-color);
   }
 
   svg {
@@ -129,23 +103,10 @@ const CoverWrapper = styled.div`
   position: relative;
   width: 100%;
   overflow: hidden;
-
-  @media (hover: hover) {
-    &:hover img {
-      transform: scale(1.03);
-    }
-  }
 `;
 
 const CoverImg = styled.img`
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
-  background-color: var(--cover-bg);
-  opacity: 0.9;
-  border-bottom: 1px solid var(--border-color);
-  display: block;
-  transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+  ${bookCoverImage}
 `;
 
 const CoverPlaceholder = styled.div`
@@ -156,7 +117,8 @@ const CoverPlaceholder = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
   color: var(--text-color-secondary);
 `;
 
@@ -165,7 +127,7 @@ const CoverMetaOverlayBottom = styled.div`
   left: 0;
   bottom: 0;
   max-width: 100%;
-  padding: 6px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -174,51 +136,24 @@ const CoverMetaOverlayBottom = styled.div`
 `;
 
 const CoverMetaLine = styled.div`
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text-on-accent);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.3;
-  width: fit-content;
-  max-width: 100%;
-  box-sizing: border-box;
-  padding: 3px 6px;
-  background: rgba(201, 128, 154, 0.85);
-  border: 1px solid rgba(255, 248, 245, 0.4);
+  ${coverMetaBadge}
 `;
 
 const Info = styled.div`
-  padding: 8px 10px 10px;
+  padding: 12px 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  min-height: 62px;
+  gap: 4px;
   box-sizing: border-box;
 `;
 
 const Title = styled.div`
-  font-size: 13px;
-  font-weight: 600;
-  font-family: var(--display-font-family);
-  color: var(--text-color);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  line-height: 1.35;
-  min-height: calc(13px * 1.35 * 2);
+  ${bookCardTitle}
 `;
 
 const Author = styled.div`
-  font-size: 11px;
-  color: var(--accent-color);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  opacity: ${(p) => (p.$empty ? 0 : 0.85)};
-  min-height: 11px;
+  ${bookCardAuthor}
+  opacity: ${(p) => (p.$empty ? 0 : 1)};
 `;
 
 const SelectionBadge = styled.div`
@@ -232,11 +167,10 @@ const SelectionBadge = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid ${(p) => (p.$selected ? 'var(--accent-color)' : 'var(--border-color)')};
-  background: ${(p) => (p.$selected ? 'var(--accent-color)' : 'rgba(240, 233, 228, 0.92)')};
+  border: 1.5px solid ${(p) => (p.$selected ? 'var(--accent-color)' : 'rgba(255, 255, 255, 0.9)')};
+  background: ${(p) => (p.$selected ? 'var(--accent-color)' : 'rgba(20, 18, 16, 0.35)')};
   color: var(--text-on-accent);
   pointer-events: none;
-  box-shadow: var(--retro-shadow);
 
   svg {
     width: 12px;
@@ -325,11 +259,6 @@ function BookshelfBookGridCard({
   const convertedWordCount = useConvertedText(word_number, conversionMode);
   const convertedCategory = useConvertedText(category, conversionMode);
   const chapter_count = bookInfo?.chapter_count ?? null;
-  const [imgError, setImgError] = useState(false);
-
-  useEffect(() => {
-    setImgError(false);
-  }, [thumb_url, variant]);
 
   const coverMetaLines = getCoverMetaEntries(sortBy, {
     score,
@@ -370,7 +299,7 @@ function BookshelfBookGridCard({
       onClick={handleCardClick}
       $disabled={isRefreshing}
       $isDragging={isDragging}
-      $reorderMode={reorderMode}
+      $still={reorderMode || isDragging}
       $selected={selectionMode && isSelected}
     >
       {isRefreshing && (
@@ -386,18 +315,13 @@ function BookshelfBookGridCard({
       )}
 
       <CoverWrapper>
-        {thumb_url && !imgError ? (
-          <BookCoverImg
-            url={thumb_url}
-            fallbackUrl={fallback_thumb_url}
-            ImgComponent={CoverImg}
-            Placeholder={CoverPlaceholder}
-            alt="書籍封面"
-            onFailed={() => setImgError(true)}
-          />
-        ) : (
-          <CoverPlaceholder>無封面</CoverPlaceholder>
-        )}
+        <BookCoverImg
+          url={thumb_url}
+          fallbackUrl={fallback_thumb_url}
+          ImgComponent={CoverImg}
+          Placeholder={CoverPlaceholder}
+          alt="書籍封面"
+        />
         {coverOverlayBottom}
         {selectionMode && (
           <SelectionBadge $selected={isSelected} aria-hidden>

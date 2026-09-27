@@ -16,7 +16,8 @@ const TopBarWrapper = styled.div`
   gap: 8px;
   flex-shrink: 0;
   background-color: var(--topbar-bg);
-  backdrop-filter: blur(18px);
+  backdrop-filter: saturate(1.4) blur(20px);
+  -webkit-backdrop-filter: saturate(1.4) blur(20px);
   z-index: 1000;
   border-bottom: 1px solid var(--border-color);
 
@@ -43,8 +44,9 @@ const TitleBlock = styled.div`
   h1 {
     color: var(--text-color);
     font-family: var(--display-font-family);
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 600;
+    letter-spacing: 0.06em;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -56,19 +58,37 @@ const TitleBlock = styled.div`
       font-size: 16px;
     }
     h3 {
-      font-size: 11px;
+      font-size: 12px;
     }
   }
 
   h3 {
     color: var(--text-color-secondary);
     font-size: 12px;
-    font-weight: 400;
-    margin: 4px 0 0 0;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    margin: 2px 0 0 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
+`;
+
+/** Stacks two labels in one cell and cross-fades between them, keeping the bar height fixed. */
+const SwapLine = styled.span`
+  display: grid;
+  min-width: 0;
+
+  > span {
+    grid-area: 1 / 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: opacity 0.3s ease;
+  }
+
+  > span:first-child { opacity: ${(p) => (p.$showSecond ? 0 : 1)}; }
+  > span:last-child { opacity: ${(p) => (p.$showSecond ? 1 : 0)}; }
 `;
 
 const ProgressBox = styled.div`
@@ -79,22 +99,25 @@ const ProgressBox = styled.div`
 `;
 
 const ProgressBarContainer = styled.div`
-  height: 3px;
+  height: 2px;
   flex: 1;
   border-radius: 999px;
-  background-color: var(--accent-soft);
+  background-color: var(--border-color);
   overflow: hidden;
 `;
 
 const Progress = styled.div`
   height: 100%;
   background-color: var(--accent-color);
-  transition: width 0.1s steps(10);
+  border-radius: inherit;
+  transition: width 0.4s var(--ease-out);
 `;
 
 const ProgressText = styled.div`
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
   color: var(--text-color-secondary);
   min-width: 60px;
   text-align: right;
@@ -122,12 +145,14 @@ function ChapterTopBar({
   conversionMode = 'tw',
   readerControlsOpen,
   onReaderControlsToggle,
+  showChapterTitle = true,
 }) {
   const { variant } = useBookDisplayVariant();
   const novelData = chapterData?.novel_data;
   const convertedTitle = useConvertedText(novelData?.title, conversionMode);
   const { book_name: displayBookName } = resolveBookDisplay(bookInfo, variant, bookId);
   const convertedBookName = useConvertedText(displayBookName, conversionMode);
+  const convertedAuthor = useConvertedText(bookInfo?.book_info?.author ?? bookInfo?.author, conversionMode);
 
   if (!chapterData) return null;
 
@@ -141,8 +166,25 @@ function ChapterTopBar({
     <TopBarWrapper>
       <InfoRow>
         <TitleBlock>
-          <h1>{displayTitle}</h1>
-          {bookInfo && <h3>{convertedBookName}</h3>}
+          {bookInfo ? (
+            <>
+              {/* Book name + author while the in-page chapter heading is visible; chapter + book name after it scrolls away. */}
+              <h1>
+                <SwapLine $showSecond={showChapterTitle}>
+                  <span aria-hidden={showChapterTitle}>{convertedBookName}</span>
+                  <span aria-hidden={!showChapterTitle}>{displayTitle}</span>
+                </SwapLine>
+              </h1>
+              <h3>
+                <SwapLine $showSecond={showChapterTitle}>
+                  <span aria-hidden={showChapterTitle}>{convertedAuthor}</span>
+                  <span aria-hidden={!showChapterTitle}>{convertedBookName}</span>
+                </SwapLine>
+              </h3>
+            </>
+          ) : (
+            <h1>{displayTitle}</h1>
+          )}
         </TitleBlock>
         <ActionBar
           pinnedEnd={(

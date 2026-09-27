@@ -19,8 +19,10 @@ import {
   TEXT_BRIGHTNESS_MIN,
   TEXT_BRIGHTNESS_MAX,
   TEXT_BRIGHTNESS_STEP,
+  READER_BACKGROUND_THEME_DEFAULT,
 } from '../utils/constants';
 import { resolveReaderColors } from '../utils/readerColors';
+import { useTheme } from '../contexts/ThemeContext';
 import { applyChromeFonts } from '../utils/uiFont';
 
 function useSteppedValue(readValue, writeValue, { min, max, step }) {
@@ -67,7 +69,9 @@ export function useTextBrightness() {
 }
 
 export function useReaderBackground() {
-  const [readerBackground, setReaderBackgroundState] = useState(getReaderBackground);
+  const { theme } = useTheme();
+  const [storedBackground, setReaderBackgroundState] = useState(getReaderBackground);
+  const readerBackground = storedBackground ?? READER_BACKGROUND_THEME_DEFAULT[theme];
   const [customColors, setCustomColorsState] = useState(getReaderCustomColors);
   const { background: readerBackgroundColor, textColor: readerTextColor } = resolveReaderColors(
     readerBackground,

@@ -30,7 +30,6 @@ const DisabledLinkSpan = styled.span`
 `;
 
 const CatalogPanel = styled.section`
-  margin: 12px 6px 12px;
   ${catalogPanelShell}
 `;
 
@@ -45,10 +44,20 @@ const MenuItem = styled.li`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px dashed var(--border-color);
-  padding: 0 16px;
-  min-height: 48px;
-  transition: all 0.1s steps(2);
+  padding: 0 20px;
+  min-height: 52px;
+  position: relative;
+  transition: background-color 0.2s ease;
+
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 0;
+    height: 1px;
+    background: var(--border-color);
+  }
 
   &:hover {
     background-color: var(--catalog-glass-hover);
@@ -56,23 +65,17 @@ const MenuItem = styled.li`
 
   a {
     display: block;
-    padding: 16px 0;
+    padding: 15px 0;
     text-decoration: none;
     color: var(--text-color);
+    font-family: var(--display-font-family);
     font-size: 16px;
+    letter-spacing: 0.03em;
     flex: 1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: all 0.1s steps(2);
-    font-family: inherit;
-
-    &::before {
-      content: '>';
-      margin-right: 12px;
-      color: var(--accent-color);
-      font-weight: 900;
-    }
+    transition: color 0.2s ease;
 
     &:visited {
       color: var(--text-color-secondary);
@@ -81,7 +84,6 @@ const MenuItem = styled.li`
 
   &:hover > a {
     color: var(--accent-color);
-    transform: translateX(4px);
   }
 
   .chapter-actions {
@@ -94,8 +96,11 @@ const MenuItem = styled.li`
 
   .chapter-actions button {
     padding: 8px;
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 36px;
+    min-height: 36px;
+    background: transparent;
+    border-color: transparent;
+    color: var(--text-color-secondary);
   }
 
   .chapter-actions svg {
@@ -104,6 +109,13 @@ const MenuItem = styled.li`
   }
 
   @media (max-width: 480px) {
+    padding: 0 16px;
+
+    &:not(:last-child)::after {
+      left: 16px;
+      right: 16px;
+    }
+
     a {
       font-size: 15px;
     }

@@ -7,11 +7,7 @@ import CommentsActionBar from './CommentsActionBar';
 import CommentThread from './CommentThread';
 
 const Section = styled.div`
-  padding: 24px 24px 24px;
-
-  @media (max-width: 480px) {
-    padding: 20px 16px 16px;
-  }
+  padding: 8px 0 24px;
 `;
 
 const SectionTitle = styled.h1`
@@ -19,8 +15,10 @@ const SectionTitle = styled.h1`
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  font-size: 22px;
-  font-weight: 700;
+  font-family: var(--display-font-family);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   color: var(--text-color);
   margin: 10px 0 24px;
 

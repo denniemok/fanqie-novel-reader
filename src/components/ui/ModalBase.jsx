@@ -34,8 +34,9 @@ export const ModalBox = styled.div`
   background: var(--background-color2);
   border: var(--retro-border-width) solid var(--border-color);
   border-radius: var(--border-radius);
-  box-shadow: var(--retro-shadow);
+  box-shadow: var(--panel-shadow);
   width: 100%;
+  animation: fadeInUp 0.28s var(--ease-out) both;
   max-width: ${(p) => p.$maxWidth ?? '380px'};
   max-height: calc(
     100dvh - max(24px, env(safe-area-inset-top)) - max(24px, env(safe-area-inset-bottom))
@@ -61,12 +62,11 @@ export const ModalBox = styled.div`
 
 export const ModalHeader = styled.div`
   font-family: var(--display-font-family);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-color);
-  letter-spacing: 0.06em;
-  padding: 12px 16px;
-  background: var(--background-color);
+  letter-spacing: 0.08em;
+  padding: 12px 12px 12px 20px;
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
@@ -85,23 +85,25 @@ const ModalCloseButton = styled.button`
   width: 36px;
   height: 36px;
   box-sizing: border-box;
-  border: 1px solid var(--border-color);
-  background: var(--background-color2);
-  color: var(--text-color);
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-color-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.1s steps(2);
+  transition: var(--transition-default);
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
   }
 
   &:hover {
-    filter: brightness(1.2);
+    background: var(--hover-background-color);
+    color: var(--text-color);
   }
 
   @media (max-height: 500px) {
@@ -111,10 +113,10 @@ const ModalCloseButton = styled.button`
 `;
 
 export const ModalBody = styled.div`
-  padding: 16px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   flex: 1 1 auto;
   min-height: 0;
 
@@ -145,23 +147,23 @@ export const ModalScrollRegion = styled.div`
 `;
 
 export const ModalText = styled.p`
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-color-secondary);
-  line-height: 1.6;
+  line-height: 1.75;
   margin: 0;
   white-space: pre-line;
   word-break: break-word;
 
   strong {
     color: var(--text-color);
-    font-weight: 900;
+    font-weight: 600;
   }
 `;
 
 export const ModalFooter = styled.div`
   display: flex;
   gap: 8px;
-  padding: 12px 16px;
+  padding: 14px 20px;
   border-top: 1px solid var(--border-color);
   justify-content: flex-end;
   flex-shrink: 0;
@@ -196,13 +198,15 @@ export const ModalInput = styled.input`
   flex: 1;
   min-width: 0;
   box-sizing: border-box;
-  padding: 8px 10px;
+  padding: 9px 12px;
   background: var(--background-color);
   border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-xs);
   color: var(--text-color);
-  font-size: 13px;
+  font-size: 14px;
   font-family: inherit;
   outline: none;
+  transition: var(--transition-default);
 
   &:focus {
     border-color: var(--accent-color);
@@ -215,18 +219,23 @@ export const ModalInput = styled.input`
 `;
 
 const modalButtonStyles = `
-  padding: 8px 12px;
-  font-size: 12px;
-  font-weight: 900;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  border-radius: var(--border-radius-sketch);
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.1s steps(2);
-  text-transform: uppercase;
+  transition: var(--transition-default);
   font-family: inherit;
 
-  &:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0px #000;
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
   }
 `;
 
@@ -235,33 +244,35 @@ export const ModalPrimaryButton = styled.button`
   flex-shrink: 0;
   box-sizing: border-box;
   background: var(--accent-color);
-  color: #000;
-  border: 2px solid #000;
-  box-shadow: 2px 2px 0px #000;
+  color: var(--text-on-accent);
+  border: 1px solid var(--accent-color);
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: var(--accent-hover);
+    border-color: var(--accent-hover);
   }
 `;
 
 export const ModalDangerButton = styled.button`
   ${modalButtonStyles}
-  background: #aa5555;
-  color: #000;
-  border: 2px solid #000;
-  box-shadow: 2px 2px 0px #000;
+  background: var(--toast-error-color);
+  color: var(--background-color2);
+  border: 1px solid var(--toast-error-color);
 
-  &:hover {
-    filter: brightness(1.1);
+  &:hover:not(:disabled) {
+    filter: brightness(1.08);
   }
 `;
 
 export const ModalSecondaryButton = styled.button`
   ${modalButtonStyles}
-  background: var(--background-color2);
+  background: transparent;
   color: var(--text-color);
-  border: 2px solid #000;
-  box-shadow: 2px 2px 0px #000;
+  border: 1px solid var(--border-strong);
+
+  &:hover:not(:disabled) {
+    background: var(--hover-background-color);
+  }
 `;
 
 export function Modal({ onClose, children, maxWidth }) {

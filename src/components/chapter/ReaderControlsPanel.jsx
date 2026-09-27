@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import { Minus, Plus, Sun, Moon, Type, Palette, RefreshCw } from 'lucide-react';
@@ -15,6 +16,8 @@ import {
   READER_BACKGROUND_CUSTOM,
 } from '../../utils/constants';
 import { catalogPanelShell } from '../../utils/styled/retro';
+import { loadAllWebFonts } from '../../utils/fontLoader';
+import { filterAvailableFonts } from '../../utils/fontDetect';
 import { thinScrollbarStyles } from '../../utils/styled/scrollbars';
 
 const Overlay = styled(ModalOverlay)`
@@ -63,7 +66,8 @@ const Section = styled.div`
   padding: 10px 8px;
   flex-shrink: 0;
   ${catalogPanelShell}
-  box-shadow: none;
+  background: var(--dropdown-bg);
+  box-shadow: var(--panel-shadow);
 
   @media (max-width: 480px) {
     gap: 6px;
@@ -91,16 +95,13 @@ const ColorSwatch = styled.span`
   height: 44px;
   border-radius: var(--border-radius-sm);
   background-color: ${(p) => p.$color};
-  border: var(--retro-border-width) solid var(--border-color);
-  box-shadow: var(--retro-shadow);
+  border: var(--retro-border-width) solid var(--border-strong);
   transition: var(--transition-default);
   pointer-events: none;
 
   ${ColorPickerLabel}:hover &,
   ${ColorPickerLabel}:focus-within & {
     border-color: var(--accent-color);
-    transform: translate(-1px, -1px);
-    box-shadow: var(--retro-shadow-hover);
   }
 `;
 
@@ -136,6 +137,11 @@ function ReaderControlsPanel({
 }) {
   const isCustom = readerBackground === READER_BACKGROUND_CUSTOM;
 
+  // The font picker previews every option in its own face.
+  useEffect(() => {
+    if (open) loadAllWebFonts();
+  }, [open]);
+
   if (!open) return null;
 
   return createPortal(
@@ -168,7 +174,7 @@ function ReaderControlsPanel({
               icon={<Type size={20} strokeWidth={2.5} />}
               title="閱讀字體"
               ariaLabel="選擇閱讀字體"
-              options={CHINESE_FONTS}
+              options={filterAvailableFonts(CHINESE_FONTS)}
               value={fontFamily}
               onChange={onFontFamilyChange}
               menuPlacement="left"

@@ -9,19 +9,20 @@ const ToastWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px 20px;
-  background: var(--card-surface);
-  border: var(--retro-border-width) solid var(--toast-color, var(--accent-color));
+  padding: 12px 14px 12px 16px;
+  background: var(--background-color2);
+  border: var(--retro-border-width) solid var(--border-color);
+  border-left: 3px solid var(--toast-color, var(--accent-color));
   border-radius: var(--border-radius-sm);
-  color: var(--toast-color, var(--accent-color));
+  color: var(--text-color);
   font-size: 14px;
-  box-shadow: var(--retro-shadow-hover);
+  box-shadow: var(--panel-shadow);
   z-index: 9999;
-  max-width: min(320px, calc(100vw - 48px));
+  max-width: min(340px, calc(100vw - 32px));
   font-family: var(--ui-font-family);
   font-weight: 500;
   letter-spacing: 0.03em;
-  animation: toastIn 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) backwards;
+  animation: toastIn 0.3s var(--ease-out) backwards;
 
   ${(p) => p.$type === 'success' && css`
     --toast-color: var(--toast-success-color);
@@ -45,18 +46,17 @@ const CloseButton = styled.button`
   margin: -8px -8px -8px 0;
   background: none;
   border: none;
-  color: inherit;
+  color: var(--text-color-secondary);
   cursor: pointer;
   font-size: 20px;
   line-height: 1;
-  opacity: 0.8;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: color 0.2s ease;
 
   &:hover {
-    opacity: 1;
-    transform: scale(1.2);
+    color: var(--text-color);
   }
 `;
 

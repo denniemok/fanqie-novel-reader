@@ -24,7 +24,7 @@ const Hint = styled.p`
 
   @media (max-height: 500px) {
     margin-bottom: 6px;
-    font-size: 11px;
+    font-size: 12px;
   }
 `;
 
@@ -32,12 +32,12 @@ const CollectionRow = styled.div`
   display: flex;
   align-items: stretch;
   border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
   background: var(--background-color);
   overflow: hidden;
 
   ${(p) => p.$isDragging && `
-    outline: 2px dashed var(--accent-color);
-    outline-offset: -2px;
+    border-color: var(--accent-color);
   `}
 `;
 
@@ -48,7 +48,7 @@ const DragHandle = styled.div`
   flex-shrink: 0;
   width: 36px;
   align-self: stretch;
-  background: var(--background-color2);
+  background: transparent;
   border-right: 1px solid var(--border-color);
   color: var(--text-color-secondary);
   touch-action: none;
@@ -79,8 +79,8 @@ const RowMain = styled.div`
 const RowName = styled.div`
   flex: 1;
   min-width: 0;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--text-color);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -89,8 +89,9 @@ const RowName = styled.div`
 
 const RowMeta = styled.span`
   flex-shrink: 0;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
   color: var(--text-color-secondary);
 `;
 
@@ -101,6 +102,7 @@ const RowInput = styled.input`
   padding: 6px 8px;
   background: var(--background-color);
   border: 1px solid var(--accent-color);
+  border-radius: var(--border-radius-xs);
   color: var(--text-color);
   font-size: 13px;
   font-family: var(--ui-font-family);
@@ -119,28 +121,29 @@ const IconBtn = styled.button`
   width: 32px;
   height: 32px;
   box-sizing: border-box;
-  border: 1px solid var(--border-color);
-  background: ${(p) => {
-    if (p.$variant === 'delete') return '#aa5555';
-    if (p.$variant === 'confirm') return '#55aa55';
-    if (p.$variant === 'cancel') return '#aa5555';
-    return 'var(--background-color2)';
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-xs);
+  background: transparent;
+  color: ${(p) => {
+    if (p.$variant === 'delete' || p.$variant === 'cancel') return 'var(--toast-error-color)';
+    if (p.$variant === 'confirm') return 'var(--toast-success-color)';
+    return 'var(--text-color-secondary)';
   }};
-  color: ${(p) => (p.$variant ? 'var(--text-on-accent)' : 'var(--text-color)')};
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.1s steps(2);
+  transition: var(--transition-default);
 
   svg {
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
   }
 
   &:hover {
-    filter: brightness(1.08);
+    background: var(--hover-background-color);
+    border-color: var(--border-color);
   }
 `;
 

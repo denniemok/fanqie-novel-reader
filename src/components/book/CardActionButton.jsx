@@ -1,13 +1,9 @@
 import styled from 'styled-components';
 import { spin } from '../../utils/styled/animations';
 
-function actionVariantColor(variant) {
-  if (variant === 'delete') return '#c15f6a';
-  if (variant === 'refresh') return '#6397b9';
-  if (variant === 'collection') return '#b18045';
-  if (variant === 'download') return '#5f9974';
-  if (variant === 'export') return '#8772b2';
-  return 'var(--text-color-secondary)';
+/** Monochrome icons; only destructive actions pick up a hue, and only on hover. */
+function actionHoverColor(variant) {
+  return variant === 'delete' ? 'var(--toast-error-color)' : 'var(--accent-color)';
 }
 
 export const CardActionButton = styled.button`
@@ -15,7 +11,7 @@ export const CardActionButton = styled.button`
   min-width: 36px;
   min-height: 36px;
   border-radius: ${(p) => (p.$compact ? 'var(--border-radius-xs)' : 'var(--border-radius-sm)')};
-  border: 1px solid var(--border-color);
+  border: 1px solid transparent;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -23,17 +19,15 @@ export const CardActionButton = styled.button`
   flex-shrink: 0;
   transition: var(--transition-default);
   background: transparent;
-  color: ${(p) => actionVariantColor(p.$variant)};
-  box-shadow: none;
+  color: var(--text-color-secondary);
 
-  &:hover {
-    transform: none;
-    background: var(--accent-soft);
-    color: ${(p) => actionVariantColor(p.$variant)};
+  &:hover:not(:disabled) {
+    background: var(--hover-background-color);
+    color: ${(p) => actionHoverColor(p.$variant)};
   }
 
-  &:active {
-    transform: none;
+  &:active:not(:disabled) {
+    transform: scale(0.94);
   }
 
   &:disabled {
@@ -59,9 +53,9 @@ export const CardLoadingOverlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: color-mix(in srgb, var(--background-color) 88%, transparent);
+  background: color-mix(in srgb, var(--background-color) 80%, transparent);
   backdrop-filter: blur(4px);
-  border-radius: var(--border-radius-sm);
+  border-radius: inherit;
   z-index: 10;
 
   svg {

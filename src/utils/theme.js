@@ -1,8 +1,8 @@
 import { getStoredTheme } from './storage';
 
 const THEME_COLORS = {
-  light: '#eee7e2',
-  dark: '#19151e',
+  light: '#f1ede6',
+  dark: '#0f131b',
 };
 
 /** @returns {'light'|'dark'} */

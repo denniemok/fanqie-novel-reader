@@ -1,22 +1,11 @@
-import styled from 'styled-components';
 import EmptyHint from '../ui/EmptyHint';
+import { ModalPrimaryButton as EmptyAction } from '../ui/ModalBase';
 import BookshelfBookGridCard from './BookshelfBookGridCard';
 import BookshelfBookListCard from './BookshelfBookListCard';
 import SortableBooks from '../ui/SortableBooks';
 import { useBookshelfQuickAction } from '../../contexts/BookshelfQuickActionContext';
 import { ALL_TAB } from './constants';
 import { GridLayout, ListLayout } from '../layout/BookListLayouts';
-
-const EmptyAction = styled.button`
-  border: 0;
-  border-radius: 999px;
-  padding: 9px 15px;
-  background: var(--accent-color);
-  color: var(--text-on-accent);
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-`;
 
 function BookshelfBookList({
   activeTab,

@@ -15,20 +15,20 @@ const CollectionOption = styled.button`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px;
-  background: ${(p) => (p.$checked ? 'rgba(212, 165, 116, 0.15)' : 'var(--background-color)')};
-  border: 1px solid ${(p) => (p.$checked ? 'var(--accent-color)' : 'var(--border-color)')};
+  padding: 11px 14px;
+  background: ${(p) => (p.$checked ? 'var(--accent-soft)' : 'var(--background-color)')};
+  border: 1px solid ${(p) => (p.$checked ? 'color-mix(in srgb, var(--accent-color) 45%, transparent)' : 'var(--border-color)')};
+  border-radius: var(--border-radius-sm);
   color: var(--text-color);
-  font-size: 13px;
+  font-size: 14px;
   font-family: inherit;
   cursor: ${(p) => (p.$locked ? 'default' : 'pointer')};
   text-align: left;
-  transition: all 0.1s steps(2);
+  transition: var(--transition-default);
   opacity: ${(p) => (p.$locked ? 0.92 : 1)};
 
   &:hover {
-    border-color: ${(p) => (p.$locked ? (p.$checked ? 'var(--accent-color)' : 'var(--border-color)') : 'var(--accent-color)')};
-    background: ${(p) => (p.$locked ? (p.$checked ? 'rgba(212, 165, 116, 0.15)' : 'var(--background-color)') : 'var(--hover-background-color)')};
+    ${(p) => !(p.$locked || p.$checked) && 'border-color: var(--border-strong); background: var(--hover-background-color);'}
   }
 
   .check {
@@ -43,6 +43,7 @@ const MultiCollectionRow = styled.div`
   display: flex;
   align-items: stretch;
   border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
   background: var(--background-color);
   overflow: hidden;
 `;
@@ -50,8 +51,8 @@ const MultiCollectionRow = styled.div`
 const MultiCollectionName = styled.div`
   flex: 1;
   min-width: 0;
-  padding: 10px 12px;
-  font-size: 13px;
+  padding: 11px 14px;
+  font-size: 14px;
   font-family: inherit;
   color: var(--text-color);
   display: flex;
@@ -89,22 +90,22 @@ const MultiActionBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--background-color2);
+  background: transparent;
   color: var(--text-color-secondary);
-  transition: background 0.1s steps(2), color 0.1s steps(2);
+  transition: var(--transition-default);
 
   & + & {
     box-shadow: inset 1px 0 0 var(--border-color);
   }
 
   ${(p) => p.$active && p.$tone === 'add' && `
-    background: #55aa55;
-    color: var(--text-on-accent);
+    background: color-mix(in srgb, var(--toast-success-color) 16%, transparent);
+    color: var(--toast-success-color);
   `}
 
   ${(p) => p.$active && p.$tone === 'remove' && `
-    background: #aa5555;
-    color: var(--text-on-accent);
+    background: color-mix(in srgb, var(--toast-error-color) 14%, transparent);
+    color: var(--toast-error-color);
   `}
 
   svg {
@@ -113,7 +114,7 @@ const MultiActionBtn = styled.button`
   }
 
   &:hover:not(:disabled) {
-    filter: brightness(1.06);
+    ${(p) => !p.$active && 'background: var(--hover-background-color);'}
   }
 
   &:active:not(:disabled) {

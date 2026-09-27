@@ -40,9 +40,9 @@ export const CardActionOverlay = styled.div`
 export const CardActionFooter = styled.div`
   ${actionBarStyles}
   flex-shrink: 0;
-  padding: 6px 10px 6px;
+  padding: 4px 8px;
   border-top: 1px solid var(--border-color);
-  background: var(--background-color);
+  background: transparent;
 `;
 
 /** Stops click/touch propagation for nested action buttons on cards. */

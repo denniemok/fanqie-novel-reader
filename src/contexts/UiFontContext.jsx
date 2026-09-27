@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { getFontFamily, getUiFontMode, setUiFontMode as persistUiFontMode } from '../utils/storage';
 import { applyChromeFonts, isValidUiFontMode } from '../utils/uiFont';
-import { UI_FONT_MODE_BRAND } from '../utils/constants';
+import { UI_FONT_MODE_DEFAULT } from '../utils/constants';
 
 const UiFontContext = createContext(null);
 
@@ -29,7 +29,7 @@ export function useUiFont() {
   const ctx = useContext(UiFontContext);
   if (!ctx) {
     return {
-      mode: UI_FONT_MODE_BRAND,
+      mode: UI_FONT_MODE_DEFAULT,
       setMode: () => {},
     };
   }

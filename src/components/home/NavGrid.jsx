@@ -1,20 +1,19 @@
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import { Archive, BookOpen, Compass, Download, FileText, Github, Megaphone, MessageCircleWarning, Activity } from 'lucide-react';
+import styled, { css } from 'styled-components';
+import { Archive, ArrowUpRight, BookOpen, Compass, Download, FileText, Github, Megaphone, MessageCircleWarning, Activity } from 'lucide-react';
 import { GITHUB_ISSUES_URL, GITHUB_REPO_URL } from '../../utils/constants';
 import { ROUTES, buildDefaultDiscoverUrl } from '../../utils/navigation';
+import { SectionTitle } from '../../utils/styled/sections';
 
 const Section = styled.section`
   width: 100%;
-  margin-top: 24px;
-`;
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: homeCardEntrance 0.6s var(--ease-out) ${(p) => p.$delay ?? 0}s both;
 
-const SectionLabel = styled.h2`
-  margin: 0 0 10px;
-  font-family: var(--display-font-family);
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  @media (max-width: 480px) { margin-top: 32px; gap: 14px; }
 `;
 
 const QuickGrid = styled.div`
@@ -22,86 +21,146 @@ const QuickGrid = styled.div`
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 
-  > *:nth-child(1) { animation-delay: 0.14s; }
-  > *:nth-child(2) { animation-delay: 0.2s; }
-  > *:nth-child(3) { animation-delay: 0.26s; }
-
   @media (max-width: 480px) { gap: 8px; }
 `;
 
-const UtilityGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-
-  > *:nth-child(1) { animation-delay: 0.34s; }
-  > *:nth-child(2) { animation-delay: 0.39s; }
-  > *:nth-child(3) { animation-delay: 0.44s; }
-  > *:nth-child(4) { animation-delay: 0.49s; }
-  > *:nth-child(5) { animation-delay: 0.54s; }
-  > *:nth-child(6) { animation-delay: 0.59s; }
-
-  @media (max-width: 480px) { grid-template-columns: repeat(2, 1fr); }
-`;
-
-const sharedCard = `
-  display: flex;
-  align-items: center;
-  gap: 12px;
+const surface = css`
   border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-sm);
-  color: var(--text-color);
-  text-decoration: none;
-  cursor: pointer;
-  font-family: var(--ui-font-family);
-  transition: var(--transition-default);
   background: var(--surface-muted);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  animation: homeCardEntrance 0.46s cubic-bezier(0.22, 1, 0.36, 1) both;
-  &:hover { border-color: color-mix(in srgb, var(--accent-color) 58%, var(--border-color)); background: var(--surface-raised); transform: translateY(-2px); box-shadow: var(--retro-shadow); }
-  svg { flex-shrink: 0; color: var(--accent-color); }
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 `;
 
 const QuickButton = styled.button`
-  ${sharedCard}
-  min-height: 86px;
-  padding: 16px;
+  ${surface}
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: var(--border-radius);
+  color: var(--text-color);
   text-align: left;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  svg { width: 22px; height: 22px; }
-  strong { font-family: var(--display-font-family); font-size: 17px; font-weight: 600; }
-  span { color: var(--text-color-secondary); font-size: 12px; line-height: 1.35; }
-  @media (max-width: 480px) { min-height: 76px; padding: 12px; strong { font-size: 15px; } span { display: none; } }
+  font-family: var(--ui-font-family);
+  cursor: pointer;
+  transition: var(--transition-default);
+
+  .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent-color);
+    transition: var(--transition-default);
+  }
+  svg { width: 18px; height: 18px; }
+  .text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  strong { font-family: var(--display-font-family); font-size: 17px; font-weight: 600; letter-spacing: 0.1em; line-height: 1.4; white-space: nowrap; }
+  span.desc { color: var(--text-color-secondary); font-size: 12px; letter-spacing: 0.04em; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  @media (hover: hover) {
+    &:hover { background: var(--surface-raised); border-color: var(--border-strong); }
+    &:hover .icon { background: var(--accent-color); color: var(--text-on-accent); }
+  }
+  &:active { transform: scale(0.985); }
+
+  @media (max-width: 480px) {
+    gap: 10px;
+    padding: 14px 12px;
+    .icon { width: 32px; height: 32px; }
+    svg { width: 16px; height: 16px; }
+    strong { font-size: 15px; letter-spacing: 0.06em; }
+    span.desc { display: none; }
+  }
 `;
 
-const UtilityButton = styled.button`${sharedCard} padding: 11px 12px; font-size: 13px; background: var(--surface-muted);`;
-const UtilityLink = styled.a`${sharedCard} padding: 11px 12px; font-size: 13px; background: var(--surface-muted);`;
+const UtilityPanel = styled.div`
+  ${surface}
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+
+  /* Hairline grid: each cell draws its right/bottom edge; the panel border covers the outer edge. */
+  && > * { border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+  && > *:nth-child(3n) { border-right: none; }
+  && > *:nth-last-child(-n + 3) { border-bottom: none; }
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+    && > *:nth-child(3n) { border-right: 1px solid var(--border-color); }
+    && > *:nth-child(2n) { border-right: none; }
+    && > *:nth-last-child(3) { border-bottom: 1px solid var(--border-color); }
+  }
+`;
+
+const utilityItem = css`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 18px;
+  border: 0;
+  background: transparent;
+  color: var(--text-color);
+  font-family: var(--ui-font-family);
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition-default);
+
+  svg { width: 17px; height: 17px; flex-shrink: 0; color: var(--text-color-secondary); transition: color 0.2s ease; }
+  svg.external { width: 14px; height: 14px; margin-left: auto; opacity: 0.6; }
+
+  @media (hover: hover) {
+    &:hover { background: var(--hover-background-color); color: var(--accent-color); }
+    &:hover svg { color: var(--accent-color); }
+  }
+
+  @media (max-width: 480px) { padding: 14px 16px; font-size: 13px; gap: 10px; }
+`;
+
+const UtilityButton = styled.button`${utilityItem}`;
+const UtilityLink = styled.a`${utilityItem}`;
+
+const QUICK_ITEMS = [
+  { key: 'bookshelf', Icon: BookOpen, title: '書架', desc: '閱讀歷史與收藏', to: () => ROUTES.bookshelf },
+  { key: 'discover', Icon: Compass, title: '找書', desc: '開始一段新閱讀', to: buildDefaultDiscoverUrl },
+  { key: 'download', Icon: Download, title: '下載', desc: '離線閱讀與管理', to: () => ROUTES.download },
+];
 
 function NavGrid() {
   const navigate = useNavigate();
   return (
     <>
-      <Section>
-        <SectionLabel>常用功能</SectionLabel>
+      <Section $delay={0.18}>
+        <SectionTitle>常用功能</SectionTitle>
         <QuickGrid>
-          <QuickButton type="button" onClick={() => navigate(ROUTES.bookshelf)}><BookOpen aria-hidden /><strong>書架</strong><span>閱讀歷史與收藏</span></QuickButton>
-          <QuickButton type="button" onClick={() => navigate(buildDefaultDiscoverUrl())}><Compass aria-hidden /><strong>找書</strong><span>開始一段新閱讀</span></QuickButton>
-          <QuickButton type="button" onClick={() => navigate(ROUTES.download)}><Download aria-hidden /><strong>下載</strong><span>離線閱讀與管理</span></QuickButton>
+          {QUICK_ITEMS.map(({ key, Icon, title, desc, to }) => (
+            <QuickButton key={key} type="button" onClick={() => navigate(to())}>
+              <span className="icon"><Icon aria-hidden /></span>
+              <span className="text">
+                <strong>{title}</strong>
+                <span className="desc">{desc}</span>
+              </span>
+            </QuickButton>
+          ))}
         </QuickGrid>
       </Section>
-      <Section>
-        <SectionLabel>工具與資訊</SectionLabel>
-        <UtilityGrid>
+      <Section $delay={0.26}>
+        <SectionTitle>工具與資訊</SectionTitle>
+        <UtilityPanel>
           <UtilityButton type="button" onClick={() => navigate(ROUTES.announcements)}><Megaphone aria-hidden />公告</UtilityButton>
           <UtilityButton type="button" onClick={() => navigate(ROUTES.status)}><Activity aria-hidden />API 狀態</UtilityButton>
           <UtilityButton type="button" onClick={() => navigate(ROUTES.export)}><Archive aria-hidden />備份</UtilityButton>
           <UtilityButton type="button" onClick={() => navigate(ROUTES.terms)}><FileText aria-hidden />使用條款</UtilityButton>
-          <UtilityLink href={GITHUB_ISSUES_URL} target="_blank" rel="noopener noreferrer"><MessageCircleWarning aria-hidden />回報問題</UtilityLink>
-          <UtilityLink href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer"><Github aria-hidden />原始碼</UtilityLink>
-        </UtilityGrid>
+          <UtilityLink href={GITHUB_ISSUES_URL} target="_blank" rel="noopener noreferrer"><MessageCircleWarning aria-hidden />回報問題<ArrowUpRight className="external" aria-hidden /></UtilityLink>
+          <UtilityLink href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer"><Github aria-hidden />原始碼<ArrowUpRight className="external" aria-hidden /></UtilityLink>
+        </UtilityPanel>
       </Section>
     </>
   );

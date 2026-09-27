@@ -10,21 +10,17 @@ export const GrayButton = styled.button`
   border-radius: var(--border-radius-sketch);
   cursor: pointer;
   transition: var(--transition-default);
-  box-shadow: var(--retro-shadow);
   font-weight: 500;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 
   &:hover {
-    background: var(--accent-color);
-    color: var(--text-on-accent);
-    border-color: var(--accent-color);
-    transform: translate(-2px, -2px) rotate(-0.5deg);
-    box-shadow: var(--retro-shadow-hover);
+    background: var(--hover-background-color);
+    color: var(--accent-color);
+    border-color: var(--border-strong);
   }
 
   &:active {
-    transform: translate(1px, 1px) rotate(0deg);
-    box-shadow: none;
+    transform: scale(0.98);
   }
 
   &:focus-visible {

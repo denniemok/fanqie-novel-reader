@@ -32,15 +32,18 @@ const ToggleBtn = styled.button`
   gap: 8px;
   flex-shrink: 0;
   min-height: 36px;
-  padding: 0 12px;
+  padding: 0 14px;
   border: var(--retro-border-width) solid var(--border-color);
-  background: var(--background-color2);
+  border-radius: var(--border-radius-sm);
+  background: var(--card-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: var(--text-color-secondary);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   font-family: var(--ui-font-family);
   cursor: pointer;
-  box-shadow: var(--retro-shadow);
   transition: var(--transition-default);
 
   svg {
@@ -59,9 +62,7 @@ const ToggleBtn = styled.button`
 
   &:hover {
     color: var(--text-color);
-    border-color: var(--accent-color);
-    transform: translate(-1px, -1px);
-    box-shadow: var(--retro-shadow-hover);
+    border-color: var(--border-strong);
   }
 `;
 
@@ -73,12 +74,13 @@ const ActiveFilters = styled(HorizontalScrollInner)`
 
 const ActiveTag = styled.span`
   flex-shrink: 0;
-  padding: 4px 10px;
-  border: 1px solid color-mix(in srgb, var(--accent-color) 45%, var(--border-color));
-  background: color-mix(in srgb, var(--accent-color) 12%, var(--background-color2));
+  padding: 3px 10px;
+  border: none;
+  border-radius: 999px;
+  background: var(--accent-soft);
   color: var(--accent-color);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   font-family: var(--ui-font-family);
   white-space: nowrap;
 `;
@@ -110,9 +112,12 @@ const Body = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 12px 14px;
+  padding: 16px 18px;
+  border-radius: var(--border-radius);
   ${toolbarRetroUnit}
-  background: color-mix(in srgb, var(--background-color2) 48%, transparent);
+  background: var(--card-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 `;
 
 const Row = styled.div`
@@ -126,9 +131,9 @@ const Label = styled.span`
   min-width: 3.2em;
   padding-top: 6px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--text-color-secondary);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.08em;
 `;
 
 const Options = styled.div`
@@ -140,21 +145,22 @@ const Options = styled.div`
 `;
 
 const Chip = styled.button`
-  padding: 5px 12px;
-  border: 1px solid var(--border-color);
-  background: ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--background-color2)')};
-  color: ${(p) => (p.$active ? 'var(--text-on-accent)' : 'var(--text-color-secondary)')};
+  padding: 5px 14px;
+  border: 1px solid ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--border-color)')};
+  border-radius: 999px;
+  background: ${(p) => (p.$active ? 'var(--accent-soft)' : 'transparent')};
+  color: ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--text-color-secondary)')};
   font-size: 13px;
-  font-weight: 600;
+  font-weight: ${(p) => (p.$active ? 600 : 500)};
   font-family: var(--ui-font-family);
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: var(--transition-default);
 
   &:hover {
-    background: ${(p) => (p.$active ? 'var(--accent-hover)' : 'var(--hover-background-color)')};
-    color: ${(p) => (p.$active ? 'var(--text-on-accent)' : 'var(--text-color)')};
-    border-color: var(--accent-color);
+    background: ${(p) => (p.$active ? 'var(--accent-soft)' : 'var(--hover-background-color)')};
+    color: ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--text-color)')};
+    border-color: ${(p) => (p.$active ? 'var(--accent-color)' : 'var(--border-strong)')};
   }
 `;
 

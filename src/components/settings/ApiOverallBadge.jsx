@@ -1,8 +1,10 @@
 import styled from 'styled-components';
 
-const STATUS_GREEN = '#4a9a4a';
-const STATUS_AMBER = '#c80';
-const STATUS_RED = '#d44';
+function statusColor(status) {
+  if (status === 'up') return 'var(--toast-success-color)';
+  if (status === 'degraded') return 'var(--toast-warning-color)';
+  return 'var(--toast-error-color)';
+}
 
 export function overallStatusLabel(status) {
   if (status === 'up') return '正常';
@@ -13,23 +15,14 @@ export function overallStatusLabel(status) {
 const Badge = styled.span`
   display: inline-block;
   flex-shrink: 0;
-  padding: ${({ $compact }) => ($compact ? '2px 6px' : '3px 8px')};
-  border-radius: 4px;
+  padding: ${({ $compact }) => ($compact ? '1px 7px' : '2px 9px')};
+  border-radius: 999px;
   font-size: ${({ $compact }) => ($compact ? '10px' : '11px')};
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  color: #fff;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   white-space: nowrap;
-  background: ${({ $status }) => {
-    if ($status === 'up') return STATUS_GREEN;
-    if ($status === 'degraded') return STATUS_AMBER;
-    return STATUS_RED;
-  }};
-  border: 1px solid ${({ $status }) => {
-    if ($status === 'up') return STATUS_GREEN;
-    if ($status === 'degraded') return STATUS_AMBER;
-    return STATUS_RED;
-  }};
+  color: ${({ $status }) => statusColor($status)};
+  background: color-mix(in srgb, ${({ $status }) => statusColor($status)} 14%, transparent);
 `;
 
 function ApiOverallBadge({ status, compact = false }) {

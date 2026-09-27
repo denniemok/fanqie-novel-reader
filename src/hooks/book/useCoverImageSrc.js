@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { convertHeicCoverUrl, coverDisplayAttempts } from '../../utils/book/coverUrl';
 
+/** Delays before re-running every attempt after all of them failed (transient CDN / network errors). */
+const RETRY_DELAYS_MS = [1500, 4000, 10000];
+
 function queueFor(url, fallbackUrl) {
   const queue = coverDisplayAttempts(url);
   if (fallbackUrl && fallbackUrl !== url) {
@@ -9,37 +12,58 @@ function queueFor(url, fallbackUrl) {
   return queue;
 }
 
+/**
+ * Resolves a displayable cover src, walking the attempt queue on errors.
+ * A failure is never final: the queue is retried with backoff, and again when the
+ * network comes back or the tab becomes visible, so one bad load cannot stick.
+ * `attemptKey` changes on every run; key the <img> with it so the browser re-requests.
+ */
 export function useCoverImageSrc(url, fallbackUrl = null) {
-  const initialQueue = queueFor(url, fallbackUrl);
-  const first = initialQueue[0];
-  const [src, setSrc] = useState(first?.type === 'url' ? first.src : null);
-  const [loading, setLoading] = useState(first?.type === 'heic');
+  const initialHead = queueFor(url, fallbackUrl)[0];
+  const [src, setSrc] = useState(initialHead?.type === 'url' ? initialHead.src : null);
+  const [loading, setLoading] = useState(initialHead?.type === 'heic');
   const [failed, setFailed] = useState(false);
+  const [attemptKey, setAttemptKey] = useState(1);
   const genRef = useRef(0);
-  const queueRef = useRef(initialQueue.slice(first ? 1 : 0));
+  const queueRef = useRef([]);
+  const retriesRef = useRef(0);
+  const retryTimerRef = useRef(null);
+  const startRef = useRef(() => {});
+  const sourcesRef = useRef({ url, fallbackUrl });
+  sourcesRef.current = { url, fallbackUrl };
 
-  const playNext = useCallback((gen) => {
+  const clearRetryTimer = () => {
+    clearTimeout(retryTimerRef.current);
+    retryTimerRef.current = null;
+  };
+
+  const play = useCallback((gen) => {
     if (genRef.current !== gen) return;
     const next = queueRef.current.shift();
+
     if (!next) {
-      if (genRef.current !== gen) return;
-      setLoading(false);
+      const delay = RETRY_DELAYS_MS[retriesRef.current];
+      if (delay == null) {
+        setLoading(false);
+        setSrc(null);
+        setFailed(true);
+        return;
+      }
+      retriesRef.current += 1;
+      // Show the placeholder while waiting instead of the broken image.
       setSrc(null);
-      setFailed(true);
+      setLoading(true);
+      retryTimerRef.current = setTimeout(() => startRef.current(), delay);
       return;
     }
 
     if (next.type === 'url') {
-      if (genRef.current !== gen) return;
       setLoading(false);
-      setFailed(false);
       setSrc(next.src);
       return;
     }
 
-    if (genRef.current !== gen) return;
     setLoading(true);
-    setFailed(false);
     setSrc(null);
     void convertHeicCoverUrl(next.src).then((displayUrl) => {
       if (genRef.current !== gen) return;
@@ -48,45 +72,54 @@ export function useCoverImageSrc(url, fallbackUrl = null) {
         setSrc(displayUrl);
         return;
       }
-      playNext(gen);
+      play(gen);
     });
   }, []);
 
-  useEffect(() => {
+  /** Begin a fresh pass over every attempt (new generation, new <img> key). */
+  const start = useCallback(() => {
+    clearRetryTimer();
     const gen = ++genRef.current;
-    const queue = queueFor(url, fallbackUrl);
-    const head = queue[0];
-    queueRef.current = queue.slice(head ? 1 : 0);
+    const { url: u, fallbackUrl: f } = sourcesRef.current;
+    queueRef.current = queueFor(u, f);
     setFailed(false);
-
-    if (!head) {
+    setAttemptKey(gen);
+    if (!queueRef.current.length) {
       setSrc(null);
       setLoading(false);
       return;
     }
+    play(gen);
+  }, [play]);
+  startRef.current = start;
 
-    if (head.type === 'url') {
-      setSrc(head.src);
-      setLoading(false);
-      return;
-    }
+  useEffect(() => {
+    retriesRef.current = 0;
+    start();
+    return clearRetryTimer;
+  }, [url, fallbackUrl, start]);
 
-    setSrc(null);
-    setLoading(true);
-    void convertHeicCoverUrl(head.src).then((displayUrl) => {
-      if (genRef.current !== gen) return;
-      if (displayUrl) {
-        setLoading(false);
-        setSrc(displayUrl);
-        return;
-      }
-      playNext(gen);
-    });
-  }, [url, fallbackUrl, playNext]);
+  // Recover covers that exhausted their retries once the network or tab comes back.
+  useEffect(() => {
+    if (!failed) return undefined;
+    const retry = () => {
+      retriesRef.current = 0;
+      start();
+    };
+    const retryWhenVisible = () => {
+      if (document.visibilityState === 'visible') retry();
+    };
+    window.addEventListener('online', retry);
+    document.addEventListener('visibilitychange', retryWhenVisible);
+    return () => {
+      window.removeEventListener('online', retry);
+      document.removeEventListener('visibilitychange', retryWhenVisible);
+    };
+  }, [failed, start]);
 
   const onError = useCallback(() => {
-    playNext(genRef.current);
-  }, [playNext]);
+    play(genRef.current);
+  }, [play]);
 
-  return { src, loading, failed, onError };
+  return { src, loading, failed, onError, attemptKey };
 }

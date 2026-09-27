@@ -5,17 +5,16 @@ import { maybeConvert } from '../../utils/text/zh-convert';
 import { getHiddenReplyCount, organizeReplies } from '../../utils/commentReplies';
 
 const ThreadItem = styled.li`
-  padding: 16px;
+  padding: 20px 22px;
   background: var(--card-surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: var(--retro-border-width) solid var(--border-color);
-  border-radius: var(--border-radius-sm);
-  box-shadow: var(--retro-shadow);
+  border-radius: var(--border-radius);
   color: var(--text-color);
-  transition: all 0.1s steps(2);
 
-  &:hover {
-    background-color: var(--hover-background-color);
-    border-color: color-mix(in srgb, var(--accent-color) 40%, var(--border-color));
+  @media (max-width: 480px) {
+    padding: 16px;
   }
 `;
 
@@ -35,8 +34,9 @@ const CommentHeaderRow = styled.div`
 
 const CommentUser = styled.span`
   font-size: 14px;
-  font-weight: 600;
-  color: var(--accent-color);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--text-color);
 `;
 
 const HeaderStats = styled.span`
@@ -49,12 +49,11 @@ const ScoreBadge = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text-on-accent);
-  padding: 3px 8px;
-  background: rgba(201, 128, 154, 0.85);
-  border: 1px solid rgba(255, 248, 245, 0.4);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent-color);
+  padding: 2px 8px;
+  background: var(--accent-soft);
   border-radius: var(--border-radius-xs);
   line-height: 1.2;
   white-space: nowrap;
@@ -71,7 +70,7 @@ const MetaStat = styled.span`
   align-items: center;
   gap: 4px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-color-secondary);
   white-space: nowrap;
 
@@ -85,14 +84,16 @@ const MetaStat = styled.span`
 
 const CommentDate = styled.time`
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-color-secondary);
   white-space: nowrap;
 `;
 
 const CommentText = styled.div`
   font-size: 15px;
-  line-height: 1.6;
+  font-weight: 400;
+  line-height: 1.85;
+  letter-spacing: 0.02em;
   color: var(--text-color);
   white-space: pre-wrap;
   word-break: break-word;
@@ -101,23 +102,17 @@ const CommentText = styled.div`
 const ReplyList = styled.ul`
   list-style: none;
   margin: 14px 0 0;
-  padding: 0 0 0 14px;
+  padding: 0 0 0 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  border-left: 2px solid color-mix(in srgb, var(--accent-color) 30%, var(--border-color));
+  gap: 12px;
+  border-left: 1px solid var(--border-strong);
 `;
 
 const ReplyItem = styled.li`
-  padding: 12px;
-  background: var(--background-color2);
-  border: 1px solid var(--border-color);
+  padding: 12px 14px;
+  background: color-mix(in srgb, var(--text-color) 3%, transparent);
   border-radius: var(--border-radius-sm);
-  transition: background-color 0.1s steps(2);
-
-  &:hover {
-    background-color: var(--hover-background-color);
-  }
 `;
 
 const HiddenReplyHint = styled.p`

@@ -13,6 +13,7 @@ import { ALL_TAB } from './constants';
 import BookFilterPanel from '../book/BookFilterPanel';
 import {
   ToolbarRoot,
+  TabRow,
   Tab,
   TabInner,
   TabName,
@@ -68,31 +69,44 @@ function BookshelfToolbar({
 }) {
   return (
     <ToolbarRoot>
-      <ScrollableTabBar>
-        <Tab
-          $active={activeTab === ALL_TAB}
-          onClick={() => onActiveTabChange(ALL_TAB)}
-          title={`全部 (${readingHistory.length})`}
-        >
-          <TabInner>
-            <TabName>全部</TabName>
-            <TabCount>({readingHistory.length})</TabCount>
-          </TabInner>
-        </Tab>
-        {collections.map((col) => (
+      <TabRow>
+        <ScrollableTabBar>
           <Tab
-            key={col.id}
-            $active={activeTab === col.id}
-            onClick={() => onActiveTabChange(col.id)}
-            title={`${col.name} (${col.bookIds.length})`}
+            $active={activeTab === ALL_TAB}
+            onClick={() => onActiveTabChange(ALL_TAB)}
+            title={`全部 (${readingHistory.length})`}
           >
             <TabInner>
-              <TabName>{col.name}</TabName>
-              <TabCount>({col.bookIds.length})</TabCount>
+              <TabName>全部</TabName>
+              <TabCount>({readingHistory.length})</TabCount>
             </TabInner>
           </Tab>
-        ))}
-      </ScrollableTabBar>
+          {collections.map((col) => (
+            <Tab
+              key={col.id}
+              $active={activeTab === col.id}
+              onClick={() => onActiveTabChange(col.id)}
+              title={`${col.name} (${col.bookIds.length})`}
+            >
+              <TabInner>
+                <TabName>{col.name}</TabName>
+                <TabCount>({col.bookIds.length})</TabCount>
+              </TabInner>
+            </Tab>
+          ))}
+        </ScrollableTabBar>
+        <ViewToggle>
+          <ToggleBtn
+            type="button"
+            onClick={onOpenCollectionManagement}
+            title="管理收藏夾"
+            aria-label="管理收藏夾"
+          >
+            <Folders />
+            <BtnLabel>收藏夾</BtnLabel>
+          </ToggleBtn>
+        </ViewToggle>
+      </TabRow>
 
       <SearchRow>
         <SearchBar>
@@ -115,17 +129,6 @@ function BookshelfToolbar({
             </SearchClearBtn>
           )}
         </SearchBar>
-        <ViewToggle>
-          <ToggleBtn
-            type="button"
-            onClick={onOpenCollectionManagement}
-            title="管理收藏夾"
-            aria-label="管理收藏夾"
-          >
-            <Folders />
-            <BtnLabel>收藏夾</BtnLabel>
-          </ToggleBtn>
-        </ViewToggle>
       </SearchRow>
 
       <BookFilterPanel

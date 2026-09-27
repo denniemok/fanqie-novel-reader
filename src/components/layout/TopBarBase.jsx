@@ -3,16 +3,18 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import SettingsButton from '../settings/SettingsButton';
 import ActionBar from './ActionBar';
+import BrandSeal from '../ui/BrandSeal';
 import { ROUTES } from '../../utils/navigation';
 
 const TopBarWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 24px;
-  padding-top: calc(12px + env(safe-area-inset-top));
+  padding: 10px 24px;
+  padding-top: calc(10px + env(safe-area-inset-top));
   background-color: var(--topbar-bg);
-  backdrop-filter: blur(18px);
+  backdrop-filter: saturate(1.4) blur(20px);
+  -webkit-backdrop-filter: saturate(1.4) blur(20px);
   border-bottom: 1px solid var(--border-color);
   position: fixed;
   top: 0;
@@ -36,10 +38,14 @@ const TitleGroup = styled.div`
 `;
 
 const SiteTitle = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-family: var(--display-font-family);
   font-size: 18px;
   font-weight: 600;
-  color: var(--accent-color);
+  letter-spacing: 0.12em;
+  color: var(--text-color);
   text-decoration: none;
   white-space: nowrap;
   border: none;
@@ -51,23 +57,24 @@ const SiteTitle = styled(Link)`
 
   @media (hover: hover) {
     &:hover {
-      color: var(--accent-hover);
+      color: var(--accent-color);
     }
   }
 `;
 
 const TitleSep = styled.span`
-  color: var(--text-color-secondary);
-  font-size: 14px;
-  opacity: 0.55;
+  width: 1px;
+  height: 14px;
+  background: var(--border-strong);
   flex-shrink: 0;
+  margin: 0 4px;
 `;
 
 const PageTitleLabel = styled.span`
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--text-color-secondary);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -79,10 +86,10 @@ function TopBarBase({ pageTitle, children }) {
   return (
     <TopBarWrapper>
       <TitleGroup>
-        <SiteTitle to={ROUTES.home}>番閱</SiteTitle>
+        <SiteTitle to={ROUTES.home}><BrandSeal aria-hidden>番</BrandSeal>番閱</SiteTitle>
         {pageTitle && (
           <>
-            <TitleSep>›</TitleSep>
+            <TitleSep aria-hidden />
             <PageTitleLabel>{pageTitle}</PageTitleLabel>
           </>
         )}

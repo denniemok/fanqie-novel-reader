@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Activity, BookImage, Globe, Languages, Moon, Sun, Type } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -21,6 +21,8 @@ import {
   ZH_CONVERSION_OPTIONS,
 } from '../../utils/constants';
 import { ROUTES } from '../../utils/navigation';
+import { loadAllWebFonts } from '../../utils/fontLoader';
+import { filterAvailableFonts } from '../../utils/fontDetect';
 
 const ApiOptionRow = styled.span`
   display: flex;
@@ -49,10 +51,10 @@ const StatusLink = styled.button`
   font-family: inherit;
   color: var(--text-color-secondary);
   background: var(--background-color);
-  border: 1px dashed var(--border-color);
-  border-radius: var(--border-radius-xs);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition: var(--transition-default);
 
   svg {
     flex-shrink: 0;
@@ -63,7 +65,7 @@ const StatusLink = styled.button`
     &:hover {
       background: var(--hover-background-color);
       color: var(--accent-color);
-      border-color: var(--accent-color);
+      border-color: var(--border-strong);
     }
   }
 `;
@@ -92,6 +94,11 @@ function SettingsModal({ onClose }) {
   const [conversionMode, setConversionMode] = useConversionMode();
   const { theme, setTheme } = useTheme();
   const { mode: uiFontMode, setMode: setUiFontMode } = useUiFont();
+
+  // The UI font picker previews every option in its own face.
+  useEffect(() => {
+    loadAllWebFonts();
+  }, []);
 
   const apiOptions = API_OPTIONS.map((opt) => ({
     ...opt,
@@ -136,7 +143,7 @@ function SettingsModal({ onClose }) {
           </SectionHeader>
           <SelectField>
             <SelectDropdown
-              options={UI_FONT_MODE_OPTIONS}
+              options={filterAvailableFonts(UI_FONT_MODE_OPTIONS)}
               value={uiFontMode}
               onChange={setUiFontMode}
               ariaLabel="選擇介面字型"
