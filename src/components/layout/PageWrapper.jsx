@@ -1,10 +1,8 @@
 import styled, { css } from 'styled-components';
-import { minViewportHeight, viewportHeight } from '../../utils/styled/viewport';
+import { fixedViewport, minViewportHeight } from '../../utils/styled/viewport';
 
-const PageWrapper = styled.div.attrs((p) => ({
-  'data-fill-viewport': p.$fillViewport ? '' : null,
-}))`
-  ${(p) => (p.$fillViewport ? viewportHeight : minViewportHeight)}
+const PageWrapper = styled.div`
+  ${(p) => (p.$fillViewport ? fixedViewport : minViewportHeight)}
   overflow-x: hidden;
   width: 100%;
   background-color: ${(p) => p.$backgroundColor ?? 'transparent'};

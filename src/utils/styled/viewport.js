@@ -1,24 +1,28 @@
 import { css } from 'styled-components';
 
-/**
- * Large viewport, so the page paints under Safari's collapsing address bar
- * instead of stopping short and leaving a strip of empty space.
- * `--browser-chrome-bottom` is the covered strip, measured in index.html.
- */
-const viewportBottomInset = 'max(var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)), var(--browser-chrome-bottom, 0px))';
-
 export const viewportHeight = css`
   height: 100vh;
-  height: 100lvh;
+  height: 100svh;
+  height: 100dvh;
 `;
 
 export const minViewportHeight = css`
   min-height: 100vh;
-  min-height: 100lvh;
+  min-height: 100svh;
+  min-height: 100dvh;
+`;
+
+/**
+ * Pins a full-screen shell to the visible viewport. Safari keeps fixed boxes inside the
+ * area its toolbars leave free, wherever they sit, so no gap opens when they expand or collapse.
+ */
+export const fixedViewport = css`
+  position: fixed;
+  inset: 0;
 `;
 
 export const safeAreaInsetBottom = css`
-  padding-bottom: ${viewportBottomInset};
+  padding-bottom: var(--safe-area-bottom, env(safe-area-inset-bottom, 0px));
 `;
 
 /**

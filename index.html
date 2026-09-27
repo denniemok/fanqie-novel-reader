@@ -55,40 +55,6 @@
     <!-- UI default font only (CHINESE_FONTS[0].webFont); reader fonts load on demand via src/utils/fontLoader.js -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <script>
-      (function () {
-        var root = document.documentElement;
-        var frame = 0;
-        function sync() {
-          var vv = window.visualViewport;
-          if (vv && vv.scale > 1.01) return;
-          var probe = document.createElement('div');
-          probe.style.cssText = 'position:absolute;left:0;top:0;visibility:hidden;pointer-events:none;width:0;height:100vh;';
-          if (window.CSS && CSS.supports('height', '100lvh')) probe.style.height = '100lvh';
-          root.appendChild(probe);
-          var large = probe.offsetHeight || window.innerHeight;
-          probe.remove();
-          var offsetTop = vv ? vv.offsetTop : 0;
-          var visible = vv ? vv.height : window.innerHeight;
-          var chromeBelow = Math.max(0, Math.round(large - offsetTop - visible));
-          root.style.setProperty('--browser-chrome-bottom', chromeBelow + 'px');
-        }
-        function schedule() {
-          if (frame) return;
-          frame = requestAnimationFrame(function () {
-            frame = 0;
-            sync();
-          });
-        }
-        sync();
-        if (window.visualViewport) {
-          visualViewport.addEventListener('resize', schedule);
-          visualViewport.addEventListener('scroll', schedule);
-        }
-        window.addEventListener('orientationchange', schedule);
-        window.addEventListener('pageshow', schedule);
-      })();
-    </script>
-    <script>
       try {
         var stored = localStorage.getItem('theme');
         var isDark = stored === 'dark' || (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
