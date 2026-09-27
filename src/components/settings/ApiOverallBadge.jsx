@@ -15,7 +15,7 @@ export function overallStatusLabel(status) {
 const Badge = styled.span`
   display: inline-block;
   flex-shrink: 0;
-  padding: ${({ $compact }) => ($compact ? '1px 7px' : '2px 9px')};
+  padding: ${({ $compact }) => ($compact ? '4px 8px' : '2px 9px')};
   border-radius: 999px;
   font-size: ${({ $compact }) => ($compact ? '10px' : '11px')};
   font-weight: 500;

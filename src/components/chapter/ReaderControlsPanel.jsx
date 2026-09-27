@@ -134,6 +134,7 @@ function ReaderControlsPanel({
   readerCustomText,
   onCustomBgChange,
   onCustomTextChange,
+  onCustomizeFromPreset,
 }) {
   const isCustom = readerBackground === READER_BACKGROUND_CUSTOM;
 
@@ -209,6 +210,17 @@ function ReaderControlsPanel({
               value={readerBackground}
               onChange={onReaderBackgroundChange}
               menuPlacement="left"
+              onEditOption={
+                onCustomizeFromPreset
+                  ? (opt) =>
+                      opt.value === READER_BACKGROUND_CUSTOM
+                        ? null
+                        : {
+                            title: `以「${opt.label}」作為自訂`,
+                            onClick: () => onCustomizeFromPreset(opt),
+                          }
+                  : undefined
+              }
             />
           )}
         </Section>

@@ -48,6 +48,7 @@ function Chapter() {
     handleReaderBackgroundChange,
     handleCustomBgChange,
     handleCustomTextChange,
+    handleCustomizeFromPreset,
   } = useReaderBackground();
   const [conversionMode] = useConversionMode();
   const [readerControlsOpen, setReaderControlsOpen] = useState(false);
@@ -136,6 +137,7 @@ function Chapter() {
                 readerCustomText={readerCustomText}
                 onCustomBgChange={handleCustomBgChange}
                 onCustomTextChange={handleCustomTextChange}
+                onCustomizeFromPreset={handleCustomizeFromPreset}
               />
               <ReaderPane ref={readerPaneRef}>
                 <Reader

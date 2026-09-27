@@ -6,7 +6,7 @@ const Header = styled.header`
   margin-left: auto;
   margin-right: auto;
   box-sizing: border-box;
-  padding: calc(120px + env(safe-area-inset-top)) 24px 0;
+  padding: calc(72px + env(safe-area-inset-top)) 24px 0;
   margin-bottom: 48px;
   display: flex;
   flex-direction: column;
@@ -15,7 +15,7 @@ const Header = styled.header`
   animation: fadeInUp 0.7s var(--ease-out) backwards;
 
   @media (max-width: 480px) {
-    padding: calc(88px + env(safe-area-inset-top)) 16px 0;
+    padding: calc(52px + env(safe-area-inset-top)) 16px 0;
     margin-bottom: 36px;
   }
 `;

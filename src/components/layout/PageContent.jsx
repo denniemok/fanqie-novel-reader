@@ -4,13 +4,13 @@ import styled from 'styled-components';
 export const TopBarOffset = styled.div`
   max-width: 800px;
   margin: 0 auto;
-  padding: calc(var(--topbar-height) + 32px) 24px 0;
+  padding: calc(var(--topbar-height) + 32px) 24px calc(24px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   gap: 16px;
 
   @media (max-width: 480px) {
-    padding: calc(var(--topbar-height) + 16px) 16px 0;
+    padding: calc(var(--topbar-height) + 16px) 16px calc(16px + env(safe-area-inset-bottom, 0px));
     gap: 12px;
   }
 `;

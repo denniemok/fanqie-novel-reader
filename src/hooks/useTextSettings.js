@@ -20,8 +20,9 @@ import {
   TEXT_BRIGHTNESS_MAX,
   TEXT_BRIGHTNESS_STEP,
   READER_BACKGROUND_THEME_DEFAULT,
+  READER_BACKGROUND_CUSTOM,
 } from '../utils/constants';
-import { resolveReaderColors } from '../utils/readerColors';
+import { isValidHexColor, resolveReaderColors } from '../utils/readerColors';
 import { useTheme } from '../contexts/ThemeContext';
 import { applyChromeFonts } from '../utils/uiFont';
 
@@ -95,6 +96,16 @@ export function useReaderBackground() {
     setCustomColorsState(next);
   };
 
+  /** Copy a preset's paper and ink into custom, then select custom so it can be edited. */
+  const handleCustomizeFromPreset = (preset) => {
+    if (!isValidHexColor(preset?.value) || !isValidHexColor(preset?.textColor)) return;
+    const next = { bg: preset.value, text: preset.textColor };
+    setReaderCustomColors(next);
+    setCustomColorsState(next);
+    setReaderBackground(READER_BACKGROUND_CUSTOM);
+    setReaderBackgroundState(READER_BACKGROUND_CUSTOM);
+  };
+
   return {
     readerBackground,
     readerBackgroundColor,
@@ -104,5 +115,6 @@ export function useReaderBackground() {
     handleReaderBackgroundChange,
     handleCustomBgChange,
     handleCustomTextChange,
+    handleCustomizeFromPreset,
   };
 }
