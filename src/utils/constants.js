@@ -106,8 +106,6 @@ export const API_OPTIONS = [
   { value: 'hk-2', label: 'hk-2' },
   { value: 'hk-3', label: 'hk-3' },
   { value: 'hk-4', label: 'hk-4' },
-  { value: 'hk-5', label: 'hk-5' },
-  { value: 'hk-6', label: 'hk-6' },
   { value: 'cn-1', label: 'cn-1' },
   { value: 'cn-2', label: 'cn-2' },
   { value: 'sg-1', label: 'sg-1' },
