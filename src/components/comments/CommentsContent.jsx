@@ -58,13 +58,19 @@ const Pagination = styled.div`
   padding: 16px 0;
 `;
 
+/** Comment tools when book details are unavailable, so refresh is always reachable. */
+const ToolRow = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
 const PaginationButton = styled.button`
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 10px 20px;
   min-height: 44px;
-  border-radius: 12px;
+  border-radius: var(--border-radius-sm);
   border: 1px solid var(--border-color);
   background: var(--background-color2);
   color: var(--text-color);
@@ -120,10 +126,17 @@ function CommentsContent({
 }) {
   return (
     <TopBarOffset>
-      {bookInfo && (
-        <BookInfo bookInfo={bookInfo} conversionMode={conversionMode} />
+      {bookInfo ? (
+        <BookInfo
+          bookInfo={bookInfo}
+          conversionMode={conversionMode}
+          action={<CommentsActionBar bookId={bookId} onRefresh={onRefresh} />}
+        />
+      ) : (
+        <ToolRow>
+          <CommentsActionBar bookId={bookId} onRefresh={onRefresh} />
+        </ToolRow>
       )}
-      <CommentsActionBar bookId={bookId} onRefresh={onRefresh} />
       <Section>
         <CommentStatsHeading commentCnt={commentCnt} convertedContext={convertedContext} />
         {pageLoading ? (
