@@ -7,13 +7,13 @@ import { SectionTitle } from '../../utils/styled/sections';
 
 const Section = styled.section`
   width: 100%;
-  margin-top: 40px;
+  margin-top: ${(p) => p.$gap ?? 40}px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   animation: homeCardEntrance 0.6s var(--ease-out) ${(p) => p.$delay ?? 0}s both;
 
-  @media (max-width: 480px) { margin-top: 32px; gap: 14px; }
+  @media (max-width: 480px) { margin-top: ${(p) => (p.$gap ? 12 : 32)}px; gap: 14px; }
 `;
 
 const QuickGrid = styled.div`
@@ -27,6 +27,7 @@ const QuickGrid = styled.div`
 const surface = css`
   border: 1px solid var(--border-color);
   background: var(--surface-muted);
+  background-image: var(--paper-grain);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 `;
@@ -44,34 +45,21 @@ const QuickButton = styled.button`
   cursor: pointer;
   transition: var(--transition-default);
 
-  .icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--accent-soft);
-    color: var(--accent-color);
-    transition: var(--transition-default);
-  }
-  svg { width: 18px; height: 18px; }
+  .icon { display: flex; flex-shrink: 0; color: var(--accent-color); }
+  svg { width: 22px; height: 22px; }
   .text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
   strong { font-family: var(--display-font-family); font-size: 17px; font-weight: 600; letter-spacing: 0.1em; line-height: 1.4; white-space: nowrap; }
   span.desc { color: var(--text-color-secondary); font-size: 12px; letter-spacing: 0.04em; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   @media (hover: hover) {
-    &:hover { background: var(--surface-raised); border-color: var(--border-strong); }
-    &:hover .icon { background: var(--accent-color); color: var(--text-on-accent); }
+    &:hover { background-color: var(--surface-raised); border-color: var(--border-strong); }
   }
   &:active { transform: scale(0.985); }
 
   @media (max-width: 480px) {
     gap: 10px;
     padding: 14px 12px;
-    .icon { width: 32px; height: 32px; }
-    svg { width: 16px; height: 16px; }
+    svg { width: 18px; height: 18px; }
     strong { font-size: 15px; letter-spacing: 0.06em; }
     span.desc { display: none; }
   }
@@ -137,8 +125,7 @@ function NavGrid() {
   const navigate = useNavigate();
   return (
     <>
-      <Section $delay={0.18}>
-        <SectionTitle>常用功能</SectionTitle>
+      <Section $delay={0.18} $gap={16} aria-label="常用功能">
         <QuickGrid>
           {QUICK_ITEMS.map(({ key, Icon, title, desc, to }) => (
             <QuickButton key={key} type="button" onClick={() => navigate(to())}>

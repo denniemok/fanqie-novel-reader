@@ -60,6 +60,7 @@ export const retroGlassButtonStyles = css`
 export const retroCardStyles = css`
   padding: 20px 22px;
   background: var(--card-surface);
+  background-image: var(--paper-grain);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: var(--border-radius);
@@ -92,6 +93,7 @@ export const catalogPanelShell = css`
   border-radius: var(--border-radius);
   border: var(--retro-border-width) solid var(--border-color);
   background: var(--catalog-glass-bg);
+  background-image: var(--paper-grain);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   overflow: hidden;
