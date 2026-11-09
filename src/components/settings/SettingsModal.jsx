@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Activity, BookImage, Globe, Languages, Moon, Replace, Sun, Type } from 'lucide-react';
+import { Activity, BookImage, Globe, Languages, Monitor, Moon, Replace, Sun, Type } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Modal, ModalTitleBar, ModalBody, ModalText } from '../ui/ModalBase';
 import { MODAL_SELECT_PROPS, Section, SectionHeader, SelectField } from '../ui/ModalFormSection';
@@ -72,6 +72,7 @@ const StatusLink = styled.button`
 `;
 
 const THEME_OPTIONS = [
+  { value: 'system', label: '跟隨系統', icon: Monitor },
   { value: 'light', label: '淺色模式', icon: Sun },
   { value: 'dark', label: '深色模式', icon: Moon },
 ];
@@ -95,7 +96,7 @@ function SettingsModal({ onClose }) {
   const [conversionMode, setConversionMode] = useConversionMode();
   const { replaceRules } = useReplaceRules();
   const [replaceRulesOpen, setReplaceRulesOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { themeMode, setTheme } = useTheme();
   const { mode: uiFontMode, setMode: setUiFontMode } = useUiFont();
 
   // The UI font picker previews every option in its own face.
@@ -233,7 +234,7 @@ function SettingsModal({ onClose }) {
           <SelectField>
             <SelectDropdown
               options={THEME_OPTIONS}
-              value={theme}
+              value={themeMode}
               onChange={setTheme}
               ariaLabel="選擇主題"
               {...MODAL_SELECT_PROPS}
