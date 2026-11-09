@@ -1,9 +1,7 @@
 import {
   CANONICAL_SITE_URL,
-  CANONICAL_HOSTNAME,
   DATA_BACKUP_VERSION,
   DATA_BACKUP_EXTENSION,
-  LEGACY_HOSTNAMES,
   DIRECTORY_CACHE_KEY,
   CHAPTER_CACHE_KEY,
   DETAIL_CACHE_KEY,
@@ -12,19 +10,6 @@ import {
 } from './constants';
 import { getAllStoreEntries, importStoreEntries } from './cache';
 import { triggerFileDownload } from './export/downloadFile';
-
-export function getHostname() {
-  if (typeof window === 'undefined') return '';
-  return window.location.hostname;
-}
-
-export function isLegacyOrigin(hostname = getHostname()) {
-  return LEGACY_HOSTNAMES.includes(hostname);
-}
-
-export function isCanonicalOrigin(hostname = getHostname()) {
-  return hostname === CANONICAL_HOSTNAME;
-}
 
 export function summarizeBackupData(indexedDB = {}) {
   const keys = Object.keys(indexedDB);

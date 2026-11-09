@@ -1,17 +1,11 @@
 import { useRef, useState } from 'react';
 import PageContent from '../layout/PageContent';
 import { GrayButton } from '../ui/GrayButton';
-import HostCodeList from '../settings/HostCodeList';
 import { useToast } from '../../contexts/ToastContext';
 import { useReplaceRules } from '../../hooks/useConversionMode';
-import {
-  CANONICAL_HOSTNAME,
-  CANONICAL_IMPORT_URL,
-  DATA_BACKUP_EXTENSION,
-  LEGACY_HOSTNAMES,
-} from '../../utils/constants';
-import { importUserData, isCanonicalOrigin, hasBackupExtension } from '../../utils/dataMigration';
-import { ActionRow, FileInput, FileLabel, Hint, Section, SectionTitle, StepCard } from './styles';
+import { DATA_BACKUP_EXTENSION } from '../../utils/constants';
+import { importUserData, hasBackupExtension } from '../../utils/dataMigration';
+import { ActionRow, FileInput, FileLabel, Section, SectionTitle, StepCard } from './styles';
 
 function ImportContent() {
   const { notifyError, notifySuccess, notifyWarning } = useToast();
@@ -19,7 +13,6 @@ function ImportContent() {
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [importing, setImporting] = useState(false);
-  const onCanonicalSite = isCanonicalOrigin();
 
   const handleFileChange = (event) => {
     const file = event.target.files?.[0] ?? null;
@@ -60,36 +53,19 @@ function ImportContent() {
   return (
     <PageContent $paddingBottom={48} $paddingBottomMobile={32}>
       <Section>
-        <SectionTitle>資料遷移 — 匯入</SectionTitle>
-
-        <StepCard>
-          <b>匯入前的小提醒</b>
-          <ol>
-            <li>
-              請確認您已經在舊站（<HostCodeList hostnames={LEGACY_HOSTNAMES} />）下載好備份檔。
-            </li>
-            <li>備份檔的副檔名應該要是 <code>{DATA_BACKUP_EXTENSION}</code>。</li>
-            <li>
-              建議您在 <code>{CANONICAL_HOSTNAME}</code> 進行匯入，資料才會寫進新站喔！
-            </li>
-          </ol>
-          {!onCanonicalSite && (
-            <Hint>
-              提醒您：您目前不在 {CANONICAL_HOSTNAME}。在這裡匯入只會把資料寫進<strong>目前的網址</strong>；如果要搬家到新站，請在{' '}
-              {CANONICAL_IMPORT_URL.replace('https://', '')} 打開這個頁面。
-            </Hint>
-          )}
-        </StepCard>
+        <SectionTitle>備份資料 — 匯入</SectionTitle>
 
         <StepCard>
           <b>上傳備份檔</b>
-          <p>請選擇從舊站下載的備份檔。匯入後，相同的書籍資料會被覆蓋更新（不會變更本機的閱讀設定）。</p>
+          <p>
+            選擇之前匯出的 <code>{DATA_BACKUP_EXTENSION}</code> 檔案。匯入後，相同書籍的資料會以備份為準更新，本機的閱讀設定不會變更。
+          </p>
           <ActionRow>
             <GrayButton type="button" onClick={() => fileInputRef.current?.click()}>
               選擇檔案
             </GrayButton>
             <GrayButton type="button" onClick={handleImport} disabled={!selectedFile || importing}>
-              {importing ? '搬運中…' : '開始匯入'}
+              {importing ? '匯入中…' : '開始匯入'}
             </GrayButton>
           </ActionRow>
           <FileInput
