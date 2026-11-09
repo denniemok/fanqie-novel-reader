@@ -175,16 +175,6 @@ export const SearchClearBtn = styled.button`
   }
 `;
 
-export const TabActions = styled.div`
-  display: flex;
-  align-items: stretch;
-  justify-content: flex-end;
-  gap: 12px;
-  flex-wrap: wrap;
-  min-height: ${TOOLBAR_CONTROL_HEIGHT};
-  width: 100%;
-`;
-
 export const ToolbarRoot = styled.div`
   display: flex;
   flex-direction: column;
@@ -209,7 +199,8 @@ export const ToolbarRight = styled.div`
   gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
-  flex: 1 1 100%;
+  /* Sits beside the filter toggle; drops to its own line when they don't fit. */
+  flex: 1 1 auto;
   max-width: 100%;
 `;
 

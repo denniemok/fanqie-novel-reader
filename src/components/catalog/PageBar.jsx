@@ -16,6 +16,10 @@ const Bar = styled.div`
     border-bottom: none;
     ${catalogDividerTop}
   }
+
+  @media (max-width: 400px) {
+    padding: 12px 10px;
+  }
 `;
 
 const PaginationGroup = styled.div`
@@ -24,6 +28,11 @@ const PaginationGroup = styled.div`
   justify-content: center;
   align-items: center;
   gap: 12px;
+
+  /* Five controls must fit a 320px phone: 4 × 40 + 80 + 4 × 6 = 264px. */
+  @media (max-width: 400px) {
+    gap: 6px;
+  }
 `;
 
 const NavButton = styled.button`
@@ -97,6 +106,7 @@ function PageDropdown({ pageOptions, currentPage, onPageSelect, openUpward = fal
       openUpward={openUpward}
       retro
       triggerMinHeight={40}
+      triggerMinWidthMobile={80}
       renderValue={(opt) => <PageOptionLabel pageNumber={opt.pageNumber} />}
       renderOption={(opt) => (
         <PageOptionLabel

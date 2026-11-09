@@ -686,7 +686,9 @@ export function getStoredTheme() {
   return readStoredChoice(THEME_KEY, THEME_VALUES, null);
 }
 
+/** @param {'light'|'dark'|'system'} theme 'system' clears the stored choice. */
 export function setTheme(theme) {
+  if (theme === 'system') return safeRemoveItem(THEME_KEY);
   return writeStoredChoice(THEME_KEY, theme, THEME_VALUES);
 }
 

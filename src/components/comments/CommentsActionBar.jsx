@@ -1,29 +1,24 @@
 import { List, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import BookActionBar from '../book/BookActionBar';
-import LabeledIconButton from '../ui/LabeledIconButton';
+import BookToolButton from '../book/BookToolButton';
 import { buildCatalogUrl } from '../../utils/navigation';
 import { CATALOG_BUTTON_TITLE } from '../navigation/CatalogButton';
 
+/** Comment-page tools; rendered inside BookInfo's action row. */
 function CommentsActionBar({ bookId, onRefresh }) {
   const navigate = useNavigate();
 
   return (
-    <BookActionBar>
-      <LabeledIconButton type="button" label="刷新評論" title="刷新評論" onClick={onRefresh}>
-        <RefreshCw size={20} strokeWidth={2.5} />
-      </LabeledIconButton>
+    <>
+      <BookToolButton icon={RefreshCw} label="刷新評論" onClick={onRefresh} />
       {bookId && (
-        <LabeledIconButton
-          type="button"
+        <BookToolButton
+          icon={List}
           label={CATALOG_BUTTON_TITLE}
-          title={CATALOG_BUTTON_TITLE}
           onClick={() => navigate(buildCatalogUrl(bookId))}
-        >
-          <List size={20} strokeWidth={2.5} />
-        </LabeledIconButton>
+        />
       )}
-    </BookActionBar>
+    </>
   );
 }
 

@@ -64,6 +64,8 @@ const TableWrap = styled.div`
   ${retroCardStyles}
   padding: 0;
   max-width: 100%;
+  /* Clip the header row's fill to the card's rounded corners. */
+  overflow: hidden;
 
   @media (max-width: 480px) {
     overflow-x: auto;

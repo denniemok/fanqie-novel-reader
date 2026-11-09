@@ -28,13 +28,6 @@ export const ActionRow = styled.div`
   margin-top: 14px;
 `;
 
-export const Hint = styled.p`
-  margin: 0;
-  font-size: 13px;
-  color: var(--text-muted, color-mix(in srgb, var(--text-color) 65%, transparent));
-  line-height: 1.6;
-`;
-
 export const FileInput = styled.input`
   display: none;
 `;

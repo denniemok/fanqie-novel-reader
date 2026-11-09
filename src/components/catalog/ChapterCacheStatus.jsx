@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Check, X, Loader2 } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 import { CardSpinningIcon } from '../book/CardActionButton';
 
 const StatusWrapper = styled.span`
@@ -27,11 +27,8 @@ function ChapterCacheStatus({ isDownloading, isCached }) {
     );
   }
 
-  return (
-    <StatusWrapper>
-      <X size={18} color="var(--text-color-secondary)" />
-    </StatusWrapper>
-  );
+  // Not downloaded is the normal state: show nothing rather than an "✕" that reads like delete.
+  return null;
 }
 
 export default ChapterCacheStatus;

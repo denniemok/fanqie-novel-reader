@@ -38,7 +38,7 @@ const ActionsGroup = styled.div`
       border: none;
       box-shadow: none;
       color: var(--text-color-secondary);
-      border-radius: 12px;
+      border-radius: var(--border-radius-sm);
 
       @media (hover: hover) {
         &:hover:not(:disabled) {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Navigate, useNavigate } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import CatalogChapterList from '../components/catalog/CatalogChapterList';
 import BookInfo from '../components/book/BookInfo';
 import Error from '../components/ui/Error';
@@ -15,7 +16,8 @@ import { useBookDisplayVariant } from '../contexts/BookDisplayVariantContext';
 import { useBookLoader } from '../hooks/book/useBookLoader';
 import { useDownloadManager } from '../contexts/DownloadManager';
 import { CHAPTERS_PER_PAGE, getTotalPages } from '../utils/book/catalogPagination';
-import { buildCatalogUrl, ROUTES } from '../utils/navigation';
+import { buildCatalogUrl, buildChapterUrl, ROUTES } from '../utils/navigation';
+import { PrimaryButton } from '../components/ui/PrimaryButton';
 import DownloadAllConfirmModal from '../components/catalog/DownloadAllConfirmModal';
 import ExportBookModalHost from '../components/export/ExportBookModalHost';
 
@@ -74,6 +76,13 @@ function Catalog() {
   }, [bookInfo, completedDownloads]);
 
   const hasUncachedChapters = uncachedItemIds.length > 0;
+  const readItemId = lastReadItemId || itemDataList[0]?.item_id;
+  const readAction = readItemId ? (
+    <PrimaryButton type="button" onClick={() => navigate(buildChapterUrl(readItemId, bookId))}>
+      {lastReadItemId ? '繼續閱讀' : '開始閱讀'}
+      <ArrowRight aria-hidden />
+    </PrimaryButton>
+  ) : null;
   const downloadingAll = isDownloadingAll(bookId);
 
   const goToPage = (pageIndex) => {
@@ -129,16 +138,23 @@ function Catalog() {
       )}
       {bookInfo ? (
         <TopBarOffset>
-          <BookInfo bookInfo={bookInfo} conversionMode={conversionMode} />
-          <CatalogActionBar
-            bookId={bookId}
-            navigate={navigate}
-            hasUncachedChapters={hasUncachedChapters}
-            downloadingAll={downloadingAll}
-            onDownloadAll={handleDownloadAll}
-            onRefresh={() => loadBook(true)}
-            onExportBook={handleExportBook}
-            lastReadItemId={lastReadItemId}
+          <BookInfo
+            bookInfo={bookInfo}
+            conversionMode={conversionMode}
+            action={(
+              <>
+                {readAction}
+                <CatalogActionBar
+                  bookId={bookId}
+                  navigate={navigate}
+                  hasUncachedChapters={hasUncachedChapters}
+                  downloadingAll={downloadingAll}
+                  onDownloadAll={handleDownloadAll}
+                  onRefresh={() => loadBook(true)}
+                  onExportBook={handleExportBook}
+                />
+              </>
+            )}
           />
           {bookInfo.item_data_list && (
             <CatalogChapterList

@@ -6,6 +6,7 @@ import { css } from 'styled-components';
  */
 export const bookCardSurface = css`
   background: var(--card-surface);
+  background-image: var(--paper-grain);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: var(--retro-border-width) solid var(--border-color);
@@ -15,7 +16,7 @@ export const bookCardSurface = css`
   @media (hover: hover) {
     &:hover {
       border-color: ${(p) => (p.$still ? 'var(--border-color)' : 'var(--border-strong)')};
-      background: ${(p) => (p.$still ? 'var(--card-surface)' : 'var(--surface-raised)')};
+      background-color: ${(p) => (p.$still ? 'var(--card-surface)' : 'var(--surface-raised)')};
     }
   }
 `;

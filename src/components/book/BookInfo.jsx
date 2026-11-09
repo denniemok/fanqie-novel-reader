@@ -6,6 +6,7 @@ import { useConvertedText } from '../../hooks/useConvertedText';
 import { resolveBookDisplay } from '../../utils/book/bookInfo';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 import BookCoverImg from './BookCoverImg';
+import { PrimaryButton } from '../ui/PrimaryButton';
 import { HorizontalScrollArea, HorizontalScrollInner } from '../ui/HorizontalScrollArea';
 
 const InfoWrapper = styled.div`
@@ -14,6 +15,7 @@ const InfoWrapper = styled.div`
   align-items: flex-start;
   gap: 28px;
   background-color: var(--card-surface);
+  background-image: var(--paper-grain);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: var(--retro-border-width) solid var(--border-color);
@@ -22,6 +24,14 @@ const InfoWrapper = styled.div`
   @media (max-width: 480px) {
     padding: 20px 16px;
     gap: 16px;
+  }
+
+  /* With actions: the action row wraps under the cover and text at full card width. */
+  &.has-action {
+    flex-wrap: wrap;
+    row-gap: 20px;
+
+    @media (max-width: 480px) { row-gap: 16px; }
   }
 
   &.variant-card {
@@ -313,7 +323,6 @@ const Tags = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  opacity: 0.8;
   font-family: inherit;
 `;
 
@@ -323,7 +332,6 @@ const ScrollableTagText = styled.span`
   font-size: 12px;
   color: var(--text-color-secondary);
   line-height: 1.3;
-  opacity: 0.8;
   font-family: inherit;
 `;
 
@@ -350,6 +358,7 @@ const MetaTag = styled.span`
   border: none;
   color: var(--text-color-secondary);
   background: color-mix(in srgb, var(--text-color) 6%, transparent);
+  font-variant-numeric: tabular-nums;
   font-family: inherit;
 
   &.meta-score {
@@ -363,17 +372,35 @@ const MetaTag = styled.span`
   }
 `;
 
-const Footer = styled.div`
-  margin-top: 12px;
-  font-size: 14px;
-  color: var(--text-color-secondary);
-  font-family: inherit;
-  border-top: 1px solid var(--border-color);
-  padding-top: 8px;
-  width: 100%;
+const ActionRow = styled.div`
+  flex-basis: 100%;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  ${PrimaryButton} { margin-right: 8px; }
+
+  /* Phones: the read button fills what the icon-only tools leave. */
+  @media (max-width: 480px) {
+    gap: 6px;
+
+    ${PrimaryButton} {
+      flex: 1;
+      justify-content: center;
+      margin-right: 0;
+
+      svg { display: none; }
+    }
+  }
+
+  /* Very narrow: read button gets its own line so the tools stay together below it. */
+  @media (max-width: 360px) {
+    ${PrimaryButton} { flex-basis: 100%; }
+  }
 `;
 
-function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapterCount = true }) {
+function BookInfo({ bookInfo, conversionMode = 'tw', variant, action, showChapterCount = true }) {
   const [showFullAbstract, setShowFullAbstract] = useState(false);
   const { variant: displayVariant } = useBookDisplayVariant();
   
@@ -385,7 +412,8 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
   const convertedAbstract = useConvertedText(abstract, conversionMode);
   const convertedBookName = useConvertedText(book_name, conversionMode);
   const convertedAuthor = useConvertedText(author, conversionMode);
-  const convertedTags = useConvertedText(tags, conversionMode);
+  // API joins tags with commas; the Chinese enumeration comma reads more naturally.
+  const convertedTags = useConvertedText(tags, conversionMode)?.replace(/\s*,\s*/g, '、');
   const convertedCategory = useConvertedText(category, conversionMode);
   const convertedSubInfo = useConvertedText(sub_info, conversionMode);
   const convertedWordNumber = useConvertedText(word_number, conversionMode);
@@ -395,7 +423,9 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
 
   if (!book_name && !author) return null;
 
-  const wrapperClass = variant === 'card' ? 'variant-card' : variant === 'compact' ? 'variant-compact' : '';
+  const hasAction = !isCompact && Boolean(action);
+  const variantClass = variant === 'card' ? 'variant-card' : variant === 'compact' ? 'variant-compact' : '';
+  const wrapperClass = [variantClass, hasAction && 'has-action'].filter(Boolean).join(' ');
   const scrollCaptureProps = isCompact
     ? { onClick: (e) => e.stopPropagation(), onTouchStart: (e) => e.stopPropagation() }
     : {};
@@ -412,11 +442,7 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
             width="128"
             height="128"
           />
-          {showChapterCount && (
-            <CoverMeta>
-              {chapter_count ? `共 ${chapter_count} 章節` : '暫無章節資訊'}
-            </CoverMeta>
-          )}
+          {showChapterCount && chapter_count ? <CoverMeta>共 {chapter_count} 章節</CoverMeta> : null}
         </CoverWrapper>
       )}
       <TextBlock>
@@ -453,9 +479,9 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
           {convertedAbstract}
         </Abstract>
         <HorizontalScrollArea as={MetaRow} {...scrollCaptureProps}>
-          {showChapterCount && !thumb_url && (
-            <MetaTag className="meta-chapters">{chapter_count ? `共 ${chapter_count} 章節` : '暫無章節資訊'}</MetaTag>
-          )}
+          {showChapterCount && !thumb_url && chapter_count ? (
+            <MetaTag className="meta-chapters">共 {chapter_count} 章節</MetaTag>
+          ) : null}
           {score && (
             <MetaTag className="meta-score">評分 {score}</MetaTag>
           )}
@@ -465,8 +491,8 @@ function BookInfo({ bookInfo, conversionMode = 'tw', variant, footer, showChapte
           {creation_status && <MetaTag className="meta-creation-status">{convertedCreationStatus}</MetaTag>}
           {last_publish_time && <MetaTag className="meta-publish-time">更新 {last_publish_time}</MetaTag>}
         </HorizontalScrollArea>
-        {!isCompact && footer && <Footer>{footer}</Footer>}
       </TextBlock>
+      {hasAction && <ActionRow>{action}</ActionRow>}
       {!isCompact && showFullAbstract && (
         <SimpleTextModal text={formatExpandedAbstract(convertedAbstract)} onClose={() => setShowFullAbstract(false)} />
       )}

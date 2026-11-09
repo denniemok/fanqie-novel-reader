@@ -47,8 +47,9 @@ const Subtitle = styled.p`
   }
 `;
 
+/* Scrolls away with the header so it never sits on top of the cards below. */
 const SettingsButtonSlot = styled.div`
-  position: fixed;
+  position: absolute;
   top: calc(12px + env(safe-area-inset-top));
   right: calc(24px + env(safe-area-inset-right));
   z-index: 99;
