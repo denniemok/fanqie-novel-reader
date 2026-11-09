@@ -5,7 +5,6 @@ import { CardSpinningIcon } from '../book/CardActionButton';
 import {
   SortUnit,
   Tab,
-  TabActions,
   TOOLBAR_SORT_DROPDOWN_PROPS,
   ToolbarRight,
 } from '../layout/BookToolbarStyles';
@@ -32,7 +31,6 @@ function DiscoverToolbar({
   showListContent,
   loading,
   searchInput,
-  submittedQuery,
   viewMode,
   sortBy,
   sortDirection,
@@ -55,6 +53,28 @@ function DiscoverToolbar({
   getFilterMeta,
   filteredCount,
 }) {
+  const listActions = (
+    <ToolbarRight>
+      <SortUnit>
+        <SelectDropdown
+          options={DISCOVER_SORT_OPTIONS}
+          value={sortBy}
+          onChange={onSortChange}
+          ariaLabel="探索排序方式"
+          hasTrailing={sortBy !== 'default'}
+          {...TOOLBAR_SORT_DROPDOWN_PROPS}
+        />
+        {sortBy !== 'default' && (
+          <SortDirectionButton
+            sortDirection={sortDirection}
+            onToggle={onSortDirectionToggle}
+          />
+        )}
+      </SortUnit>
+      <ListGridViewToggle viewMode={viewMode} onViewModeChange={onViewModeChange} />
+    </ToolbarRight>
+  );
+
   const filterPanel = showListContent ? (
     <BookFilterPanel
       categories={filterCategories}
@@ -66,6 +86,7 @@ function DiscoverToolbar({
       filterItems={filterItems}
       getFilterMeta={getFilterMeta}
       filteredCount={filteredCount}
+      actions={listActions}
     />
   ) : null;
 
@@ -121,7 +142,6 @@ function DiscoverToolbar({
       {showSearchContent && (
         <DiscoverSearchForm
           searchInput={searchInput}
-          submittedQuery={submittedQuery}
           loading={loading}
           onSearchInputChange={onSearchInputChange}
           onSubmit={onSearchSubmit}
@@ -131,29 +151,6 @@ function DiscoverToolbar({
 
       {showSearchContent && filterPanel}
 
-      {showListContent && (
-        <TabActions>
-          <ToolbarRight>
-            <SortUnit>
-              <SelectDropdown
-                options={DISCOVER_SORT_OPTIONS}
-                value={sortBy}
-                onChange={onSortChange}
-                ariaLabel="探索排序方式"
-                hasTrailing={sortBy !== 'default'}
-                {...TOOLBAR_SORT_DROPDOWN_PROPS}
-              />
-              {sortBy !== 'default' && (
-                <SortDirectionButton
-                  sortDirection={sortDirection}
-                  onToggle={onSortDirectionToggle}
-                />
-              )}
-            </SortUnit>
-            <ListGridViewToggle viewMode={viewMode} onViewModeChange={onViewModeChange} />
-          </ToolbarRight>
-        </TabActions>
-      )}
     </TabStack>
   );
 }

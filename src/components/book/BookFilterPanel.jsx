@@ -10,6 +10,7 @@ import {
 } from '../../utils/book/bookFilters';
 import { maybeConvert } from '../../utils/text/zh-convert';
 import { HorizontalScrollArea, HorizontalScrollInner } from '../ui/HorizontalScrollArea';
+import { TOOLBAR_CONTROL_HEIGHT } from '../layout/BookToolbarStyles';
 
 const PanelRoot = styled.div`
   display: flex;
@@ -18,7 +19,17 @@ const PanelRoot = styled.div`
   width: 100%;
 `;
 
+/** Filter toggle plus the caller's sort/view controls; wraps to two lines when narrow. */
 const ToggleRow = styled.div`
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+`;
+
+const ActiveRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -31,7 +42,8 @@ const ToggleBtn = styled.button`
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-  min-height: 36px;
+  height: ${TOOLBAR_CONTROL_HEIGHT};
+  box-sizing: border-box;
   padding: 0 14px;
   border: var(--retro-border-width) solid var(--border-color);
   border-radius: var(--border-radius-sm);
@@ -39,10 +51,11 @@ const ToggleBtn = styled.button`
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: var(--text-color-secondary);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.06em;
   font-family: var(--ui-font-family);
+  white-space: nowrap;
   cursor: pointer;
   transition: var(--transition-default);
 
@@ -63,6 +76,18 @@ const ToggleBtn = styled.button`
   &:hover {
     color: var(--text-color);
     border-color: var(--border-strong);
+  }
+
+  /* Phones: icon + count only, like the other toolbar buttons, so it shares a row with sort and view. */
+  @media (max-width: 480px) {
+    gap: 4px;
+    padding: 0 10px;
+
+    .label,
+    .paren,
+    svg.chevron {
+      display: none;
+    }
   }
 `;
 
@@ -217,6 +242,7 @@ function BookFilterPanel({
   filterItems,
   getFilterMeta,
   filteredCount,
+  actions,
 }) {
   const categoryOptions = [
     { value: '', label: '全部' },
@@ -282,22 +308,30 @@ function BookFilterPanel({
           onClick={() => onExpandedChange(!expanded)}
           aria-expanded={expanded}
           aria-controls="book-filter-panel"
+          aria-label={filteredCount != null ? `篩選（${filteredCount} 本）` : '篩選'}
+          title="篩選"
         >
           <SlidersHorizontal aria-hidden />
-          篩選
-          {filteredCount != null && ` (${filteredCount})`}
+          <span className="label">篩選</span>
+          {filteredCount != null && (
+            <span>
+              <span className="paren">(</span>
+              {filteredCount}
+              <span className="paren">)</span>
+            </span>
+          )}
           <ChevronDown className={`chevron${expanded ? ' open' : ''}`} aria-hidden />
         </ToggleBtn>
+        {actions}
+      </ToggleRow>
 
-        {showActiveFilters && (
+      {showActiveFilters && (
+        <ActiveRow>
           <HorizontalScrollArea as={ActiveFilters} aria-label="已選篩選">
             {activeFilterLabels.map((label) => (
               <ActiveTag key={label}>{label}</ActiveTag>
             ))}
           </HorizontalScrollArea>
-        )}
-
-        {showActiveFilters && (
           <ClearBtn
             type="button"
             onClick={clearFilters}
@@ -306,8 +340,8 @@ function BookFilterPanel({
           >
             <X aria-hidden />
           </ClearBtn>
-        )}
-      </ToggleRow>
+        </ActiveRow>
+      )}
 
       {expanded && (
         <Body id="book-filter-panel">

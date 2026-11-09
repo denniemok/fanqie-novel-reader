@@ -22,7 +22,6 @@ import {
   SearchRow,
   SearchInput,
   SearchClearBtn,
-  TabActions,
   ToolbarRight,
   ViewToggle,
   SortUnit,
@@ -95,17 +94,6 @@ function BookshelfToolbar({
             </Tab>
           ))}
         </ScrollableTabBar>
-        <ViewToggle>
-          <ToggleBtn
-            type="button"
-            onClick={onOpenCollectionManagement}
-            title="管理收藏夾"
-            aria-label="管理收藏夾"
-          >
-            <Folders />
-            <BtnLabel>收藏夾</BtnLabel>
-          </ToggleBtn>
-        </ViewToggle>
       </TabRow>
 
       <SearchRow>
@@ -129,6 +117,37 @@ function BookshelfToolbar({
             </SearchClearBtn>
           )}
         </SearchBar>
+        <ViewToggle>
+          <ToggleBtn
+            type="button"
+            onClick={onOpenCollectionManagement}
+            title="管理收藏夾"
+            aria-label="管理收藏夾"
+          >
+            <Folders />
+            <BtnLabel>收藏夾</BtnLabel>
+          </ToggleBtn>
+          <ToggleBtn
+            type="button"
+            $active={manageMode}
+            onClick={onManageModeToggle}
+            title="管理書籍"
+            aria-label="管理書籍"
+            aria-pressed={manageMode}
+          >
+            <ListChecks />
+            <BtnLabel>管理</BtnLabel>
+          </ToggleBtn>
+          <ToggleBtn
+            type="button"
+            onClick={() => navigate(buildDefaultDiscoverUrl())}
+            title="新增書籍"
+            aria-label="新增書籍"
+          >
+            <Plus />
+            <BtnLabel>新書</BtnLabel>
+          </ToggleBtn>
+        </ViewToggle>
       </SearchRow>
 
       <BookFilterPanel
@@ -141,64 +160,40 @@ function BookshelfToolbar({
         filterItems={filterItems}
         getFilterMeta={getFilterMeta}
         filteredCount={filteredCount}
-      />
-
-      <TabActions>
-        <ToolbarRight>
-          <SortUnit>
-            <SelectDropdown
-              options={BOOKSHELF_SORT_OPTIONS}
-              value={sortBy}
-              onChange={onSortChange}
-              ariaLabel="書架排序方式"
-              hasTrailing={sortBy !== 'manual' || canReorder}
-              {...TOOLBAR_SORT_DROPDOWN_PROPS}
-            />
-            {sortBy !== 'manual' ? (
-              <SortDirectionButton
-                sortDirection={sortDirection}
-                onToggle={onSortDirectionToggle}
+        actions={
+          <ToolbarRight>
+            <SortUnit>
+              <SelectDropdown
+                options={BOOKSHELF_SORT_OPTIONS}
+                value={sortBy}
+                onChange={onSortChange}
+                ariaLabel="書架排序方式"
+                hasTrailing={sortBy !== 'manual' || canReorder}
+                {...TOOLBAR_SORT_DROPDOWN_PROPS}
               />
-            ) : canReorder && !hasSearch && !hasActiveFilters ? (
-              <SortTrailingBtn
-                type="button"
-                $active={reorderMode}
-                onClick={onReorderModeToggle}
-                title="調整排序"
-                aria-label="調整排序"
-                aria-pressed={reorderMode}
-              >
-                <Hand />
-                <BtnLabel>調序</BtnLabel>
-              </SortTrailingBtn>
-            ) : null}
-          </SortUnit>
-          <ViewToggle>
-            <ToggleBtn
-              $active={manageMode}
-              onClick={onManageModeToggle}
-              title="管理書籍"
-              aria-label="管理書籍"
-              aria-pressed={manageMode}
-            >
-              <ListChecks />
-              <BtnLabel>管理</BtnLabel>
-            </ToggleBtn>
-          </ViewToggle>
-          <ViewToggle>
-            <ToggleBtn
-              type="button"
-              onClick={() => navigate(buildDefaultDiscoverUrl())}
-              title="新增書籍"
-              aria-label="新增書籍"
-            >
-              <Plus />
-              <BtnLabel>新書</BtnLabel>
-            </ToggleBtn>
-          </ViewToggle>
-          <ListGridViewToggle viewMode={viewMode} onViewModeChange={onViewModeChange} />
-        </ToolbarRight>
-      </TabActions>
+              {sortBy !== 'manual' ? (
+                <SortDirectionButton
+                  sortDirection={sortDirection}
+                  onToggle={onSortDirectionToggle}
+                />
+              ) : canReorder && !hasSearch && !hasActiveFilters ? (
+                <SortTrailingBtn
+                  type="button"
+                  $active={reorderMode}
+                  onClick={onReorderModeToggle}
+                  title="調整排序"
+                  aria-label="調整排序"
+                  aria-pressed={reorderMode}
+                >
+                  <Hand />
+                  <BtnLabel>調序</BtnLabel>
+                </SortTrailingBtn>
+              ) : null}
+            </SortUnit>
+            <ListGridViewToggle viewMode={viewMode} onViewModeChange={onViewModeChange} />
+          </ToolbarRight>
+        }
+      />
     </ToolbarRoot>
   );
 }
