@@ -9,7 +9,6 @@ import { SearchInput } from '../layout/BookToolbarStyles';
 
 function DiscoverSearchForm({
   searchInput,
-  submittedQuery,
   loading,
   onSearchInputChange,
   onSubmit,
@@ -39,7 +38,7 @@ function DiscoverSearchForm({
       </InlineSearchBar>
       <SearchSubmitBtn
         type="submit"
-        disabled={!searchInput.trim() || loading || searchInput.trim() === submittedQuery}
+        disabled={!searchInput.trim() || loading}
       >
         搜尋
       </SearchSubmitBtn>

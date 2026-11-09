@@ -162,7 +162,12 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     const query = searchInput.trim();
-    if (!query || loading || query === submittedQuery) return;
+    if (!query || loading) return;
+    // Same keyword: search again instead of leaving the button looking dead.
+    if (query === submittedQuery) {
+      setRefreshKey((key) => key + 1);
+      return;
+    }
     setDiscoverActiveTab({ primary: PRIMARY_TAB_SEARCH, secondary: null });
     navigate(buildDiscoverUrl(PRIMARY_TAB_SEARCH, null, query));
   };
@@ -232,7 +237,6 @@ function DiscoverBooks({ conversionMode = 'tw' }) {
         showListContent={showListContent}
         loading={loading}
         searchInput={searchInput}
-        submittedQuery={submittedQuery}
         viewMode={viewMode}
         sortBy={sortBy}
         sortDirection={sortDirection}
