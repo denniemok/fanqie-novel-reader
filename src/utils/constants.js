@@ -11,6 +11,9 @@ export const CHAPTER_CACHE_KEY = 'fanqie-chapter';
 export const DETAIL_CACHE_KEY = 'fanqie-detail';
 export const READING_HISTORY_KEY = 'fanqie-history';
 export const COLLECTIONS_KEY = 'fanqie-collections';
+export const REPLACE_RULES_KEY = 'fanqie-replace-rules';
+export const REPLACE_RULES_MAX = 200;
+export const REPLACE_RULE_TEXT_MAX = 50;
 
 export const BOOKSHELF_VIEW_MODE_KEY = 'bookshelfViewMode';
 export const DISCOVER_VIEW_MODE_KEY = 'discoverViewMode';

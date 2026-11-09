@@ -3,6 +3,7 @@ import {
   CATALOG_MANAGE_MODE_KEY,
   READING_HISTORY_KEY,
   COLLECTIONS_KEY,
+  REPLACE_RULES_KEY,
   BOOKSHELF_VIEW_MODE_KEY,
   DISCOVER_VIEW_MODE_KEY,
   BOOKSHELF_SORT_KEY,
@@ -41,6 +42,7 @@ import { isValidHexColor, isValidReaderBackground } from './readerColors';
 import { isFontAvailable } from './fontDetect';
 import { normalizeBookFilterState } from './book/bookFilters';
 import { directoryCache, chapterCache, detailCache, getStoreItem, setStoreItem } from './cache';
+import { normalizeReplaceRules } from './text/replaceRules';
 
 export function safeGetItem(key) {
   if (typeof window === 'undefined') return null;
@@ -418,6 +420,21 @@ export async function deleteChapter(itemId) {
   if (!itemId) return false;
   await chapterCache.remove(itemId);
   return true;
+}
+
+// ── Replace rules ────────────────────────────────────────────────────────────
+
+/** @returns {Promise<import('./text/replaceRules').ReplaceRule[]>} */
+export async function getReplaceRules() {
+  try {
+    return normalizeReplaceRules(await getStoreItem(REPLACE_RULES_KEY));
+  } catch {
+    return [];
+  }
+}
+
+export async function saveReplaceRules(rules) {
+  return setStoreItem(REPLACE_RULES_KEY, normalizeReplaceRules(rules));
 }
 
 // ── Collections ──────────────────────────────────────────────────────────────

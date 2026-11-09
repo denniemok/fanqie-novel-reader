@@ -1,1 +1,1 @@
-export { useConversionMode } from '../contexts/ConversionModeContext';
+export { useConversionMode, useReplaceRules } from '../contexts/ConversionModeContext';

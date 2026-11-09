@@ -3,6 +3,7 @@ import PageContent from '../layout/PageContent';
 import { GrayButton } from '../ui/GrayButton';
 import HostCodeList from '../settings/HostCodeList';
 import { useToast } from '../../contexts/ToastContext';
+import { useReplaceRules } from '../../hooks/useConversionMode';
 import {
   CANONICAL_HOSTNAME,
   CANONICAL_IMPORT_URL,
@@ -14,6 +15,7 @@ import { ActionRow, FileInput, FileLabel, Hint, Section, SectionTitle, StepCard 
 
 function ImportContent() {
   const { notifyError, notifySuccess, notifyWarning } = useToast();
+  const { reloadReplaceRules } = useReplaceRules();
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [importing, setImporting] = useState(false);
@@ -42,6 +44,7 @@ function ImportContent() {
     setImporting(true);
     try {
       const summary = await importUserData(selectedFile);
+      await reloadReplaceRules();
       notifySuccess(
         `匯入完成：${summary.chapters} 章節、${summary.directories} 本目錄、${summary.details} 本書籍。`,
       );

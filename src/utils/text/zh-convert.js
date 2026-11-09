@@ -1,5 +1,6 @@
 import { Converter, ConverterFactory, Locale } from 'opencc-js';
 import { getConversionMode } from '../storage';
+import { applyReplaceRules } from './replaceRules';
 
 /**
  * OpenCC's s2twp bundles TWPhrasesIT, a ~400-entry computing glossary that mangles
@@ -51,6 +52,7 @@ function convertByMode(text, mode) {
 }
 
 /**
+ * Converts by mode, then applies the user's replace rules (in every mode).
  * @param {string} text
  * @param {'original'|'tw'|'hk'} [mode] - Override; otherwise uses stored preference
  * @returns {string}
@@ -58,5 +60,5 @@ function convertByMode(text, mode) {
 export function maybeConvert(text, mode) {
   if (!text || typeof text !== 'string') return text;
   const effectiveMode = mode !== undefined ? mode : getConversionMode();
-  return convertByMode(text, effectiveMode);
+  return applyReplaceRules(convertByMode(text, effectiveMode));
 }

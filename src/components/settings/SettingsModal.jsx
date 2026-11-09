@@ -1,16 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Activity, BookImage, Globe, Languages, Moon, Sun, Type } from 'lucide-react';
+import { Activity, BookImage, Globe, Languages, Moon, Replace, Sun, Type } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Modal, ModalTitleBar, ModalBody, ModalText } from '../ui/ModalBase';
 import { MODAL_SELECT_PROPS, Section, SectionHeader, SelectField } from '../ui/ModalFormSection';
 import SelectDropdown from '../ui/SelectDropdown';
 import ApiOverallBadge from './ApiOverallBadge';
+import ReplaceRulesModal from './ReplaceRulesModal';
 import { useApiBase } from '../../hooks/api/useApiBase';
 import { useApiStatus } from '../../hooks/api/useApiStatus';
 import { useBookDisplayVariant } from '../../contexts/BookDisplayVariantContext';
 import { useBookshelfQuickAction } from '../../contexts/BookshelfQuickActionContext';
-import { useConversionMode } from '../../hooks/useConversionMode';
+import { useConversionMode, useReplaceRules } from '../../hooks/useConversionMode';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useUiFont } from '../../contexts/UiFontContext';
 import {
@@ -92,6 +93,8 @@ function SettingsModal({ onClose }) {
   const { variant, setVariant } = useBookDisplayVariant();
   const { enabled: bookshelfQuickAction, setEnabled: setBookshelfQuickAction } = useBookshelfQuickAction();
   const [conversionMode, setConversionMode] = useConversionMode();
+  const { replaceRules } = useReplaceRules();
+  const [replaceRulesOpen, setReplaceRulesOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const { mode: uiFontMode, setMode: setUiFontMode } = useUiFont();
 
@@ -104,6 +107,10 @@ function SettingsModal({ onClose }) {
     ...opt,
     status: statusByApi[opt.value],
   }));
+
+  if (replaceRulesOpen) {
+    return <ReplaceRulesModal onClose={() => setReplaceRulesOpen(false)} />;
+  }
 
   return (
     <Modal onClose={onClose} maxWidth="420px">
@@ -212,6 +219,10 @@ function SettingsModal({ onClose }) {
             />
           </SelectField>
           <ModalText>僅影響書名、正文、評論等內容，不影響介面。</ModalText>
+          <StatusLink type="button" onClick={() => setReplaceRulesOpen(true)}>
+            <Replace size={16} strokeWidth={2.5} aria-hidden />
+            自訂替換{replaceRules.length > 0 ? `（${replaceRules.length} 條）` : ''}
+          </StatusLink>
         </Section>
 
         <Section>
